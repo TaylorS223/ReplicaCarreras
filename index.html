@@ -4,613 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arquitectura | ULEAM</title>
-    <link rel="stylesheet" href="styles/dashicons.min.css">
-    <link rel="stylesheet" href="styles/elegant-font.css">
-    <link rel="stylesheet" href="styles/font-awesome.css">
-    <link rel="stylesheet" href="styles/kingster-learnpress-pb.css">
-    <link rel="stylesheet" href="styles/kingster-learnpress.css">
-    <link rel="stylesheet" href="styles/kingster-style-custom.css">
-    <link rel="stylesheet" href="styles/page-builder.css">
-    <link rel="stylesheet" href="styles/revicons.css">
-    <link rel="stylesheet" href="styles/sr7.btns.css">
-    <link rel="stylesheet" href="styles/sr7.css">
-    <link rel="stylesheet" href="styles/sr7.lp.css">
-    <link rel="stylesheet" href="styles/sr7.media.css">
-    <link rel="stylesheet" href="styles/sr7.nav.css">
-    <link rel="stylesheet" href="styles/style-core.css">
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="styles/t15.css">
-    <link rel="stylesheet" href="styles/tom-select.min.css">
-    <link rel="stylesheet" href="styles/widgets.min.css">
-    <link rel="stylesheet" href="styles/wpgmp_all_frontend.css">
-    <style>
-        :root {
-            color-scheme: light;
-            --page-bg: #ffffff;
-            --surface: #f7f9fc;
-            --surface-strong: #eef3f9;
-            --ink: #1f315e;
-            --muted: #64728b;
-            --accent: #214d97;
-            --accent-strong: #2f6fdd;
-            --accent-soft: #dbe8ff;
-            --dark: #1e1e1e;
-            --dark-soft: #232323;
-            --border: rgba(31, 61, 119, 0.12);
-            --shadow: 0 18px 60px rgba(18, 34, 63, 0.12);
-            --radius-lg: 28px;
-            --radius-md: 22px;
-            --radius-sm: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            color: var(--ink);
-            background: var(--page-bg);
-        }
-
-        img {
-            display: block;
-            max-width: 100%;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .page-shell {
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            width: min(1200px, calc(100% - 32px));
-            margin: 0 auto;
-        }
-
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(28, 58, 110, 0.08);
-        }
-
-        .header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-            padding: 14px 0;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            min-width: 0;
-        }
-
-        .brand img {
-            width: min(420px, 100%);
-            height: auto;
-        }
-
-        .main-nav {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            font-size: 0.98rem;
-            font-weight: 700;
-            color: #2a4572;
-            white-space: nowrap;
-        }
-
-        .main-nav a {
-            position: relative;
-            padding: 8px 0;
-        }
-
-        .main-nav a.is-active::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -4px;
-            height: 4px;
-            border-radius: 999px;
-            background: #c8db39;
-        }
-
-        .hero {
-            position: relative;
-            min-height: 680px;
-            display: flex;
-            align-items: center;
-            background: linear-gradient(180deg, rgba(28, 44, 77, 0.96), rgba(20, 32, 56, 0.98));
-            color: #fff;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: linear-gradient(rgba(7, 18, 35, 0.2), rgba(7, 18, 35, 0.2)), url("imagenes/ACREDITACION-ARQUITECTURA-600x333.jpeg");
-            background-size: cover;
-            background-position: center;
-            opacity: 0.14;
-            transform: scale(1.05);
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 20%, rgba(67, 99, 181, 0.28), transparent 42%), linear-gradient(90deg, rgba(9, 19, 37, 0.65), rgba(9, 19, 37, 0.28) 46%, rgba(9, 19, 37, 0.65));
-        }
-
-        .hero-inner {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            padding: 58px 0 64px;
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            gap: 28px;
-            align-items: center;
-        }
-
-        .hero-copy {
-            max-width: 700px;
-        }
-
-        .hero-copy .eyebrow {
-            display: inline-flex;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            margin-bottom: 18px;
-        }
-
-        .hero-copy h1 {
-            margin: 0;
-            font-size: clamp(2.6rem, 5vw, 5.6rem);
-            line-height: 0.98;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 10px 18px;
-            margin: 10px 0 20px;
-            background: #4857b0;
-            font-size: clamp(1.4rem, 3.8vw, 3.3rem);
-            line-height: 1;
-            font-weight: 700;
-            border-radius: 6px;
-        }
-
-        .hero-copy p {
-            margin: 0;
-            font-size: 1.16rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 52ch;
-        }
-
-        .hero-visual {
-            display: grid;
-            gap: 16px;
-            justify-items: end;
-        }
-
-        .hero-card {
-            width: min(100%, 450px);
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .hero-card img {
-            border-radius: calc(var(--radius-lg) - 8px);
-            width: 100%;
-            aspect-ratio: 1.18;
-            object-fit: cover;
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .section {
-            padding: 64px 0;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 24px;
-            margin-bottom: 28px;
-        }
-
-        .section-header h2 {
-            margin: 0;
-            color: #1d4282;
-            font-size: clamp(1.8rem, 3vw, 2.7rem);
-            line-height: 1.1;
-        }
-
-        .section-header p {
-            margin: 0;
-            color: var(--muted);
-            max-width: 64ch;
-            line-height: 1.7;
-        }
-
-        .teacher-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 24px 18px;
-        }
-
-        .teacher-card {
-            text-align: center;
-            padding: 8px 10px;
-        }
-
-        .teacher-card figure {
-            margin: 0 auto 12px;
-            width: 92px;
-            height: 92px;
-            border-radius: 999px;
-            overflow: hidden;
-            background: var(--surface-strong);
-            box-shadow: 0 12px 30px rgba(15, 29, 57, 0.12);
-        }
-
-        .teacher-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .teacher-card h3 {
-            margin: 0;
-            font-size: 0.92rem;
-            line-height: 1.35;
-            letter-spacing: 0.01em;
-            text-transform: uppercase;
-            color: #254072;
-        }
-
-        .teacher-card p {
-            margin: 4px 0 0;
-            color: #717b8f;
-            font-size: 0.95rem;
-        }
-
-        .split-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .surface-card {
-            background: #fff;
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 61, 119, 0.08);
-        }
-
-        .surface-card.dark {
-            background: var(--dark-soft);
-            color: #f7f7f7;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .surface-card h3 {
-            margin: 0 0 18px;
-            font-size: 1.65rem;
-            line-height: 1.1;
-            color: #1f4686;
-        }
-
-        .surface-card.dark h3 {
-            color: #fff;
-        }
-
-        .surface-card p,
-        .surface-card li {
-            color: inherit;
-            line-height: 1.8;
-        }
-
-        .surface-card ol {
-            margin: 18px 0 0;
-            padding-left: 1.2rem;
-        }
-
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 14px 26px;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #3e7fe3, #2d71d2);
-            color: #fff;
-            font-weight: 800;
-            margin-top: 24px;
-        }
-
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .news-card {
-            display: block;
-            color: inherit;
-        }
-
-        .news-card figure {
-            margin: 0;
-            border-radius: 16px;
-            overflow: hidden;
-            aspect-ratio: 16 / 10;
-            background: var(--surface-strong);
-        }
-
-        .news-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .news-card time {
-            display: inline-flex;
-            margin: -14px 0 0 12px;
-            position: relative;
-            z-index: 1;
-            padding: 8px 16px;
-            border-radius: 999px;
-            background: #f6fbff;
-            color: #90b6b5;
-            font-size: 0.9rem;
-            box-shadow: 0 8px 20px rgba(17, 33, 60, 0.08);
-        }
-
-        .news-card h3 {
-            margin: 12px 0 0;
-            font-size: 1.02rem;
-            line-height: 1.35;
-            color: #233f72;
-        }
-
-        .accreditation-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            align-items: stretch;
-        }
-
-        .video-frame {
-            min-height: 440px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            background: #111;
-            box-shadow: var(--shadow);
-        }
-
-        .video-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .accordion {
-            padding: 0;
-        }
-
-        .study-level {
-            border-top: 1px solid rgba(31, 61, 119, 0.12);
-            padding: 18px 0;
-        }
-
-        .study-level:first-child {
-            border-top: 0;
-            padding-top: 0;
-        }
-
-        .study-level summary {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px;
-            list-style: none;
-            cursor: pointer;
-            font-weight: 800;
-            color: #1f4686;
-        }
-
-        .study-level summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .study-level summary::after {
-            content: "+";
-            font-size: 1.2rem;
-            font-weight: 400;
-            color: #6d84b0;
-        }
-
-        .study-level[open] summary::after {
-            content: "–";
-        }
-
-        .study-columns {
-            margin-top: 18px;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .study-list {
-            margin: 0;
-            padding-left: 1.1rem;
-            color: #4d5a70;
-            line-height: 1.8;
-        }
-
-        .level-note {
-            margin-top: 18px;
-            text-align: right;
-            color: #8190a8;
-            font-size: 0.95rem;
-        }
-
-        .site-footer {
-            background: #171717;
-            color: #cfcfcf;
-            padding: 58px 0 18px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr;
-            gap: 28px;
-        }
-
-        .footer-brand img {
-            width: 240px;
-            height: auto;
-            margin-bottom: 18px;
-        }
-
-        .footer-title {
-            margin: 0 0 18px;
-            font-size: 1rem;
-            color: #fff;
-        }
-
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-
-        .footer-bottom {
-            margin-top: 30px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: #888;
-            font-size: 0.92rem;
-        }
-
-        @media (max-width: 1100px) {
-            .hero-grid,
-            .split-grid,
-            .accreditation-grid,
-            .footer-grid,
-            .study-columns {
-                grid-template-columns: 1fr;
-            }
-
-            .news-grid,
-            .teacher-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .main-nav {
-                gap: 18px;
-                overflow-x: auto;
-                padding-bottom: 4px;
-            }
-
-            .hero {
-                min-height: auto;
-            }
-
-            .hero-visual {
-                justify-items: start;
-            }
-        }
-
-        @media (max-width: 720px) {
-            .container {
-                width: min(100% - 20px, 1200px);
-            }
-
-            .header-inner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .brand img {
-                width: min(360px, 100%);
-            }
-
-            .section {
-                padding: 48px 0;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .teacher-grid,
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .surface-card,
-            .hero-inner {
-                padding-left: 0;
-                padding-right: 0;
-            }
-
-            .surface-card {
-                padding: 22px;
-            }
-
-            .hero-copy h1 {
-                font-size: clamp(2.2rem, 12vw, 4rem);
-            }
-
-            .hero-badge {
-                font-size: clamp(1.3rem, 8vw, 2.2rem);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles/global.css">
 </head>
 <body>
     <div class="page-shell">
@@ -638,6 +32,7 @@
                             <div class="hero-badge">ARQUITECTURA</div>
                             <p>Formación académica orientada al diseño, la planificación y la gestión de proyectos arquitectónicos y urbanos con enfoque sostenible, técnico y social.</p>
                         </div>
+
                         <div class="hero-visual">
                             <div class="hero-card">
                                 <img src="imagenes/ACREDITACION-ARQUITECTURA-600x333.jpeg" alt="Acreditación de Arquitectura ULEAM">
@@ -649,57 +44,90 @@
                     </div>
                 </div>
             </section>
-
-            <section id="personal" class="section">
+            <section id="datos" class="container-info-section">
                 <div class="container">
-                    <div class="section-header">
-                        <h2>Personal docente</h2>
-                        <p>Equipo académico que acompaña el proceso formativo en diseño, teoría, historia, técnicas constructivas, investigación y gestión de proyectos.</p>
-                    </div>
-                    <div class="teacher-grid">
-                        <article class="teacher-card"><figure><img src="imagenes/QUIMIS-ABEL-150x150.png" alt="Abel Quimis Chilan"></figure><h3>Abel Quimis Chilan</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/MENDOZA-ALEJANDRO-150x150.png" alt="Alejandro Mendoza Chávez"></figure><h3>Alejandro Mendoza Chávez</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/INTRIAGO-ANDREA-150x150.png" alt="Andrea Intriago Landázuri"></figure><h3>Andrea Intriago Landázuri</h3><p>Arquitecta</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/ZAMBRANO-ARMANDO-150x150.png" alt="Armando Zambrano Loor"></figure><h3>Armando Zambrano Loor</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/CESAR-PALMA-150x150.png" alt="César Palma Espinel"></figure><h3>César Palma Espinel</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/MELGAR-CRISTHIAN-150x150.png" alt="Cristhian Melgar Véliz"></figure><h3>Cristhian Melgar Véliz</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/CEVALLOS-ERICK-150x150.png" alt="Erick Cevallos Viera"></figure><h3>Erick Cevallos Viera</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/ORMAZA-FABRICIO-150x150.png" alt="Fabricio Ormaza García"></figure><h3>Fabricio Ormaza García</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/FERNANDO-REPRESA-150x150.png" alt="Fernando Represa Pérez"></figure><h3>Fernando Represa Pérez</h3><p>Doctor</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/DELGADO-FRANCISCO-150x150.png" alt="Francisco Delgado Sanz"></figure><h3>Francisco Delgado Sanz</h3><p>Ingeniero</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/FULTON-PESANTES-150x150.png" alt="Fulton Pesantes Macías"></figure><h3>Fulton Pesantes Macías</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/BARBA-GABRIEL-150x150.png" alt="Gabriel Barba Espinel"></figure><h3>Gabriel Barba Espinel</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/GALLO-MARCOS-150x150.png" alt="Marcos Gallo Zambrano"></figure><h3>Marcos Gallo Zambrano</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/AVEIGA-NADIA-150x150.png" alt="Nadia Aveiga Villacís"></figure><h3>Nadia Aveiga Villacís</h3><p>Arquitecta</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/TORRES-NEMAR-150x150.png" alt="Nemar Torres Reyes"></figure><h3>Nemar Torres Reyes</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/GARCIA-PABLO-150x150.png" alt="Pablo García Delgado"></figure><h3>Pablo García Delgado</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/AVILA-RICARDO-150x150.png" alt="Ricardo Ávila Ávila"></figure><h3>Ricardo Ávila Ávila</h3><p>Arquitecto</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/CEDENO-TATIANA-150x150.png" alt="Tatiana Cedeño Delgado"></figure><h3>Tatiana Cedeño Delgado</h3><p>Arquitecta</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/MOREIRA-VALERIA-150x150.png" alt="Valeria Moreira Zambrano"></figure><h3>Valeria Moreira Zambrano</h3><p>Arquitecta</p></article>
-                        <article class="teacher-card"><figure><img src="imagenes/WINDERSON-MUENTES-150x150.png" alt="Winderson Muentes Rivera"></figure><h3>Winderson Muentes Rivera</h3><p>Arquitecto</p></article>
+                    <div class="container-info-grid">
+                        <article class="info-card">
+                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+                            <h3>Titulo profesional</h3>
+                            <p>Arquitecto</p>
+                        </article>
+                        <article class="info-card">
+                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                            <h3>Jornada</h3>
+                            <p>Diurno / vespertino</p>
+                        </article>
+                        <article class="info-card">
+                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                            <h3>Duración</h3>
+                            <p>10 semestres</p>
+                        </article>
+                        <article class="info-card">
+                            <i class="fa fa-users" aria-hidden="true"></i>
+                            <h3>Modalidad</h3>
+                            <p>Presencial</p>
+                        </article>
                     </div>
                 </div>
             </section>
 
-            <section id="perfil" class="section">
-                <div class="container split-grid">
-                    <article class="surface-card">
-                        <h3>Perfil de egreso</h3>
-                        <p>La carrera de Arquitectura de la Universidad Laica Eloy Alfaro de Manabí forma profesionales con competencias integrales para diseñar, planificar, gestionar y ejecutar proyectos arquitectónicos y urbanos que respondan a los desafíos contemporáneos del desarrollo sostenible.</p>
-                        <p>Las y los egresados desarrollan propuestas arquitectónicas y urbanísticas con criterio crítico, dominio de herramientas técnicas y digitales, sensibilidad estética y capacidad para comunicar ideas de manera oral y gráfica.</p>
-                        <p>Su formación fortalece el compromiso ético, la responsabilidad social y la integración de criterios de sostenibilidad en procesos de diseño, investigación y gestión del territorio.</p>
+            <section id="mision-vision" class="card-enfoque">
+                <div class="container card-grid">
+                    <article class="surface-card info-panel">
+                        <i class="fa fa-bullseye" aria-hidden="true"></i>
+                        <h2>Misión</h2>
+                        <p>Formar profesionales propositivos y comprometidos con la transformación del entorno construido, mediante una práctica arquitectónica y urbana ética, contextual, interdisciplinaria, con enfoque territorial, cultural, sostenible, biocéntrico y comunitario.</p>
                     </article>
-                    <article class="surface-card">
+                    <article class="surface-card info-panel">
+                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+                        <h2>Visión</h2>
+                        <p>Al año 2030 ser una carrera acreditada a nivel nacional e internacional, que garantice la calidad en sus procesos y pertinencia para contribuir al desarrollo sostenible en el contexto regional y nacional.</p>
+                    </article>
+                </div>
+            </section>
+
+            <h2 class="section-title">¡Construye el futuro, diseña tus sueños y transforma el mundo!
+Arquitectura - Universidad Laica Eloy Alfaro de Manabí</h2>
+
+            <section id="perfil" class="section profile-section">
+                <div class="profile-effects" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="container split-grid">
+                    <article class="surface-card profile-card">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        <h3>Perfil de egreso</h3>
+                        <p>La carrera de Arquitectura de la Universidad Laica Eloy Alfaro de Manabí (ULEAM) tiene como propósito formar profesionales con competencias integrales para diseñar, planificar, gestionar y ejecutar proyectos arquitectónicos y urbanos que respondan a los desafíos contemporáneos del desarrollo sostenible. Los egresados aplicarán soluciones innovadoras y responsables que mejoren la calidad de vida de las comunidades, respetando la diversidad cultural y promoviendo el equilibrio entre lo ambiental, social y económico.
+Los arquitectos y arquitectas de la ULEAM serán capaces de desarrollar propuestas arquitectónicas y urbanísticas integrales mediante la observación crítica, el análisis contextual y la interacción con diversos actores sociales. Su formación incluye el manejo de herramientas técnicas y digitales avanzadas, así como el dominio de principios estéticos, normativos y tecnológicos que garanticen la pertinencia, funcionalidad y calidad de sus proyectos. Además, se destaca su capacidad para comunicar ideas de manera efectiva, tanto de forma oral, escrita como gráfica, motivando la innovación e investigación.
+El egresado también se distinguirá por su compromiso ético y social, integrando criterios de sostenibilidad en sus diseños y procesos, promoviendo el uso eficiente de recursos y la preservación del medio ambiente. Será un profesional versátil, capaz de liderar equipos interdisciplinarios, gestionar proyectos de diversa escala y complejidad, y participar activamente en la investigación y desarrollo de soluciones que aborden las problemáticas del territorio.</p>
+                    </article>
+                    <article class="surface-card profile-card">
+                        <i class="fa fa-briefcase" aria-hidden="true"></i>
                         <h3>Campo laboral</h3>
-                        <p>El arquitecto y la arquitecta de la ULEAM cuentan con las competencias necesarias para identificar problemáticas urbanas y territoriales y proponer soluciones innovadoras, sostenibles y contextualizadas.</p>
-                        <p>Su preparación les permite desempeñarse de forma independiente o en instituciones públicas y privadas, desarrollando actividades como:</p>
-                        <ol>
-                            <li>Asesoría, consultoría y evaluación en proyectos arquitectónicos, urbanos y territoriales.</li>
-                            <li>Formulación y gestión de planes, políticas y programas de desarrollo urbano y ordenamiento territorial.</li>
-                            <li>Diseño arquitectónico y urbano con enfoques de eficiencia, innovación y sostenibilidad.</li>
-                            <li>Ejecución, dirección, supervisión e inspección de obras con cumplimiento normativo.</li>
-                        </ol>
-                        <a class="cta" href="#plan">Malla curricular</a>
+                        <p>Los arquitectos y arquitectas egresados de la Universidad Laica Eloy Alfaro de Manabí (ULEAM) cuentan con las competencias necesarias para identificar y abordar problemáticas urbanas y territoriales, proponiendo soluciones innovadoras, sostenibles y contextualizadas. Su formación les permite diseñar y gestionar proyectos de arquitectura y urbanismo en diversas escalas y niveles de complejidad, adaptándose a las dinámicas y desafíos del entorno construido.
+
+Gracias a esta preparación integral, pueden desempeñarse en distintos ámbitos, ya sea de manera independiente o en instituciones públicas y privadas, desarrollando actividades como:
+
+Asesoría, consultoría y evaluación en proyectos arquitectónicos, urbanos y territoriales.
+Formulación y gestión de planes, políticas y programas de desarrollo urbano y ordenamiento territorial.
+Diseño arquitectónico y urbano, con enfoques en eficiencia, innovación y sostenibilidad.
+Ejecución, dirección, supervisión e inspección de obras, garantizando calidad, viabilidad técnica y cumplimiento normativo.</p>
+                        <a class="cta" href="https://carreras.uleam.edu.ec/arquitectura-internacional/wp-content/uploads/sites/95/2025/02/MALLA-2024-NS-MICROSITIO-1.pdf" target="_blank" rel="noopener noreferrer">Malla curricular</a>
                     </article>
                 </div>
             </section>
@@ -740,41 +168,296 @@
                         <h2>Plan de estudios</h2>
                         <p>Organización curricular por niveles con enfoque progresivo en representación, diseño, análisis, investigación y proyecto arquitectónico.</p>
                     </div>
-                    <div class="surface-card accordion">
+                    <div class="accordion">
                         <details class="study-level" open>
                             <summary>NIVEL 1</summary>
-                            <div class="study-columns">
-                                <ul class="study-list">
-                                    <li>Geometría plana ARQ-101</li>
-                                    <li>Medios de expresión y representación ARQ-103</li>
-                                    <li>Geometría descriptiva ARQ-105</li>
-                                </ul>
-                                <ul class="study-list">
-                                    <li>Diseño básico ARQ-102A</li>
-                                    <li>Dibujo técnico para arquitectos ARQ-104</li>
-                                    <li>Cátedra Alfaro 9901V01-R22</li>
-                                </ul>
+                            <div class="study-items">
+                                <details class="course-item" open>
+                                    <summary>
+                                        <span class="course-title">Geometría plana ARQ-101</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Expresa habilidad para percibir, concebir y manejar el espacio en sus tres dimensiones y en las diferentes escalas, comunicando sus propuestas tanto urbanas como arquitectónicas mediante superficies y volúmenes creativos e innovadores plasmados a través del dominio de los medios y herramientas para comunicar de forma oral, escrita o de manera gráfica los detalles de sus ideas.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Medios de expresión y representación ARQ-103</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Desarrolla el manejo de técnicas de representación para comunicar ideas arquitectónicas con claridad, precisión y criterio gráfico.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Geometría descriptiva ARQ-105</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Fortalece la lectura espacial y la traducción de formas tridimensionales a sistemas de representación técnica.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Diseño básico ARQ-102A</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Introduce fundamentos de composición, proporción y organización espacial para el desarrollo de propuestas iniciales.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Dibujo técnico para arquitectos ARQ-104</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Apoya la precisión gráfica y la normalización técnica para el registro y la comunicación de proyectos arquitectónicos.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Cátedra Alfaro 9901V01-R22</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Refuerza la formación humanista y el compromiso institucional desde una perspectiva histórica, ética y social.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>1.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
                             </div>
                             <div class="level-note">Créditos por nivel: 15.0</div>
                         </details>
                         <details class="study-level">
                             <summary>NIVEL 2</summary>
-                            <div class="study-columns">
-                                <ul class="study-list">
-                                    <li>Cálculo aplicado a la arquitectura ARQ-201</li>
-                                    <li>Taller de perspectiva y sombras ARQ-203</li>
-                                    <li>Dibujo arquitectónico ARQ-204</li>
-                                </ul>
-                                <ul class="study-list">
-                                    <li>Metodología de la investigación PDU-5202</li>
-                                    <li>Taller de plástica arquitectónica ARQ-202A</li>
-                                </ul>
+                            <div class="study-items">
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Cálculo aplicado a la arquitectura ARQ-201</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Aporta herramientas matemáticas para resolver problemas de análisis, medición y dimensionamiento en arquitectura.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Taller de perspectiva y sombras ARQ-203</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Desarrolla recursos de representación visual para profundizar volumen, profundidad y percepción espacial.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Dibujo arquitectónico ARQ-204</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Consolida la comunicación técnica de ideas, planos y detalles con lenguaje arquitectónico claro y coherente.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Metodología de la investigación PDU-5202</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Introduce criterios para formular, analizar y sustentar procesos de investigación aplicada al proyecto arquitectónico.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Taller de plástica arquitectónica ARQ-202A</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Potencia la expresión formal y material de las propuestas arquitectónicas mediante ejercicios creativos y experimentales.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                            </div>
+                            <div class="level-note">Créditos por nivel: 15.0</div>
+                        </details>
+                        <details class="study-level">
+                            <summary>NIVEL 3</summary>
+                            <div class="study-items">
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Historia de la arquitectura ARQ-301</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Analiza la evolución histórica de la disciplina para comprender referentes, lenguajes y criterios de proyecto en distintos contextos culturales.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Construcción y materiales ARQ-302</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Introduce sistemas constructivos, propiedades de materiales y criterios técnicos para la materialización segura y eficiente del proyecto.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Taller de diseño intermedio ARQ-303</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Desarrolla propuestas de mayor complejidad incorporando programa arquitectónico, contexto y criterios de habitabilidad.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Estructuras básicas ARQ-304</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Brinda fundamentos estructurales para comprender esfuerzos, sistemas portantes y estabilidad en edificaciones de baja complejidad.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Urbanismo y territorio ARQ-305</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Aborda la lectura del territorio, la estructura urbana y los criterios iniciales para intervenir espacios colectivos y públicos.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                            </div>
+                            <div class="level-note">Créditos por nivel: 15.0</div>
+                        </details>
+                        <details class="study-level">
+                            <summary>NIVEL 4</summary>
+                            <div class="study-items">
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Diseño arquitectónico avanzado ARQ-401</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Integra programa, contexto, estructura y materialidad en propuestas complejas con mayor autonomía conceptual y técnica.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Instalaciones arquitectónicas ARQ-402</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Desarrolla criterios para incorporar instalaciones sanitarias, eléctricas y de climatización en proyectos arquitectónicos.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Taller de vivienda y hábitat ARQ-403</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Plantea soluciones para vivienda y entorno inmediato con enfoque social, climático y de uso eficiente del espacio.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Estructuras intermedias ARQ-404</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Profundiza en sistemas estructurales y su aplicación a edificaciones con mayores demandas de estabilidad y desempeño.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
+                                <details class="course-item">
+                                    <summary>
+                                        <span class="course-title">Gestión de proyectos ARQ-405</span>
+                                        <span class="course-toggle" aria-hidden="true"></span>
+                                    </summary>
+                                    <div class="course-content">
+                                        <p class="course-description">Introduce herramientas para planificar, presupuestar y coordinar proyectos arquitectónicos en distintas escalas de intervención.</p>
+                                        <div class="course-meta"><span>Créditos:</span> <strong>2.0</strong></div>
+                                        <a class="course-syllabus" href="https://drive.google.com/file/d/1q1QYfHX8_9qY4cv5BmOkjPy2DJTcpLby/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Sílabo</a>
+                                    </div>
+                                </details>
                             </div>
                             <div class="level-note">Créditos por nivel: 15.0</div>
                         </details>
                     </div>
                 </div>
             </section>
+
+                    <section id="personal" class="section">
+                        <div class="container">
+                            <div class="section-header">
+                                <h2>Personal docente</h2>
+                                <p>Equipo académico que acompaña el proceso formativo en diseño, teoría, historia, técnicas constructivas, investigación y gestión de proyectos.</p>
+                            </div>
+                            <div class="teacher-grid">
+                                <article class="teacher-card"><figure><img src="imagenes/QUIMIS-ABEL-150x150.png" alt="Abel Quimis Chilan"></figure><h3>Abel Quimis Chilan</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/MENDOZA-ALEJANDRO-150x150.png" alt="Alejandro Mendoza Chávez"></figure><h3>Alejandro Mendoza Chávez</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/INTRIAGO-ANDREA-150x150.png" alt="Andrea Intriago Landázuri"></figure><h3>Andrea Intriago Landázuri</h3><p>Arquitecta</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/ZAMBRANO-ARMANDO-150x150.png" alt="Armando Zambrano Loor"></figure><h3>Armando Zambrano Loor</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/CESAR-PALMA-150x150.png" alt="César Palma Espinel"></figure><h3>César Palma Espinel</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/MELGAR-CRISTHIAN-150x150.png" alt="Cristhian Melgar Véliz"></figure><h3>Cristhian Melgar Véliz</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/CEVALLOS-ERICK-150x150.png" alt="Erick Cevallos Viera"></figure><h3>Erick Cevallos Viera</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/ORMAZA-FABRICIO-150x150.png" alt="Fabricio Ormaza García"></figure><h3>Fabricio Ormaza García</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/FERNANDO-REPRESA-150x150.png" alt="Fernando Represa Pérez"></figure><h3>Fernando Represa Pérez</h3><p>Doctor</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/DELGADO-FRANCISCO-150x150.png" alt="Francisco Delgado Sanz"></figure><h3>Francisco Delgado Sanz</h3><p>Ingeniero</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/FULTON-PESANTES-150x150.png" alt="Fulton Pesantes Macías"></figure><h3>Fulton Pesantes Macías</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/BARBA-GABRIEL-150x150.png" alt="Gabriel Barba Espinel"></figure><h3>Gabriel Barba Espinel</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/GALLO-MARCOS-150x150.png" alt="Marcos Gallo Zambrano"></figure><h3>Marcos Gallo Zambrano</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/AVEIGA-NADIA-150x150.png" alt="Nadia Aveiga Villacís"></figure><h3>Nadia Aveiga Villacís</h3><p>Arquitecta</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/TORRES-NEMAR-150x150.png" alt="Nemar Torres Reyes"></figure><h3>Nemar Torres Reyes</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/GARCIA-PABLO-150x150.png" alt="Pablo García Delgado"></figure><h3>Pablo García Delgado</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/AVILA-RICARDO-150x150.png" alt="Ricardo Ávila Ávila"></figure><h3>Ricardo Ávila Ávila</h3><p>Arquitecto</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/CEDENO-TATIANA-150x150.png" alt="Tatiana Cedeño Delgado"></figure><h3>Tatiana Cedeño Delgado</h3><p>Arquitecta</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/MOREIRA-VALERIA-150x150.png" alt="Valeria Moreira Zambrano"></figure><h3>Valeria Moreira Zambrano</h3><p>Arquitecta</p></article>
+                                <article class="teacher-card"><figure><img src="imagenes/WINDERSON-MUENTES-150x150.png" alt="Winderson Muentes Rivera"></figure><h3>Winderson Muentes Rivera</h3><p>Arquitecto</p></article>
+                            </div>
+                        </div>
+                    </section>
         </main>
 
         <footer class="site-footer">
