@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<base href="../../../">
+	<title>Perfil docente | Arquitectura ULEAM</title>
+	<link rel="stylesheet" href="src/styles/global.css">
+</head>
+<body>
+	<div class="page-shell">
+		<div id="site-navbar"></div>
+
+		<main>
+			<section class="section staff-page teacher-profile-page">
+				<div class="container">
+					<div class="person-list">
+						<article class="person-row">
+							<div class="teacher-profile-side">
+								<figure>
+									<img id="docente-foto" src="src/assets/imagenes/QUIMIS-ABEL-150x150.png" alt="Foto de docente">
+								</figure>
+								<ul class="staff-meta teacher-profile-meta">
+									<li><i class="fa fa-envelope" aria-hidden="true"></i><span id="docente-correo">abel.quimis@uleam.edu.ec</span></li>
+									<li><i class="fa fa-location-arrow" aria-hidden="true"></i><span id="docente-ubicacion">Edificio Carrera de Arquitectura - FIIA B07</span></li>
+									<li><i class="fa fa-clock-o" aria-hidden="true"></i><span><strong>Horario de atencion</strong></span></li>
+								</ul>
+								<p id="docente-horario" class="profile-schedule-text">9h00 - 18h00</p>
+							</div>
+							<div class="teacher-profile-content">
+								<h3 id="docente-nombre">Abel Emilio Quimis Chilan</h3>
+								<p id="docente-rol" class="person-role">Docente carrera de Arquitectura</p>
+
+								<div class="profile-main-divider"></div>
+
+								<h4 class="profile-subtitle">Area de especializacion</h4>
+								<p id="docente-area" class="profile-area-text">Diseno curricular y arquitectura urbana</p>
+								<h4 class="profile-subtitle">Formacion Academica</h4>
+
+								<ul id="docente-formacion" class="profile-bullets">
+									<li>Arquitecto; Universidad Laica Eloy Alfaro de Manabi</li>
+									<li>Especialista en Diseno Curricular por Competencias; Universidad del Mar</li>
+									<li>Magister en arquitectura mencion diseno urbano; Universidad Laica Eloy Alfaro de Manabi</li>
+								</ul>
+
+								<div class="profile-main-divider"></div>
+
+								<h4 class="profile-subtitle profile-subtitle-space">Publicaciones de investigaciones</h4>
+								<div class="profile-research-links">
+									<a id="docente-scholar" class="research-mark research-mark-scholar" href="https://scholar.google.com" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+									<a id="docente-researchgate" class="research-mark research-mark-gate" href="https://www.researchgate.net" target="_blank" rel="noopener noreferrer">ResearchGate</a>
+								</div>
+							</div>
+						</article>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<div id="site-footer"></div>
+	</div>
+
+	<script type="module" src="src/pages/docentes_perfiles/perfil-docentes-page.js"></script>
+	<script src="src/routes/layout-loader.js" defer></script>
+</body>
+</html>

@@ -1162,6 +1162,23 @@ ul {
     padding: 8px 10px;
 }
 
+.teacher-card-link {
+    display: block;
+    border-radius: 16px;
+    padding: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.teacher-card-link:hover {
+    transform: translateY(-2px);
+}
+
+.teacher-card-link:focus-visible {
+    outline: 2px solid #2b67c3;
+    outline-offset: 3px;
+    box-shadow: 0 8px 24px rgba(15, 29, 57, 0.14);
+}
+
 .teacher-card figure {
     margin: 0 auto 12px;
     width: 92px;
@@ -1336,6 +1353,96 @@ ul {
     margin-top: 18px;
     padding-top: 14px;
     border-top: 1px solid rgba(31, 61, 119, 0.12);
+}
+
+.teacher-profile-page .person-row {
+    padding-bottom: 12px;
+    border-bottom: 0;
+}
+
+.teacher-profile-side {
+    display: grid;
+    align-content: start;
+}
+
+.teacher-profile-content {
+    min-width: 0;
+}
+
+.profile-main-divider {
+    margin: 16px 0;
+    border-top: 1px solid rgba(31, 61, 119, 0.12);
+}
+
+.profile-subtitle {
+    margin: 0;
+    color: #184a8c;
+    font-size: clamp(1.45rem, 2.1vw, 2rem);
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.profile-subtitle-space {
+    margin-top: 4px;
+}
+
+.profile-area-text {
+    margin: 8px 0 26px;
+    color: #516079;
+    font-size: clamp(1rem, 1.7vw, 1.2rem);
+    line-height: 1.55;
+}
+
+.profile-bullets {
+    margin: 10px 0 0;
+    padding-left: 1.35rem;
+    list-style: disc;
+    color: #516079;
+    font-size: clamp(1rem, 1.5vw, 1.14rem);
+    line-height: 1.62;
+}
+
+.profile-bullets li {
+    margin-bottom: 6px;
+}
+
+.profile-research-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    margin-top: 18px;
+}
+
+.research-mark {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.research-mark-scholar {
+    color: #767676;
+}
+
+.research-mark-gate {
+    color: #4ab7a1;
+}
+
+.teacher-profile-meta {
+    margin-top: 18px;
+    gap: 16px;
+    font-size: clamp(1rem, 1.15vw, 1.9rem);
+}
+
+.teacher-profile-meta .fa {
+    color: #697385;
+}
+
+.profile-schedule-text {
+    margin: 8px 0 0 32px;
+    color: #516079;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
 }
 
 .bio-lines {
@@ -1770,6 +1877,17 @@ ul {
     padding: 14px 0;
     cursor: pointer;
     list-style: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.course-item:hover summary {
+    transform: scale(1.01);
+    background-color: #f7faff;
+}
+
+.course-item summary:focus-visible {
+    outline: 2px solid #2b67c3;
+    outline-offset: 2px;
 }
 
 .course-item summary::-webkit-details-marker {
@@ -1938,6 +2056,14 @@ ul {
     .commission-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .teacher-profile-meta {
+        font-size: 1.55rem;
+    }
+
+    .profile-schedule-text {
+        margin-left: 0;
+    }
 }
 
 @media (max-width: 720px) {
@@ -2011,6 +2137,24 @@ ul {
     .staff-grid,
     .commission-grid {
         grid-template-columns: 1fr;
+    }
+
+    .profile-research-links {
+        gap: 14px;
+    }
+
+    .research-mark {
+        font-size: clamp(1.8rem, 9vw, 2.3rem);
+    }
+
+    .teacher-profile-meta {
+        font-size: 1.15rem;
+    }
+
+    .teacher-profile-page .person-row figure {
+        width: 220px;
+        height: 220px;
+        margin: 0 auto;
     }
 
     .surface-card,
