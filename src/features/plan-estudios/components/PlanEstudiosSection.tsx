@@ -7,8 +7,11 @@ import type { Course, StudyLevel } from "@/types/api";
 const MOBILE_FALLBACK_QUERY =
   "(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)";
 
-const LEVEL_SCROLL_SENSITIVITY = 0.3;
+const LEVEL_SCROLL_SENSITIVITY = 0.42;
+const LAST_LEVEL_HOLD_FACTOR = 0.45;
 const FALLBACK_HEADER_HEIGHT = 91;
+const SCROLL_EASING_FACTOR = 0.18;
+const MIN_PROGRESS_DELTA = 0.001;
 
 const PlanCourseAccordion = ({ course }: { course: Course }) => (
   <details className="course-item" open={course.open}>
@@ -106,7 +109,8 @@ export const PlanEstudiosSection = () => {
       const stickyHeight = Math.max(1, viewportHeight - headerHeight);
       const steps = Math.max(0, content.levels.length - 1);
       const stepDistance = Math.max(24, stickyHeight * LEVEL_SCROLL_SENSITIVITY);
-      const wrapperHeight = stickyHeight + steps * stepDistance;
+      const lastLevelHold = stickyHeight * LAST_LEVEL_HOLD_FACTOR;
+      const wrapperHeight = stickyHeight + steps * stepDistance + lastLevelHold;
 
 
       wrapperElement.style.setProperty("--plan-pin-top", `${headerHeight}px`);
@@ -117,6 +121,33 @@ export const PlanEstudiosSection = () => {
     };
 
     let ticking = false;
+    let animationFrameId: number | null = null;
+    let isAnimating = false;
+    let targetProgress = 0;
+    let displayProgress = 0;
+
+    const updateActiveIndex = (progressValue: number) => {
+      const rawIndex = Math.floor(progressValue * content.levels.length);
+      const clampedIndex = Math.min(content.levels.length - 1, Math.max(0, rawIndex));
+      setActiveIndex(clampedIndex);
+    };
+
+    const animateProgress = () => {
+      const delta = targetProgress - displayProgress;
+
+      if (Math.abs(delta) <= MIN_PROGRESS_DELTA) {
+        displayProgress = targetProgress;
+        updateActiveIndex(displayProgress);
+        isAnimating = false;
+        animationFrameId = null;
+        return;
+      }
+
+      displayProgress += delta * SCROLL_EASING_FACTOR;
+      updateActiveIndex(displayProgress);
+
+      animationFrameId = window.requestAnimationFrame(animateProgress);
+    };
 
     const updateActive = () => {
       ticking = false;
@@ -130,20 +161,12 @@ export const PlanEstudiosSection = () => {
       );
       const totalScrollable = Math.max(1, rect.height - stickyHeight);
       const scrolled = Math.max(0, containerTop - rect.top);
-      const progress = Math.min(1, scrolled / totalScrollable);
+      targetProgress = Math.min(1, scrolled / totalScrollable);
 
-      console.log({
-        rectTop: rect.top.toFixed(1),
-        rectHeight: rect.height.toFixed(1),
-        containerTop: containerTop.toFixed(1),
-        stickyHeight,
-        totalScrollable: totalScrollable.toFixed(1),
-        scrolled: scrolled.toFixed(1),
-        progress: progress.toFixed(3),
-        indexCalculado: Math.round(progress * (content.levels.length - 1)),
-      });
-
-      setActiveIndex(Math.round(progress * (content.levels.length - 1)));
+      if (!isAnimating) {
+        isAnimating = true;
+        animationFrameId = window.requestAnimationFrame(animateProgress);
+      }
     };
 
     const onScroll = () => {
@@ -168,6 +191,10 @@ export const PlanEstudiosSection = () => {
     return () => {
       target.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [content.levels.length, isFallback]);
 
