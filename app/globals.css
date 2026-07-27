@@ -1,0 +1,11 @@
+@import "../src/shared/styles/base.css";
+@import "../src/features/header/components/SiteHeader.css";
+@import "../src/features/info-institucional/components/InfoInstitucional.css";
+@import "../src/shared/styles/section-shared.css";
+@import "../src/features/proyectos/components/ProyectosSection.css";
+@import "../src/features/plan-estudios/components/PlanEstudiosSection.css";
+@import "../src/features/personal-docente/components/PersonalDocenteSection.css";
+@import "../src/features/personal-docente/components/DocenteDetailSection.css";
+@import "../src/features/personal-docente/components/AdministracionServiciosSection.css";
+@import "../src/features/footer/components/SiteFooter.css";
+@import "../src/shared/styles/responsive.css";

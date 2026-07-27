@@ -1,0 +1,206 @@
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 91px;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(28, 58, 110, 0.08);
+    transition: box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.site-header .container {
+    width: min(1778px, calc(100% - 32px));
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    height: 100%;
+    padding: 0;
+    transition: padding 220ms ease, gap 220ms ease;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.brand img {
+    width: min(100%, 750px);
+    max-width: 100%;
+    height: 82px;
+    object-fit: contain;
+    object-position: left center;
+    transition: width 220ms ease, height 220ms ease, transform 220ms ease;
+}
+
+.site-header.is-compact {
+    height: 77px;
+    box-shadow: 0 8px 22px rgba(13, 27, 53, 0.08);
+}
+
+.site-header.is-compact .header-inner {
+    gap: 18px;
+}
+
+.site-header.is-compact .brand img {
+    width: min(100%, 620px);
+    height: 68px;
+    transform: scale(0.995);
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #2a4572;
+    white-space: nowrap;
+    transition: gap 220ms ease;
+}
+
+.nav-item-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 14px;
+    margin-bottom: -14px;
+}
+
+.nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 240px;
+    padding: 10px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid rgba(31, 61, 119, 0.12);
+    box-shadow: 0 12px 28px rgba(14, 26, 49, 0.14);
+    display: grid;
+    gap: 6px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    z-index: 60;
+}
+
+.nav-dropdown::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    height: 14px;
+}
+
+.nav-item-group:hover .nav-dropdown,
+.nav-item-group:focus-within .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: #1f3f72;
+}
+
+.nav-dropdown a:hover {
+    background: #eef4ff;
+}
+
+.nav-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid rgba(31, 61, 119, 0.15);
+    background: #fff;
+    color: #1f3f72;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.search-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: width 200ms ease, opacity 200ms ease;
+}
+
+.search-panel.is-open {
+    width: 260px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.search-panel input {
+    width: 100%;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid rgba(31, 61, 119, 0.2);
+    padding: 0 12px;
+    font-size: 0.92rem;
+    color: #1f3f72;
+    background: #fff;
+}
+
+.site-header.is-compact .main-nav {
+    gap: 24px;
+}
+
+.main-nav a {
+    position: relative;
+    padding: 8px 0;
+}
+
+.main-nav a.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 4px;
+    border-radius: 999px;
+    background: #c8db39;
+}
+
+@media (max-width: 1100px) {
+    .nav-dropdown {
+        left: 0;
+        transform: translateX(0);
+    }
+
+    .nav-item-group:hover .nav-dropdown,
+    .nav-item-group:focus-within .nav-dropdown {
+        transform: translateX(0);
+    }
+}

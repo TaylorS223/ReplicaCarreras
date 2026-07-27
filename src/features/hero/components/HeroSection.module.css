@@ -1,0 +1,265 @@
+.hero {
+  position: relative;
+  min-height: 680px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: #fff;
+  background: #1b273b;
+}
+
+.slideLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity 700ms ease,
+    transform 1800ms ease;
+}
+
+.slideActive {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(96deg, rgba(8, 17, 30, 0.7) 0%, rgba(8, 17, 30, 0.38) 46%, rgba(8, 17, 30, 0.76) 100%),
+    radial-gradient(circle at 68% 45%, rgba(52, 79, 144, 0.2), transparent 58%);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 58px 0 64px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.infoPanel {
+  width: min(100%, 760px);
+  min-height: 390px;
+  padding: 42px 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(41, 63, 112, 0.54);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 22px 60px rgba(7, 13, 23, 0.34);
+  animation: panel-in 680ms ease both;
+}
+
+.panelRule {
+  width: 3px;
+  height: 122px;
+  background: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+  animation: item-in 500ms ease both;
+  animation-delay: 220ms;
+}
+
+.panelEyebrow,
+.panelTitle,
+.panelBadge,
+.panelDescription {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: item-in 620ms ease both;
+}
+
+.panelEyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  animation-delay: 320ms;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: clamp(2.1rem, 4.5vw, 4.2rem);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  animation-delay: 430ms;
+}
+
+.panelBadge {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: #4857b0;
+  font-size: clamp(1.2rem, 3.2vw, 2.1rem);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  animation-delay: 550ms;
+}
+
+.panelDescription {
+  margin: 18px 0 0;
+  font-size: clamp(1rem, 1.7vw, 1.28rem);
+  line-height: 1.5;
+  max-width: 52ch;
+  color: rgba(255, 255, 255, 0.92);
+  animation-delay: 700ms;
+}
+
+.carouselControl {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(2, 7, 15, 0.68);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 220ms ease;
+}
+
+.carouselControl:hover {
+  background: rgba(2, 7, 15, 0.9);
+}
+
+.carouselControlPrev {
+  left: 20px;
+}
+
+.carouselControlNext {
+  right: 20px;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes item-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero[data-reduced-motion="true"] .slide,
+.hero[data-reduced-motion="true"] .infoPanel,
+.hero[data-reduced-motion="true"] .panelRule,
+.hero[data-reduced-motion="true"] .panelEyebrow,
+.hero[data-reduced-motion="true"] .panelTitle,
+.hero[data-reduced-motion="true"] .panelBadge,
+.hero[data-reduced-motion="true"] .panelDescription {
+  animation: none;
+  transition: none;
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide,
+  .infoPanel,
+  .panelRule,
+  .panelEyebrow,
+  .panelTitle,
+  .panelBadge,
+  .panelDescription {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero {
+    min-height: 620px;
+  }
+
+  .heroInner {
+    justify-content: center;
+  }
+
+  .infoPanel {
+    min-height: 330px;
+    width: min(100%, 860px);
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 560px;
+    align-items: flex-end;
+  }
+
+  .heroInner {
+    padding: 34px 0 36px;
+  }
+
+  .infoPanel {
+    width: 100%;
+    min-height: 0;
+    padding: 24px 20px;
+  }
+
+  .panelRule {
+    height: 62px;
+    margin-bottom: 8px;
+  }
+
+  .panelEyebrow {
+    letter-spacing: 0.08em;
+    font-size: 0.76rem;
+  }
+
+  .panelDescription {
+    font-size: 1rem;
+  }
+
+  .carouselControl {
+    width: 42px;
+    height: 42px;
+    font-size: 1.45rem;
+  }
+
+  .carouselControlPrev {
+    left: 10px;
+  }
+
+  .carouselControlNext {
+    right: 10px;
+  }
+}

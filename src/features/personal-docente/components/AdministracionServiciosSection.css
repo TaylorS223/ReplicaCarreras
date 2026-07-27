@@ -1,0 +1,104 @@
+.administracion-servicios-section {
+    padding-top: 36px;
+}
+
+.administracion-group + .administracion-group {
+    margin-top: 52px;
+    padding-top: 36px;
+    border-top: 1px solid #d8dde7;
+}
+
+.administracion-group h2 {
+    margin: 0 0 30px;
+    color: #1d4282;
+    font-size: clamp(1.9rem, 2.6vw, 2.8rem);
+    line-height: 1.1;
+}
+
+.administracion-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px 34px;
+}
+
+.administracion-card {
+    text-align: center;
+    color: #666e7f;
+}
+
+.administracion-card figure {
+    width: 118px;
+    height: 118px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0 auto 14px;
+    background: linear-gradient(180deg, #0d69ad, #2f4f99);
+}
+
+.administracion-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.administracion-card h3 {
+    margin: 0;
+    color: #1e3f74;
+    font-size: 1.18rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.administracion-cargo {
+    margin: 8px 0 10px;
+    font-size: 1.05rem;
+    line-height: 1.2;
+    color: #707785;
+}
+
+.administracion-card p {
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: #666e7f;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.administracion-icon {
+    width: 18px;
+    display: inline-flex;
+    justify-content: center;
+    color: #6d7381;
+    font-weight: 700;
+}
+
+.administracion-horario-title {
+    margin-top: 8px;
+    font-weight: 700;
+    color: #626a77;
+}
+
+.administracion-horario {
+    font-size: 1.02rem;
+    color: #666e7f;
+}
+
+@media (max-width: 1100px) {
+    .administracion-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .administracion-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .administracion-group h2 {
+        margin-bottom: 22px;
+    }
+}

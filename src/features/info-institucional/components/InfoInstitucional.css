@@ -1,0 +1,268 @@
+.container-info-section {
+    position: relative;
+    padding: 34px 0 48px;
+    background:
+        linear-gradient(rgba(10, 10, 12, 0.74), rgba(10, 10, 12, 0.74)),
+        url("/imagenes/NOTICIA-1-600x333.jpeg") center/cover no-repeat;
+}
+
+.container-info-section .container {
+    width: min(1600px, calc(100% - 36px));
+}
+
+.container-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.info-card {
+    min-height: 238px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px 22px;
+    border-radius: 24px;
+    text-align: center;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(3px);
+}
+
+.info-card i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.info-card h3 {
+    margin: 0;
+    font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+    line-height: 1.1;
+    font-weight: 800;
+    color: #fff;
+}
+
+.info-card p {
+    margin: 0;
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.card-enfoque {
+    padding: 54px 0 18px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.info-panel {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 32px 36px;
+}
+
+.info-panel i {
+    font-size: 2.1rem;
+    color: #1f4d95;
+}
+
+.info-panel h2 {
+    margin: 0;
+    color: #1f4d95;
+    font-size: clamp(1.7rem, 2.6vw, 2.45rem);
+    line-height: 1.1;
+}
+
+.info-panel p {
+    margin: 0;
+    color: #7a8090;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 44ch;
+}
+
+.section-title {
+    margin: 48px auto 26px;
+    max-width: 1080px;
+    text-align: center;
+    color: #1f4d95;
+    font-size: clamp(2rem, 3.4vw, 3.15rem);
+    line-height: 1.06;
+    font-weight: 800;
+    white-space: pre-line;
+}
+
+.profile-section {
+    position: relative;
+    overflow: hidden;
+    padding: 72px 0;
+    background:
+        linear-gradient(rgba(14, 15, 18, 0.95), rgba(14, 15, 18, 0.95)),
+        url("/imagenes/ACREDITACION-ARQUITECTURA-600x333.jpeg") center/cover no-repeat;
+}
+
+.profile-effects {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.profile-effects::before,
+.profile-effects::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.profile-effects::before {
+    background-image:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 96px 96px;
+    opacity: 0.16;
+    animation: grid-drift 24s linear infinite;
+}
+
+.profile-effects::after {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.95) 0 2px, transparent 5px),
+        radial-gradient(circle at 30% 72%, rgba(255, 255, 255, 0.82) 0 2px, transparent 5px),
+        radial-gradient(circle at 48% 28%, rgba(255, 255, 255, 0.92) 0 2px, transparent 5px),
+        radial-gradient(circle at 66% 78%, rgba(255, 255, 255, 0.78) 0 2px, transparent 5px),
+        radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.9) 0 2px, transparent 5px),
+        radial-gradient(circle at 88% 62%, rgba(255, 255, 255, 0.84) 0 2px, transparent 5px),
+        radial-gradient(circle at 18% 52%, rgba(255, 255, 255, 0.72) 0 2px, transparent 5px),
+        radial-gradient(circle at 38% 14%, rgba(255, 255, 255, 0.6) 0 2px, transparent 5px),
+        radial-gradient(circle at 58% 44%, rgba(255, 255, 255, 0.68) 0 2px, transparent 5px),
+        radial-gradient(circle at 74% 36%, rgba(255, 255, 255, 0.74) 0 2px, transparent 5px),
+        radial-gradient(circle at 8% 82%, rgba(255, 255, 255, 0.76) 0 2px, transparent 5px),
+        radial-gradient(circle at 94% 84%, rgba(255, 255, 255, 0.7) 0 2px, transparent 5px),
+        radial-gradient(circle at 52% 90%, rgba(255, 255, 255, 0.58) 0 2px, transparent 5px);
+    background-repeat: no-repeat;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.45));
+    /* Inicio de la animacion */
+    animation: particle-drift 14s ease-in-out infinite alternate;
+}
+
+.profile-effects span {
+    position: absolute;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.1) 58%, transparent 72%);
+    filter: blur(0.25px) drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+    opacity: 0.72;
+    animation: orbit 18s linear infinite;
+}
+
+.profile-effects span:nth-child(1) { width: 72px; height: 72px; top: 8%; left: 14%; animation-duration: 16s; }
+.profile-effects span:nth-child(2) { width: 44px; height: 44px; top: 18%; left: 42%; animation-duration: 20s; animation-delay: -4s; }
+.profile-effects span:nth-child(3) { width: 92px; height: 92px; top: 12%; left: 72%; animation-duration: 22s; animation-delay: -8s; }
+.profile-effects span:nth-child(4) { width: 28px; height: 28px; top: 34%; left: 20%; animation-duration: 14s; animation-delay: -2s; }
+.profile-effects span:nth-child(5) { width: 60px; height: 60px; top: 42%; left: 58%; animation-duration: 18s; animation-delay: -10s; }
+.profile-effects span:nth-child(6) { width: 34px; height: 34px; top: 56%; left: 10%; animation-duration: 15s; animation-delay: -6s; }
+.profile-effects span:nth-child(7) { width: 86px; height: 86px; top: 54%; left: 34%; animation-duration: 24s; animation-delay: -12s; }
+.profile-effects span:nth-child(8) { width: 24px; height: 24px; top: 64%; left: 74%; animation-duration: 12s; animation-delay: -5s; }
+.profile-effects span:nth-child(9) { width: 66px; height: 66px; top: 72%; left: 84%; animation-duration: 21s; animation-delay: -7s; }
+.profile-effects span:nth-child(10) { width: 40px; height: 40px; top: 84%; left: 18%; animation-duration: 17s; animation-delay: -9s; }
+.profile-effects span:nth-child(11) { width: 54px; height: 54px; top: 82%; left: 50%; animation-duration: 19s; animation-delay: -1s; }
+.profile-effects span:nth-child(12) { width: 30px; height: 30px; top: 22%; left: 90%; animation-duration: 13s; animation-delay: -11s; }
+.profile-effects span:nth-child(13) { width: 48px; height: 48px; top: 30%; left: 82%; animation-duration: 25s; animation-delay: -14s; }
+.profile-effects span:nth-child(14) { width: 38px; height: 38px; top: 44%; left: 82%; animation-duration: 16s; animation-delay: -3s; }
+.profile-effects span:nth-child(15) { width: 62px; height: 62px; top: 62%; left: 50%; animation-duration: 23s; animation-delay: -13s; }
+.profile-effects span:nth-child(16) { width: 26px; height: 26px; top: 72%; left: 58%; animation-duration: 11s; animation-delay: -5s; }
+
+.profile-effects span:nth-child(even) {
+    opacity: 0.46;
+}
+
+@keyframes grid-drift {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-72px, 48px, 0);
+    }
+}
+
+@keyframes orbit {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.92);
+    }
+
+    50% {
+        transform: translate3d(14px, -10px, 0) scale(1.08);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(0.92);
+    }
+}
+
+.profile-section::before,
+.profile-section::after {
+    content: "";
+    position: absolute;
+    inset: -18%;
+    pointer-events: none;
+}
+
+.profile-section::before {
+    background-image:
+        radial-gradient(circle at 10% 18%, rgba(255, 255, 255, 0.95) 0 2px, transparent 4px),
+        radial-gradient(circle at 24% 72%, rgba(255, 255, 255, 0.8) 0 2px, transparent 4px),
+        radial-gradient(circle at 42% 24%, rgba(255, 255, 255, 0.92) 0 2px, transparent 4px),
+        radial-gradient(circle at 58% 80%, rgba(255, 255, 255, 0.78) 0 2px, transparent 4px),
+        radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.88) 0 2px, transparent 4px),
+        radial-gradient(circle at 88% 66%, rgba(255, 255, 255, 0.82) 0 2px, transparent 4px),
+        radial-gradient(circle at 16% 48%, rgba(255, 255, 255, 0.74) 0 2px, transparent 4px),
+        radial-gradient(circle at 50% 56%, rgba(255, 255, 255, 0.58) 0 2px, transparent 4px),
+        radial-gradient(circle at 68% 38%, rgba(255, 255, 255, 0.64) 0 2px, transparent 4px),
+        radial-gradient(circle at 92% 24%, rgba(255, 255, 255, 0.72) 0 2px, transparent 4px),
+        radial-gradient(circle at 34% 10%, rgba(255, 255, 255, 0.6) 0 2px, transparent 4px),
+        radial-gradient(circle at 64% 14%, rgba(255, 255, 255, 0.55) 0 2px, transparent 4px),
+        radial-gradient(circle at 82% 48%, rgba(255, 255, 255, 0.6) 0 2px, transparent 4px);
+    background-repeat: no-repeat;
+    opacity: 0.45;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+    transform: translate3d(0, 0, 0) scale(1.1);
+    animation: particle-drift 20s ease-in-out infinite alternate;
+}
+
+.profile-section::after {
+    background-image:
+        linear-gradient(118deg, transparent 0 32%, rgba(255, 255, 255, 0.22) 33%, transparent 34%),
+        linear-gradient(58deg, transparent 0 46%, rgba(255, 255, 255, 0.17) 47%, transparent 48%),
+        linear-gradient(140deg, transparent 0 52%, rgba(255, 255, 255, 0.14) 53%, transparent 54%),
+        linear-gradient(23deg, transparent 0 18%, rgba(255, 255, 255, 0.16) 19%, transparent 20%),
+        linear-gradient(163deg, transparent 0 66%, rgba(255, 255, 255, 0.14) 67%, transparent 68%);
+    background-size: 100% 100%;
+    opacity: 0.6;
+    animation: line-shift 18s linear infinite;
+}
+
+.profile-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.profile-section .surface-card {
+    position: relative;
+    z-index: 2;
+}
+

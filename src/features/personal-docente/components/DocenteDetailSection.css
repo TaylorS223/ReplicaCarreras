@@ -1,0 +1,254 @@
+.docente-detail {
+    padding-top: 48px;
+}
+
+.docente-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(330px, 390px) minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+}
+
+.docente-detail-avatar {
+    margin: 0;
+    width: min(100%, 360px);
+    aspect-ratio: 1 / 1;
+    border-radius: 999px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0d69ad, #2f4f99);
+    box-shadow: none;
+}
+
+.docente-detail-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.docente-detail-contact {
+    margin-top: 32px;
+    color: #5f6878;
+    font-size: 1.08rem;
+    line-height: 1.4;
+}
+
+.docente-detail-contact p {
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.docente-detail-content h1 {
+    margin: 0;
+    color: #1d4282;
+    font-size: clamp(2rem, 3vw, 3.2rem);
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.docente-detail-role {
+    margin: 12px 0 0;
+    color: #737b8a;
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+.docente-detail-content hr {
+    margin: 24px 0;
+    border: 0;
+    border-top: 1px solid #d8dde7;
+}
+
+.docente-detail-content h2 {
+    margin: 0 0 12px;
+    color: #1f4d95;
+    font-size: clamp(1.6rem, 2.3vw, 2.1rem);
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.docente-detail-content p,
+.docente-detail-content li {
+    margin: 0;
+    color: #5f6878;
+    font-size: 1.08rem;
+    line-height: 1.44;
+}
+
+.docente-detail-content ul {
+    margin: 0;
+    padding-left: 1.55rem;
+}
+
+.docente-publicaciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    align-items: baseline;
+}
+
+.decanato-section .container {
+    display: grid;
+    gap: 56px;
+}
+
+.decanato-profile {
+    border-top: 1px solid #d8dde7;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.decanato-profile:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.decanato-profile:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.decanato-role {
+    font-size: 1.4rem;
+    line-height: 1.35;
+}
+
+.decanato-horario-title {
+    margin-top: 18px;
+    color: #4f5665;
+    font-weight: 700;
+}
+
+.decanato-contact-lines {
+    margin-top: 18px;
+    color: #5f6878;
+}
+
+.decanato-contact-lines p {
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.08rem;
+    line-height: 1.3;
+}
+
+.decanato-contact-icon {
+    width: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6d7381;
+    font-weight: 700;
+}
+
+.decanato-horario-value {
+    font-size: 2rem;
+    color: #737b8a;
+    margin-top: 2px;
+}
+
+.decanato-bio-paragraph {
+    margin-top: 14px;
+}
+
+.decanato-bio-paragraph:first-of-type {
+    margin-top: 0;
+}
+
+.decanato-section .docente-detail-content ul {
+    margin: 0;
+    padding-left: 1.35rem;
+}
+
+.decanato-section .docente-detail-content li {
+    margin: 0 0 8px;
+}
+
+.docente-publicaciones a {
+    font-size: clamp(2.1rem, 3.2vw, 3.2rem);
+    line-height: 1;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.logo-google-scholar {
+    font-weight: 500;
+}
+
+.g-blue { color: #4285f4; }
+.g-red { color: #ea4335; }
+.g-yellow { color: #fbbc05; }
+.g-green { color: #34a853; }
+.g-dark { color: #5f6368; }
+
+.logo-researchgate {
+    color: #3ab9a8;
+    font-weight: 500;
+}
+
+@media (max-width: 1100px) {
+    .docente-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .docente-detail-avatar {
+        width: min(100%, 280px);
+        margin-inline: auto;
+    }
+
+    .docente-detail-contact {
+        font-size: 1.12rem;
+    }
+
+    .docente-detail-role {
+        font-size: 2rem;
+    }
+
+    .docente-detail-content p,
+    .docente-detail-content li {
+        font-size: 1rem;
+    }
+
+    .decanato-section .container {
+        gap: 36px;
+    }
+
+    .decanato-profile {
+        padding-top: 28px;
+        padding-bottom: 28px;
+    }
+
+    .decanato-horario-value {
+        font-size: 1.7rem;
+    }
+}
+
+@media (max-width: 720px) {
+    .docente-detail {
+        padding-top: 36px;
+    }
+
+    .docente-detail-content h1 {
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+    }
+
+    .docente-detail-role {
+        font-size: 1.5rem;
+    }
+
+    .docente-detail-contact {
+        font-size: 1rem;
+    }
+
+    .docente-detail-content p,
+    .docente-detail-content li {
+        font-size: 1rem;
+    }
+
+    .docente-publicaciones a {
+        font-size: clamp(1.7rem, 7vw, 2.3rem);
+    }
+}

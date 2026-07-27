@@ -1,0 +1,132 @@
+@media (max-width: 1100px) {
+    .hero-grid,
+    .split-grid,
+    .container-info-grid,
+    .card-grid,
+    .accreditation-grid,
+    .footer-grid,
+    .study-items {
+        grid-template-columns: 1fr;
+    }
+
+    .news-grid,
+    .teacher-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .main-nav {
+        gap: 18px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .hero {
+        min-height: auto;
+    }
+
+    .hero-visual {
+        justify-items: start;
+    }
+}
+
+@media (max-width: 720px) {
+    .site-header {
+        height: 146px;
+    }
+
+    .site-header.is-compact {
+        height: 130px;
+    }
+
+    .container {
+        width: min(100% - 20px, 1200px);
+    }
+
+    .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .brand img {
+        width: min(360px, 100%);
+        height: auto;
+    }
+
+    .section {
+        padding: 48px 0;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .container-info-section {
+        padding-top: 24px;
+        padding-bottom: 36px;
+    }
+
+    .info-card,
+    .info-panel {
+        min-height: 0;
+    }
+
+    .course-item summary {
+        padding: 18px 18px;
+    }
+
+    .course-content {
+        padding: 16px 18px 20px;
+    }
+
+    .teacher-grid,
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .surface-card,
+    .hero-inner {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .surface-card {
+        padding: 22px;
+    }
+
+    .hero-copy h1 {
+        font-size: clamp(2.2rem, 12vw, 4rem);
+    }
+
+    .hero-badge {
+        font-size: clamp(1.3rem, 8vw, 2.2rem);
+    }
+}
+
+@keyframes particle-drift {
+    0% {
+        transform: translate3d(-1%, -1%, 0) scale(1.1);
+    }
+
+    50% {
+        transform: translate3d(2%, 1%, 0) scale(1.14);
+    }
+
+    100% {
+        transform: translate3d(-2%, 2%, 0) scale(1.1);
+    }
+}
+
+@keyframes line-shift {
+    0% {
+        transform: translate3d(-2%, -1%, 0);
+    }
+
+    50% {
+        transform: translate3d(2%, 1%, 0);
+    }
+
+    100% {
+        transform: translate3d(-2%, -1%, 0);
+    }
+}

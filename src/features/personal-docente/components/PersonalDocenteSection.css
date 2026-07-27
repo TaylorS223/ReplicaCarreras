@@ -1,0 +1,51 @@
+.teacher-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 18px;
+}
+
+.teacher-card {
+    text-align: center;
+    padding: 8px 10px;
+}
+
+.teacher-link {
+    display: block;
+}
+
+.teacher-card figure {
+    margin: 0 auto 12px;
+    width: 92px;
+    height: 92px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--surface-strong);
+    box-shadow: 0 12px 30px rgba(15, 29, 57, 0.12);
+}
+
+.teacher-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 360ms ease;
+}
+
+.teacher-link:hover img,
+.teacher-link:focus-visible img {
+    transform: scale(1.09);
+}
+
+.teacher-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.28;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: #254072;
+}
+
+.teacher-card p {
+    margin: 4px 0 0;
+    color: #717b8f;
+    font-size: 1.02rem;
+}
