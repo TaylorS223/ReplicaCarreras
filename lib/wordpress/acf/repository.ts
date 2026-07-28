@@ -2,6 +2,8 @@ import { wpFetch } from "@/lib/wordpress/client";
 import type {
   CarreraAcfSchema,
   FacultadAcfSchema,
+  PersonalPost,
+  TipoPersonalSlug,
   WpAcfEnvelope,
   WpRestCollectionResponse,
 } from "@/lib/wordpress/acf/types";
@@ -25,3 +27,19 @@ export const getFacultadAcfEntry = async (facultadSlug: string) =>
 
 export const getCarreraAcfEntry = async (facultadSlug: string, carreraSlug: string) =>
   fetchPageBySlug<CarreraAcfSchema>(`carrera-${facultadSlug}-${carreraSlug}`);
+
+// Fetch del CPT "personal" filtrado por la taxonomía "tipo_personal"
+// El slug de la taxonomía debe coincidir con los términos que registraste en WP
+export const getPersonalByTipo = async (
+  tipo: TipoPersonalSlug,
+  perPage = 100,
+): Promise<PersonalPost[]> => {
+  return wpFetch<PersonalPost[]>("personal", {
+    query: {
+      tipo_personal: tipo,
+      per_page: perPage,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  });
+};

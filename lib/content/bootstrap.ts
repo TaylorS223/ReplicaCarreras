@@ -10,7 +10,14 @@ export const hydrateContentForContext = async (context: ContentContext) => {
     return { mode: "mock" as const };
   }
 
-  await syncContextContentFromAcf(facultadSlug, carreraSlug);
-
-  return { mode: "acf" as const };
+  try {
+    await syncContextContentFromAcf(facultadSlug, carreraSlug);
+    return { mode: "acf" as const };
+  } catch (error) {
+    console.warn(
+      `[hydrateContentForContext] ACF sync falló para ${facultadSlug}/${carreraSlug}, usando mock como fallback.`,
+      error,
+    );
+    return { mode: "mock" as const };
+  }
 };

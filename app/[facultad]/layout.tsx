@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 import { buildFacultadThemeVars } from "@/lib/utils/theme";
 import { buildFacultadMetadata } from "@/lib/utils/seo";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 
 type FacultadLayoutProps = {
   children: ReactNode;
@@ -37,6 +38,11 @@ export default async function FacultadLayout({ children, params }: FacultadLayou
   if (!config) {
     notFound();
   }
+
+  await hydrateContentForContext({
+    facultadSlug: facultad,
+    carreraSlug: config.defaultCarreraSlug,
+  });
 
   return (
     <div className="page-shell" style={buildFacultadThemeVars(config.theme)}>
