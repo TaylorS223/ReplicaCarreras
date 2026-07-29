@@ -96,3 +96,6 @@ export const getDocenteBySlugFromContext = (
 
 export const getDocenteSlugsByContext = (context?: ContentContext): string[] =>
   getCarreraContent(context).docentes.map((docente) => docente.slug);
+
+export const getInicioPaginaContentByContext = (context?: ContentContext) =>
+  getCarreraContent(context).inicioPagina ?? null;

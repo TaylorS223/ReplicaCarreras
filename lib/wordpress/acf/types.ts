@@ -13,7 +13,57 @@ export type FacultadAcfSchema = {
   content?: FacultadContent;
 };
 
-export type CarreraAcfSchema = {
+// Campos ACF planos de la página de inicio de carrera (homepage del micrositio).
+// Viven en el mismo objeto `acf` de la página `carrera-{facultad}-{carrera}`.
+export type InicioPaginaAcfSchema = {
+  // Banner principal
+  bannerimagen?: number | string;
+  bannerimagentexto?: string;
+  bannerimagenenlace?: string;
+
+  // Info cards de carrera
+  tituloprofesional?: string;
+  jornada?: string;
+  duracion?: string;
+  modalidad?: string;
+
+  // Misión / Visión
+  mision?: string;
+  vision?: string;
+
+  // Eslogan, perfil de egreso y campo laboral
+  eslogamotivacional?: string;
+  perfilegreso?: string;
+  campolaboral?: string;
+  mallacurricular?: string;
+
+  // Noticia destacada
+  imagennoticia?: number | string;
+  fechanoticia?: string; // formato YYYYMMDD que devuelve ACF Date Picker
+
+  // Acreditación internacional
+  descripcionacreditacioninternacional?: string;
+  enlaceacreditacioninternacional?: string;
+
+  // Plan de estudios — repeater de materias
+  planestudios?: PlanEstudiosMateriaAcf[];
+};
+
+/**
+ * Fila del repeater "planestudios" en ACF.
+ * silaboenlace es un campo File: ACF devuelve el ID numérico del adjunto
+ * o, si está configurado como "URL", la URL directa.
+ */
+export type PlanEstudiosMateriaAcf = {
+  nombremateria?: string;
+  resultadoaprendizaje?: string;
+  creditos?: number | string;
+  silaboenlace?: number | string; // File field: ID o URL
+};
+
+// La página de carrera en WordPress tiene tanto el objeto `content` (estructura completa)
+// como los campos planos del inicio en el mismo `acf`.
+export type CarreraAcfSchema = InicioPaginaAcfSchema & {
   content?: CarreraContent;
 };
 

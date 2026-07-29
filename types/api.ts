@@ -108,3 +108,31 @@ export type ProyectosContent = {
   description: string;
   items: Proyecto[];
 };
+
+export type MateriaPlanEstudios = {
+  nombreMateria: string;
+  resultadoAprendizaje: string;
+  creditos: string;
+  silaboEnlace: string;
+};
+
+export type InicioPaginaContent = {
+  bannerImagen: string;
+  bannerImagenTexto: string;
+  bannerImagenEnlace: string;
+  tituloProfesional: string;
+  jornada: string;
+  duracion: string;
+  modalidad: string;
+  mision: string;
+  vision: string;
+  eslogaMotivacional: string;
+  perfilEgreso: string;
+  campoLaboral: string;
+  mallaCurricular: string;
+  imagenNoticia: string;
+  fechaNoticia: string;
+  descripcionAcreditacionInternacional: string;
+  enlaceAcreditacionInternacional: string;
+  materiasPlanEstudios: MateriaPlanEstudios[];
+};

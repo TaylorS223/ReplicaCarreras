@@ -3,6 +3,7 @@ import { upsertFacultadContent } from "@/lib/content/facultades-data";
 import {
   mapCarreraFromAcf,
   mapFacultadFromAcf,
+  mapInicioPaginaFromAcf,
   mapPersonalPostToAdministrativo,
   mapPersonalPostToComisionProfile,
   mapPersonalPostToDecanatoProfile,
@@ -13,6 +14,7 @@ import {
   getCarreraAcfEntry,
   getFacultadAcfEntry,
   getPersonalByTipo,
+  resolveInicioPaginaImages,
   resolvePersonalPostImages,
 } from "@/lib/wordpress/acf/repository";
 import type { FacultadContent } from "@/types/facultad-content";
@@ -103,6 +105,16 @@ export const syncDocentesFromCpt = async (
   };
 };
 
+// Carga los campos ACF de inicio desde el entry de carrera ya cargado e inyecta en el contenido
+const applyInicioPaginaFromAcf = async (
+  acf: NonNullable<Awaited<ReturnType<typeof getCarreraAcfEntry>>["acf"]>,
+  content: CarreraContent,
+): Promise<CarreraContent> => {
+  const images = await resolveInicioPaginaImages(acf);
+  const inicioPagina = await mapInicioPaginaFromAcf(acf, images);
+  return { ...content, inicioPagina };
+};
+
 export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
   const entry = await getFacultadAcfEntry(facultadSlug);
 
@@ -138,14 +150,19 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     }
 
     const withDocentes = await syncDocentesFromCpt(existing);
-    upsertCarreraContent(facultadSlug, carreraSlug, withDocentes);
-    return withDocentes;
+    // Si hay acf (aunque sin content completo) aplicamos los campos del inicio
+    const withInicio = entry?.acf
+      ? await applyInicioPaginaFromAcf(entry.acf, withDocentes)
+      : withDocentes;
+    upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
+    return withInicio;
   }
 
   const mapped = mapCarreraFromAcf(entry);
   const withDocentes = await syncDocentesFromCpt(mapped);
-  upsertCarreraContent(facultadSlug, carreraSlug, withDocentes);
-  return withDocentes;
+  const withInicio = await applyInicioPaginaFromAcf(entry.acf, withDocentes);
+  upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
+  return withInicio;
 };
 
 export const syncContextContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {

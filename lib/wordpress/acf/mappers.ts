@@ -5,12 +5,16 @@ import type { DecanatoProfile } from "@/types/decanato";
 import type { DireccionCarreraProfile } from "@/types/direccionCarrera";
 import type { ComisionProfile } from "@/types/comisiones";
 import type { PersonalAdministrativoItem } from "@/types/administracionServicios";
+import type { InicioPaginaContent, MateriaPlanEstudios } from "@/types/api";
 import type {
   CarreraAcfSchema,
   FacultadAcfSchema,
+  InicioPaginaAcfSchema,
   PersonalPost,
+  PlanEstudiosMateriaAcf,
   WpAcfEnvelope,
 } from "@/lib/wordpress/acf/types";
+import { resolveMediaUrl } from "@/lib/wordpress/acf/repository";
 
 // Si ACF devuelve string usa la URL directamente; si devuelve ID numérico devuelve ""
 // (el ID se resuelve a URL en repository.resolvePersonalPostImages antes de llegar aquí)
@@ -138,3 +142,50 @@ export const mapPersonalPostToAdministrativo = (
 
   return { slug: post.slug, nombre, cargo, foto, alt: nombre, email, ubicacion, horario };
 };
+
+// ─── Página Inicio ────────────────────────────────────────────────────────────
+
+const normalizeAcfDate = (value: string | undefined): string => {
+  if (!value) return "";
+  if (/^\d{8}$/.test(value)) {
+    return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+  }
+  return value;
+};
+
+const mapMateriaFromAcf = async (row: PlanEstudiosMateriaAcf): Promise<MateriaPlanEstudios> => ({
+  nombreMateria: row.nombremateria ?? "",
+  resultadoAprendizaje: row.resultadoaprendizaje ?? "",
+  creditos: row.creditos !== undefined ? String(row.creditos) : "",
+  silaboEnlace: await resolveMediaUrl(row.silaboenlace),
+});
+
+export const mapInicioPaginaFromAcf = async (
+  acf: InicioPaginaAcfSchema,
+  images: Record<string, string> = {},
+): Promise<InicioPaginaContent> => ({
+  bannerImagen: images["bannerimagen"] ?? resolveImageUrl(acf.bannerimagen),
+  bannerImagenTexto: acf.bannerimagentexto ?? "",
+  bannerImagenEnlace: acf.bannerimagenenlace ?? "",
+
+  tituloProfesional: acf.tituloprofesional ?? "",
+  jornada: acf.jornada ?? "",
+  duracion: acf.duracion ?? "",
+  modalidad: acf.modalidad ?? "",
+
+  mision: acf.mision ?? "",
+  vision: acf.vision ?? "",
+
+  eslogaMotivacional: acf.eslogamotivacional ?? "",
+  perfilEgreso: acf.perfilegreso ?? "",
+  campoLaboral: acf.campolaboral ?? "",
+  mallaCurricular: acf.mallacurricular ?? "",
+
+  imagenNoticia: images["imagennoticia"] ?? resolveImageUrl(acf.imagennoticia),
+  fechaNoticia: normalizeAcfDate(acf.fechanoticia),
+
+  descripcionAcreditacionInternacional: acf.descripcionacreditacioninternacional ?? "",
+  enlaceAcreditacionInternacional: acf.enlaceacreditacioninternacional ?? "",
+
+  materiasPlanEstudios: await Promise.all((acf.planestudios ?? []).map(mapMateriaFromAcf)),
+});

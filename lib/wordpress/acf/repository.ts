@@ -90,3 +90,22 @@ export const resolvePersonalPostImages = async (
 
   return Object.fromEntries(resolved);
 };
+
+/**
+ * Resuelve los campos Image de la página Inicio (bannerimagen, imagennoticia).
+ * Recibe el acf del entry de carrera, que ya contiene los campos planos del inicio.
+ */
+export const resolveInicioPaginaImages = async (
+  acf: Pick<CarreraAcfSchema, "bannerimagen" | "imagennoticia">,
+): Promise<Record<string, string>> => {
+  const imageFields: Array<[string, number | string | undefined]> = [
+    ["bannerimagen", acf.bannerimagen],
+    ["imagennoticia", acf.imagennoticia],
+  ];
+
+  const resolved = await Promise.all(
+    imageFields.map(async ([key, val]) => [key, await resolveMediaUrl(val)] as [string, string]),
+  );
+
+  return Object.fromEntries(resolved);
+};

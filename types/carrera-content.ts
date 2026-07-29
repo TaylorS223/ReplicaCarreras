@@ -2,6 +2,7 @@ import type {
   AccreditationContent,
   HeroContent,
   InfoCard,
+  InicioPaginaContent,
   MisionVisionItem,
   PersonalContent,
   PlanEstudiosContent,
@@ -20,4 +21,6 @@ export type CarreraContent = {
   planEstudios: PlanEstudiosContent;
   personal: PersonalContent;
   docentes: Docente[];
+  /** Campos ACF de la página Inicio (opcionales: se rellenan desde WordPress) */
+  inicioPagina?: InicioPaginaContent;
 };
