@@ -14,7 +14,6 @@ export type FacultadAcfSchema = {
 };
 
 // Campos ACF planos de la página de inicio de carrera (homepage del micrositio).
-// Viven en el mismo objeto `acf` de la página `carrera-{facultad}-{carrera}`.
 export type InicioPaginaAcfSchema = {
   // Banner principal
   bannerimagen?: number | string;
@@ -39,7 +38,7 @@ export type InicioPaginaAcfSchema = {
 
   // Noticia destacada
   imagennoticia?: number | string;
-  fechanoticia?: string; // formato YYYYMMDD que devuelve ACF Date Picker
+  fechanoticia?: string; 
 
   // Acreditación internacional
   descripcionacreditacioninternacional?: string;
@@ -51,8 +50,6 @@ export type InicioPaginaAcfSchema = {
 
 /**
  * Fila del repeater "planestudios" en ACF.
- * silaboenlace es un campo File: ACF devuelve el ID numérico del adjunto
- * o, si está configurado como "URL", la URL directa.
  */
 export type PlanEstudiosMateriaAcf = {
   nombremateria?: string;
@@ -61,13 +58,9 @@ export type PlanEstudiosMateriaAcf = {
   silaboenlace?: number | string; // File field: ID o URL
 };
 
-// La página de carrera en WordPress tiene tanto el objeto `content` (estructura completa)
-// como los campos planos del inicio en el mismo `acf`.
 export type CarreraAcfSchema = InicioPaginaAcfSchema & {
   content?: CarreraContent;
 };
-
-// CPT Personal — campos ACF reales por tipo de personal
 
 // Tipo: Decano
 export type PersonalAcfDecano = {

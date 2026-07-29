@@ -91,9 +91,8 @@ export const resolvePersonalPostImages = async (
   return Object.fromEntries(resolved);
 };
 
-/**
+/*
  * Resuelve los campos Image de la página Inicio (bannerimagen, imagennoticia).
- * Recibe el acf del entry de carrera, que ya contiene los campos planos del inicio.
  */
 export const resolveInicioPaginaImages = async (
   acf: Pick<CarreraAcfSchema, "bannerimagen" | "imagennoticia">,
