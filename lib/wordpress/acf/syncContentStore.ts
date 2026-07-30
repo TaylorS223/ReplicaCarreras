@@ -3,24 +3,27 @@ import { upsertFacultadContent } from "@/lib/content/facultades-data";
 import {
   mapCarreraFromAcf,
   mapFacultadFromAcf,
-  mapInicioPaginaFromAcf,
+  mapNoticiaPostToProyecto,
   mapPersonalPostToAdministrativo,
   mapPersonalPostToComisionProfile,
   mapPersonalPostToDecanatoProfile,
   mapPersonalPostToDireccionCarreraProfile,
   mapPersonalPostToDocente,
+  mapSemestrePostsToPlanEstudios,
+  mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
 import {
   getCarreraAcfEntry,
   getFacultadAcfEntry,
+  getNoticias as getNoticiasCpt,
   getPersonalByTipo,
-  resolveInicioPaginaImages,
+  getSemestres,
   resolvePersonalPostImages,
 } from "@/lib/wordpress/acf/repository";
 import type { FacultadContent } from "@/types/facultad-content";
 import type { CarreraContent } from "@/types/carrera-content";
 
-// Resuelve imágenes de cada post (pueden ser IDs numéricos) antes de mapear
+// Resuelve imágenes de cada post antes de mapear
 const withImages = async <T>(
   posts: Awaited<ReturnType<typeof getPersonalByTipo>>,
   mapper: (post: (typeof posts)[0], images: Record<string, string>) => T,
@@ -83,36 +86,49 @@ export const syncPersonalFacultadFromCpt = async (
   return result;
 };
 
-// Carga los docentes del CPT e inyecta en el contenido de carrera
+// Carga los docentes, plan de estudios y noticias del CPT e inyecta en el contenido de carrera
 export const syncDocentesFromCpt = async (
   content: CarreraContent,
+  facultadSlug = "arquitectura",
 ): Promise<CarreraContent> => {
-  const docentesPosts = await getPersonalByTipo("docentes");
+  const [docentesPosts, semestresPosts, noticiasPosts] = await Promise.all([
+    getPersonalByTipo("docentes"),
+    getSemestres(),
+    getNoticiasCpt(),
+  ]);
 
-  if (docentesPosts.length === 0) {
-    return content;
+  let result = { ...content };
+
+  if (docentesPosts.length > 0) {
+    const docentes = await withImages(docentesPosts, mapPersonalPostToDocente);
+    result = {
+      ...result,
+      docentes,
+      personal: { ...result.personal, docentes },
+    };
   }
 
-  const docentes = await withImages(docentesPosts, mapPersonalPostToDocente);
+  if (semestresPosts.length > 0) {
+    result = {
+      ...result,
+      planEstudios: await mapSemestrePostsToPlanEstudios(semestresPosts, result.planEstudios),
+    };
+  }
 
-  return {
-    ...content,
-    docentes,
-    personal: {
-      ...content.personal,
-      docentes,
-    },
-  };
-};
+  if (noticiasPosts.length > 0) {
+    const items = await Promise.all(
+      noticiasPosts.map((post) => mapNoticiaPostToProyecto(post, facultadSlug)),
+    );
+    result = {
+      ...result,
+      proyectos: {
+        ...result.proyectos,
+        items,
+      },
+    };
+  }
 
-// Carga los campos ACF de inicio desde el entry de carrera ya cargado e inyecta en el contenido
-const applyInicioPaginaFromAcf = async (
-  acf: NonNullable<Awaited<ReturnType<typeof getCarreraAcfEntry>>["acf"]>,
-  content: CarreraContent,
-): Promise<CarreraContent> => {
-  const images = await resolveInicioPaginaImages(acf);
-  const inicioPagina = await mapInicioPaginaFromAcf(acf, images);
-  return { ...content, inicioPagina };
+  return result;
 };
 
 export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
@@ -121,11 +137,7 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
   if (!entry?.acf?.content) {
     const { FACULTADES_CONTENT } = await import("@/lib/content/facultades-data");
     const existing = FACULTADES_CONTENT[facultadSlug];
-
-    if (!existing) {
-      throw new Error(`Sin contenido base para facultad "${facultadSlug}".`);
-    }
-
+    if (!existing) throw new Error(`Sin contenido base para facultad "${facultadSlug}".`);
     const withPersonal = await syncPersonalFacultadFromCpt(existing);
     upsertFacultadContent(facultadSlug, withPersonal);
     return withPersonal;
@@ -140,29 +152,25 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
 export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {
   const entry = await getCarreraAcfEntry(facultadSlug, carreraSlug);
 
-  if (!entry?.acf?.content) {
-    const { CARRERAS_CONTENT } = await import("@/lib/content/carreras-data");
-    const key = `${facultadSlug}:${carreraSlug}`;
-    const existing = CARRERAS_CONTENT[key];
+  const { CARRERAS_CONTENT } = await import("@/lib/content/carreras-data");
+  const key = `${facultadSlug}:${carreraSlug}`;
+  const existing = CARRERAS_CONTENT[key];
 
-    if (!existing) {
-      throw new Error(`Sin contenido base para carrera "${key}".`);
+  if (!existing) throw new Error(`Sin contenido base para carrera "${key}".`);
+
+  // Aplica campos planos de la página ACF si existen
+  let base = existing;
+  if (entry?.acf) {
+    if (entry.acf.content) {
+      base = mapCarreraFromAcf(entry);
+    } else {
+      base = await mergeCarreraFromInicioPagina(entry.acf, existing);
     }
-
-    const withDocentes = await syncDocentesFromCpt(existing);
-    // Si hay acf (aunque sin content completo) aplicamos los campos del inicio
-    const withInicio = entry?.acf
-      ? await applyInicioPaginaFromAcf(entry.acf, withDocentes)
-      : withDocentes;
-    upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
-    return withInicio;
   }
 
-  const mapped = mapCarreraFromAcf(entry);
-  const withDocentes = await syncDocentesFromCpt(mapped);
-  const withInicio = await applyInicioPaginaFromAcf(entry.acf, withDocentes);
-  upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
-  return withInicio;
+  const withDocentes = await syncDocentesFromCpt(base, facultadSlug);
+  upsertCarreraContent(facultadSlug, carreraSlug, withDocentes);
+  return withDocentes;
 };
 
 export const syncContextContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {
@@ -170,6 +178,5 @@ export const syncContextContentFromAcf = async (facultadSlug: string, carreraSlu
     syncFacultadContentFromAcf(facultadSlug),
     syncCarreraContentFromAcf(facultadSlug, carreraSlug),
   ]);
-
   return { facultad, carrera };
 };

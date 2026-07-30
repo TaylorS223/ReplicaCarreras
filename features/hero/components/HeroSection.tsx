@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getHeroContent } from "@/lib/wordpress/services/getHero";
+import type { HeroContent } from "@/types/api";
 import styles from "./HeroSection.module.css";
 
 const AUTOPLAY_DELAY_MS = 7000;
 
-export const HeroSection = () => {
-  const content = getHeroContent();
+export const HeroSection = ({ content }: { content: HeroContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [sequenceKey, setSequenceKey] = useState(0);

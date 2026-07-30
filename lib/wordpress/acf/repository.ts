@@ -2,7 +2,9 @@ import { wpFetch } from "@/lib/wordpress/client";
 import type {
   CarreraAcfSchema,
   FacultadAcfSchema,
+  NoticiaPost,
   PersonalPost,
+  SemestrePost,
   TipoPersonalSlug,
   WpAcfEnvelope,
   WpRestCollectionResponse,
@@ -55,7 +57,27 @@ export const getPersonalByTipo = async (
   });
 };
 
-// Resuelve un ID de media a su URL. Si ya es URL, la devuelve tal cual.
+// Fetch de todas las materias del CPT semestres
+export const getSemestres = async (perPage = 100): Promise<SemestrePost[]> => {
+  return wpFetch<SemestrePost[]>("semestres", {
+    query: {
+      per_page: perPage,
+      _fields: "id,slug,title,acf,nivel",
+    },
+    cache: "no-store",
+  });
+};
+
+// Fetch de todas las noticias del CPT noticias
+export const getNoticias = async (perPage = 100): Promise<NoticiaPost[]> => {
+  return wpFetch<NoticiaPost[]>("noticias", {
+    query: {
+      per_page: perPage,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  });
+};
 export const resolveMediaUrl = async (value: number | string | undefined): Promise<string> => {
   if (!value) return "";
   if (typeof value === "string") return value;

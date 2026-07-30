@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { getPlanEstudiosContent } from "@/lib/wordpress/services/getPlanEstudios";
-import type { Course, StudyLevel } from "@/types/api";
+import type { Course, PlanEstudiosContent, StudyLevel } from "@/types/api";
 
 const MOBILE_FALLBACK_QUERY =
   "(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)";
@@ -14,7 +13,7 @@ const SCROLL_EASING_FACTOR = 0.18;
 const MIN_PROGRESS_DELTA = 0.001;
 
 const PlanCourseAccordion = ({ course }: { course: Course }) => (
-  <details className="course-item" open={course.open}>
+  <details className="course-item" {...(course.open ? { open: true } : {})}>
     <summary>
       <span className="course-title">{course.title}</span>
       <span className="course-toggle" aria-hidden="true"></span>
@@ -37,7 +36,7 @@ const PlanCourseAccordion = ({ course }: { course: Course }) => (
 );
 
 const PlanLevelAccordion = ({ level }: { level: StudyLevel }) => (
-  <details className="study-level" open={level.open}>
+  <details className="study-level" {...(level.open ? { open: true } : {})}>
     <summary>{level.title}</summary>
     <div className="study-items">
       {level.courses.map((course) => (
@@ -48,8 +47,7 @@ const PlanLevelAccordion = ({ level }: { level: StudyLevel }) => (
   </details>
 );
 
-export const PlanEstudiosSection = () => {
-  const content = getPlanEstudiosContent();
+export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent }) => {
   const [isFallback, setIsFallback] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement | null>(null);

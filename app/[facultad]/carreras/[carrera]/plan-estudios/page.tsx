@@ -17,5 +17,5 @@ export default async function CarreraPlanEstudiosPage({ params }: CarreraPlanEst
 
   await hydrateContentForContext({ facultadSlug: facultad, carreraSlug: carrera });
 
-  return <Pensum />;
+  return <Pensum facultadSlug={facultad} carreraSlug={carrera} />;
 }

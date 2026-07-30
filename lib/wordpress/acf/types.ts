@@ -31,14 +31,12 @@ export type InicioPaginaAcfSchema = {
   vision?: string;
 
   // Eslogan, perfil de egreso y campo laboral
-  eslogamotivacional?: string;
+  esloganmotivacional?: string;
   perfilegreso?: string;
   campolaboral?: string;
-  mallacurricular?: string;
+  mallacurricular?: string | { url?: string; title?: string; target?: string };
 
-  // Noticia destacada
-  imagennoticia?: number | string;
-  fechanoticia?: string; 
+  // Noticia destacada — eliminado, ahora en CPT noticias
 
   // Acreditación internacional
   descripcionacreditacioninternacional?: string;
@@ -67,7 +65,7 @@ export type PersonalAcfDecano = {
   imagendecano?: number | string;
   nombredecano?: string;
   cargoasignado?: string;
-  correoinsitucional?: string;
+  correoinstitucional?: string;
   ubicaciontrabajo?: string;
   horaatencion?: string;
   presentacionbreve?: string;
@@ -92,8 +90,8 @@ export type PersonalAcfDocente = {
   areadocencia?: string;
   areaespecializacion?: string;
   formacionacademica?: string;
-  publicaciones?: string; // campo Link en ACF
-  correoinsitucional?: string;
+  publicaciones?: string | { url?: string; title?: string }; // campo Link en ACF
+  correoinstitucional?: string;
   ubicaciontrabajo?: string;
   horarioatencion?: string;
 };
@@ -141,6 +139,19 @@ export type PersonalPost = WpAcfEnvelope<PersonalPostAcf> & {
   title: { rendered: string };
 };
 
+// CPT Semestres — cada post es una materia con su nivel asignado via taxonomía
+export type SemestrePostAcf = {
+  nombremateria?: string;
+  resultadoaprendizaje?: string;
+  creditos?: number | string;
+  silaboenlace?: number | string | { url?: string }; // File field: ID, URL o objeto
+};
+
+export type SemestrePost = WpAcfEnvelope<SemestrePostAcf> & {
+  title: { rendered: string };
+  nivel: number[]; // IDs de los términos de taxonomía
+};
+
 export type TipoPersonalSlug =
   | "docentes"
   | "administrativo"
@@ -148,3 +159,29 @@ export type TipoPersonalSlug =
   | "decano"
   | "comision"
   | "direccion-carrera";
+
+// Mapa fijo de ID de término de taxonomía "nivel" → número de nivel
+// Basado en los IDs reales de WordPress
+export const NIVEL_ID_MAP: Record<number, number> = {
+  82: 1,
+  83: 2,
+  84: 3,
+  85: 4,
+  86: 5,
+  87: 6,
+  88: 7,
+  89: 8,
+  90: 9,
+  91: 10,
+};
+
+// CPT Noticias — cada post es una noticia individual
+export type NoticiaPostAcf = {
+  imagennoticia?: number | string; // Image field: ID o URL
+  fechanotifica?: string;          // Text field con la fecha
+  titulonoticia?: string;          // Text field con el título
+};
+
+export type NoticiaPost = WpAcfEnvelope<NoticiaPostAcf> & {
+  title: { rendered: string };
+};
