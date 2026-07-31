@@ -297,16 +297,9 @@ export const mapNoticiaPost = (
   post: NoticiaPost,
   images: Record<string, string> = {},
 ): Noticia => {
-  const rawDate = post.acf?.fechanoticia ?? post.date ?? "";
-  const fechaISO = normalizeAcfDate(rawDate) || rawDate.slice(0, 10);
-
-  const fechaTexto = fechaISO
-    ? new Intl.DateTimeFormat("es-EC", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(fechaISO + "T00:00:00"))
-    : "";
+  const rawDate = post.date ?? "";
+  const fechaISO = rawDate.slice(0, 10);
+  const fechaTexto = post.acf?.fechanotifica ?? fechaISO;
 
   const contenidoRaw = post.content?.rendered ?? "";
   const contenido = contenidoRaw
@@ -336,21 +329,15 @@ export const mapNoticiaPostToProyecto = async (
   facultadSlug: string,
 ): Promise<Proyecto> => {
   const imagen = await resolveMediaUrl(post.acf?.imagennoticia);
-  const titulo = post.title.rendered;
-  const rawDate = post.acf?.fechanoticia ?? post.date ?? "";
-  const fechaISO = normalizeAcfDate(rawDate) || rawDate.slice(0, 10);
+  const titulo = post.acf?.titulonoticia ?? post.title.rendered;
+  const fechaISO = (post.date ?? "").slice(0, 10);
+  const fechaTexto = post.acf?.fechanotifica ?? fechaISO;
 
   return {
     slug: post.slug,
     titulo,
     fechaISO,
-    fechaTexto: fechaISO
-      ? new Intl.DateTimeFormat("es-EC", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(fechaISO + "T00:00:00"))
-      : "",
+    fechaTexto,
     imagen,
     alt: titulo,
     href: `/${facultadSlug}/noticias/${post.slug}`,

@@ -15,7 +15,7 @@ export const ProyectosSection = () => {
           {content.items.slice(0, 4).map((item) => (
             <Link key={`${item.titulo}-${item.fechaISO}`} className="news-card" href={item.href}>
               <figure>
-                <img src={item.imagen} alt={item.alt} />
+                {item.imagen ? <img src={item.imagen} alt={item.alt} /> : null}
               </figure>
               <time dateTime={item.fechaISO}>{item.fechaTexto}</time>
               <h3>{item.titulo}</h3>

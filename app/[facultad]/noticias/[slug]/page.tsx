@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import { ComentarioForm } from "@/features/noticias/components/ComentarioForm";
 
 type NoticiaDetailPageProps = {
@@ -15,6 +16,11 @@ export default async function NoticiaDetailPage({ params }: NoticiaDetailPagePro
   if (!facultadConfig) {
     notFound();
   }
+
+  await hydrateContentForContext({
+    facultadSlug: facultad,
+    carreraSlug: facultadConfig.defaultCarreraSlug,
+  });
 
   const noticias = getNoticias({
     facultadSlug: facultad,

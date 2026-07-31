@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import { notFound } from "next/navigation";
 
 type NoticiasPageProps = {
@@ -14,6 +15,11 @@ export default async function NoticiasPage({ params }: NoticiasPageProps) {
   if (!facultadConfig) {
     notFound();
   }
+
+  await hydrateContentForContext({
+    facultadSlug: facultad,
+    carreraSlug: facultadConfig.defaultCarreraSlug,
+  });
 
   const noticias = getNoticias({
     facultadSlug: facultad,

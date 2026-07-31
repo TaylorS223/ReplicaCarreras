@@ -152,7 +152,8 @@ export const NIVEL_ID_MAP: Record<number, number> = {
 
 export type NoticiaPostAcf = {
   imagennoticia?: number | string;
-  fechanoticia?: string;
+  fechanotifica?: string;   // texto libre: "31 julio del 2026"
+  titulonoticia?: string;
   autor?: string;
 };
 
