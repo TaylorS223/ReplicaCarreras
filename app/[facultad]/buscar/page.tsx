@@ -1,14 +1,44 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFacultadConfig } from "@/lib/facultades/registry";
-import { getNoticias } from "@/lib/wordpress/services/getNoticias";
-import { getDocentes } from "@/lib/wordpress/services/getDocentes";
 import { BuscarForm } from "@/features/buscar/components/BuscarForm";
+import {
+  getNoticiasContentByContext,
+  getPersonalContentByContext,
+  getMisionVisionItemsByContext,
+  getProfileContentByContext,
+  getAccreditationContentByContext,
+  getPlanEstudiosContentByContext,
+  getDecanatoContentByContext,
+  getDireccionCarreraContentByContext,
+  getComisionesContentByContext,
+  getAdministracionServiciosContentByContext,
+  getInfoCardsByContext,
+} from "@/lib/content/resolver";
+import type { ContentContext } from "@/lib/content/resolver";
 
 type BuscarPageProps = {
   params: Promise<{ facultad: string }>;
   searchParams: Promise<{ q?: string }>;
 };
+
+type ResultadoBusqueda = {
+  categoria: string;
+  titulo: string;
+  descripcion?: string;
+  href: string;
+};
+
+function normalizar(texto: string): string {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function incluye(texto: string | undefined, query: string): boolean {
+  return !!texto && normalizar(texto).includes(query);
+}
 
 export default async function BuscarPage({ params, searchParams }: BuscarPageProps) {
   const { facultad } = await params;
@@ -19,29 +49,193 @@ export default async function BuscarPage({ params, searchParams }: BuscarPagePro
     notFound();
   }
 
-  const query = (q ?? "").trim().toLowerCase();
+  const query = normalizar((q ?? "").trim());
+  const ctx: ContentContext = {
+    facultadSlug: facultad,
+    carreraSlug: facultadConfig.defaultCarreraSlug,
+  };
 
-  const context = { facultadSlug: facultad, carreraSlug: facultadConfig.defaultCarreraSlug };
+  const resultados: ResultadoBusqueda[] = [];
 
-  const noticias = query
-    ? getNoticias(context).filter(
-        (n) =>
-          n.titulo.toLowerCase().includes(query) ||
-          n.resumen.toLowerCase().includes(query) ||
-          n.contenido.toLowerCase().includes(query),
-      )
-    : [];
+  if (query) {
+    // ── Noticias ──────────────────────────────────────────────
+    getNoticiasContentByContext(ctx).forEach((n) => {
+      if (
+        incluye(n.titulo, query) ||
+        incluye(n.resumen, query) ||
+        incluye(n.contenido, query) ||
+        incluye(n.autor, query)
+      ) {
+        resultados.push({
+          categoria: "Noticias",
+          titulo: n.titulo,
+          descripcion: n.resumen || undefined,
+          href: `/${facultad}/noticias/${n.slug}`,
+        });
+      }
+    });
 
-  const docentes = query
-    ? getDocentes(context).filter(
-        (d) =>
-          d.nombre.toLowerCase().includes(query) ||
-          d.titulo.toLowerCase().includes(query) ||
-          d.especializacion.toLowerCase().includes(query),
-      )
-    : [];
+    // ── Docentes ──────────────────────────────────────────────
+    getPersonalContentByContext(ctx).docentes.forEach((d) => {
+      if (
+        incluye(d.nombre, query) ||
+        incluye(d.titulo, query) ||
+        incluye(d.especializacion, query) ||
+        d.formacionAcademica.some((f) => incluye(f, query))
+      ) {
+        resultados.push({
+          categoria: "Personal docente",
+          titulo: d.nombre,
+          descripcion: `${d.titulo}${d.especializacion ? ` — ${d.especializacion}` : ""}`,
+          href: `/${facultad}/personal/${d.slug}`,
+        });
+      }
+    });
 
-  const totalResultados = noticias.length + docentes.length;
+    // ── Decanato ──────────────────────────────────────────────
+    getDecanatoContentByContext(ctx).profiles.forEach((p) => {
+      if (
+        incluye(p.nombre, query) ||
+        incluye(p.cargo, query) ||
+        p.biografia.some((b) => incluye(b, query))
+      ) {
+        resultados.push({
+          categoria: "Decanato",
+          titulo: p.nombre,
+          descripcion: p.cargo,
+          href: `/${facultad}/personal/decanato`,
+        });
+      }
+    });
+
+    // ── Dirección de Carrera ───────────────────────────────────
+    getDireccionCarreraContentByContext(ctx).profiles.forEach((p) => {
+      if (
+        incluye(p.nombre, query) ||
+        incluye(p.cargo, query) ||
+        p.biografia.some((b) => incluye(b, query))
+      ) {
+        resultados.push({
+          categoria: "Dirección de Carrera",
+          titulo: p.nombre,
+          descripcion: p.cargo,
+          href: `/${facultad}/personal/direccion-carrera`,
+        });
+      }
+    });
+
+    // ── Comisiones ────────────────────────────────────────────
+    getComisionesContentByContext(ctx).profiles.forEach((p) => {
+      if (
+        incluye(p.nombre, query) ||
+        incluye(p.comision, query) ||
+        p.formacionAcademica.some((f) => incluye(f, query))
+      ) {
+        resultados.push({
+          categoria: "Comisiones",
+          titulo: p.nombre,
+          descripcion: p.comision,
+          href: `/${facultad}/personal/comisiones`,
+        });
+      }
+    });
+
+    // ── Administración y servicios ────────────────────────────
+    getAdministracionServiciosContentByContext(ctx).groups.forEach((g) => {
+      g.items.forEach((item) => {
+        if (
+          incluye(item.nombre, query) ||
+          incluye(item.cargo, query)
+        ) {
+          resultados.push({
+            categoria: "Administración y Servicios",
+            titulo: item.nombre,
+            descripcion: item.cargo,
+            href: `/${facultad}/personal/administracion-servicios`,
+          });
+        }
+      });
+    });
+
+    // ── Misión / Visión ───────────────────────────────────────
+    getMisionVisionItemsByContext(ctx).forEach((mv) => {
+      if (incluye(mv.title, query) || incluye(mv.description, query)) {
+        resultados.push({
+          categoria: "Misión / Visión",
+          titulo: mv.title,
+          descripcion: mv.description.slice(0, 160),
+          href: `/${facultad}#mision`,
+        });
+      }
+    });
+
+    // ── Perfil de egreso / Campo laboral ──────────────────────
+    const profile = getProfileContentByContext(ctx);
+    if (incluye(profile.sectionTitle, query)) {
+      resultados.push({
+        categoria: "Información institucional",
+        titulo: profile.sectionTitle,
+        href: `/${facultad}#perfil`,
+      });
+    }
+    profile.cards.forEach((card) => {
+      if (
+        incluye(card.title, query) ||
+        card.paragraphs.some((p) => incluye(p, query))
+      ) {
+        resultados.push({
+          categoria: "Información institucional",
+          titulo: card.title,
+          descripcion: card.paragraphs[0]?.slice(0, 160),
+          href: `/${facultad}#perfil`,
+        });
+      }
+    });
+
+    // ── Acreditación ──────────────────────────────────────────
+    const accreditation = getAccreditationContentByContext(ctx);
+    if (
+      incluye(accreditation.title, query) ||
+      accreditation.paragraphs.some((p) => incluye(p, query))
+    ) {
+      resultados.push({
+        categoria: "Acreditación Internacional",
+        titulo: accreditation.title,
+        descripcion: accreditation.paragraphs[0]?.slice(0, 160),
+        href: `/${facultad}#acreditacion`,
+      });
+    }
+
+    // ── Plan de estudios (materias) ───────────────────────────
+    const planEstudios = getPlanEstudiosContentByContext(ctx);
+    planEstudios.levels.forEach((level) => {
+      level.courses.forEach((course) => {
+        if (
+          incluye(course.title, query) ||
+          incluye(course.description, query)
+        ) {
+          resultados.push({
+            categoria: `Plan de estudios — ${level.title}`,
+            titulo: course.title,
+            descripcion: course.description?.slice(0, 160) || undefined,
+            href: `/${facultad}#planestudios`,
+          });
+        }
+      });
+    });
+
+    // ── Info cards (título profesional, jornada, duración, modalidad) ──
+    getInfoCardsByContext(ctx).forEach((card) => {
+      if (incluye(card.title, query) || incluye(card.value, query)) {
+        resultados.push({
+          categoria: "Información de la carrera",
+          titulo: card.title,
+          descripcion: card.value,
+          href: `/${facultad}`,
+        });
+      }
+    });
+  }
 
   return (
     <div className="buscar-wrapper">
@@ -49,7 +243,7 @@ export default async function BuscarPage({ params, searchParams }: BuscarPagePro
         <div className="container">
           {query && (
             <p className="buscar-caption">
-              {totalResultados} resultado{totalResultados !== 1 ? "s" : ""} para &ldquo;{q}&rdquo;
+              {resultados.length} resultado{resultados.length !== 1 ? "s" : ""} para &ldquo;{q}&rdquo;
             </p>
           )}
           <h1 className="buscar-title">Búsqueda</h1>
@@ -59,47 +253,40 @@ export default async function BuscarPage({ params, searchParams }: BuscarPagePro
       <div className="container buscar-body">
         <BuscarForm facultad={facultad} initialQuery={q ?? ""} />
 
-        {query && totalResultados === 0 && (
+        {query && resultados.length === 0 && (
           <p className="buscar-empty">
             No se encontraron resultados para &ldquo;{q}&rdquo;.
           </p>
         )}
 
-        {noticias.length > 0 && (
-          <section className="buscar-section">
-            <h2 className="buscar-section-title">Noticias</h2>
-            <ul className="buscar-list">
-              {noticias.map((n) => (
-                <li key={n.slug} className="buscar-item">
-                  <Link href={`/${facultad}/noticias/${n.slug}`} className="buscar-item-link">
-                    <span className="buscar-item-title">{n.titulo}</span>
-                    <span className="buscar-item-meta">{n.fechaTexto}</span>
-                  </Link>
-                  {n.resumen && <p className="buscar-item-excerpt">{n.resumen}</p>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {resultados.length > 0 && (() => {
+          const porCategoria = resultados.reduce<Record<string, ResultadoBusqueda[]>>(
+            (acc, r) => {
+              if (!acc[r.categoria]) acc[r.categoria] = [];
+              acc[r.categoria].push(r);
+              return acc;
+            },
+            {},
+          );
 
-        {docentes.length > 0 && (
-          <section className="buscar-section">
-            <h2 className="buscar-section-title">Personal docente</h2>
-            <ul className="buscar-list">
-              {docentes.map((d) => (
-                <li key={d.slug} className="buscar-item">
-                  <Link href={`/${facultad}/personal/${d.slug}`} className="buscar-item-link">
-                    <span className="buscar-item-title">{d.nombre}</span>
-                    <span className="buscar-item-meta">{d.titulo}</span>
-                  </Link>
-                  {d.especializacion && (
-                    <p className="buscar-item-excerpt">{d.especializacion}</p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+          return Object.entries(porCategoria).map(([categoria, items]) => (
+            <section key={categoria} className="buscar-section">
+              <h2 className="buscar-section-title">{categoria}</h2>
+              <ul className="buscar-list">
+                {items.map((item, i) => (
+                  <li key={`${item.href}-${i}`} className="buscar-item">
+                    <Link href={item.href} className="buscar-item-link">
+                      <span className="buscar-item-title">{item.titulo}</span>
+                    </Link>
+                    {item.descripcion && (
+                      <p className="buscar-item-excerpt">{item.descripcion}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ));
+        })()}
       </div>
     </div>
   );

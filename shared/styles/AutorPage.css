@@ -202,10 +202,16 @@
 }
 
 /* Search box */
-.ap-search {
+.ap-search,
+.ap-search-wrapper {
   display: flex;
   border: 1px solid #cdd6e4;
   border-radius: 3px;
+  overflow: visible;
+  position: relative;
+}
+
+.ap-search {
   overflow: hidden;
 }
 
@@ -311,4 +317,14 @@
   .ap-sidebar {
     position: static;
   }
+}
+
+/* ── Sugerencias sidebar noticias ────────────────────────────── */
+.ap-search-wrapper {
+  flex-direction: column;
+}
+
+.ap-sug-list {
+  top: calc(100% + 4px);
+  width: 100%;
 }

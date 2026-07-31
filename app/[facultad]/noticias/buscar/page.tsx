@@ -21,19 +21,22 @@ export default async function BuscarNoticiasPage({
     notFound();
   }
 
-  const query = (q ?? "").trim().toLowerCase();
+  const normalizar = (texto: string) =>
+    texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const queryNorm = normalizar((q ?? "").trim());
 
   const todasNoticias = getNoticias({
     facultadSlug: facultad,
     carreraSlug: facultadConfig.defaultCarreraSlug,
   });
 
-  const noticias = query
+  const noticias = queryNorm
     ? todasNoticias.filter(
         (n) =>
-          n.titulo.toLowerCase().includes(query) ||
-          n.resumen.toLowerCase().includes(query) ||
-          n.contenido.toLowerCase().includes(query),
+          normalizar(n.titulo).includes(queryNorm) ||
+          normalizar(n.resumen).includes(queryNorm) ||
+          normalizar(n.contenido).includes(queryNorm),
       )
     : todasNoticias;
 
@@ -54,7 +57,7 @@ export default async function BuscarNoticiasPage({
     <div className="ap-wrapper">
       <div className="ap-page-title">
         <div className="container">
-          {query && (
+          {queryNorm && (
             <div className="ap-page-caption">
               {noticias.length} resultado{noticias.length !== 1 ? "s" : ""} para &ldquo;{q}&rdquo;
             </div>
@@ -65,7 +68,7 @@ export default async function BuscarNoticiasPage({
 
       <div className="container ap-body">
         <main className="ap-main">
-          {query && noticias.length === 0 ? (
+          {queryNorm && noticias.length === 0 ? (
             <p className="ap-empty">
               No se encontraron noticias para &ldquo;{q}&rdquo;.
             </p>

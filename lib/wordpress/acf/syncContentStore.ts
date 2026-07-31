@@ -24,6 +24,7 @@ import {
   resolveNoticiaImages,
   resolvePersonalPostImages,
 } from "@/lib/wordpress/acf/repository";
+import type { CarreraAcfSchema } from "@/lib/wordpress/acf/types";
 import type { FacultadContent } from "@/types/facultad-content";
 import type { CarreraContent } from "@/types/carrera-content";
 
@@ -140,7 +141,7 @@ export const syncNoticiasFromCpt = async (
 };
 
 const applyInicioPaginaFromAcf = async (
-  acf: NonNullable<Awaited<ReturnType<typeof getCarreraAcfEntry>>["acf"]>,
+  acf: CarreraAcfSchema,
   content: CarreraContent,
 ): Promise<CarreraContent> => {
   const images = await resolveInicioPaginaImages(acf);
@@ -176,7 +177,7 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
   if (!existing) throw new Error(`Sin contenido base para carrera "${key}".`);
 
   let base = existing;
-  if (entry?.acf) {
+  if (entry !== null && entry.acf) {
     if (entry.acf.content) {
       base = mapCarreraFromAcf(entry);
     } else {
@@ -186,7 +187,7 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
 
   const withDocentes = await syncDocentesFromCpt(base, facultadSlug);
   const withNoticias = await syncNoticiasFromCpt(withDocentes, facultadSlug);
-  const withInicio = entry?.acf
+  const withInicio = entry !== null && entry.acf
     ? await applyInicioPaginaFromAcf(entry.acf, withNoticias)
     : withNoticias;
 

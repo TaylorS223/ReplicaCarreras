@@ -29,6 +29,8 @@ export type InicioPaginaAcfSchema = {
   mallacurricular?: string | { url?: string; title?: string; target?: string };
   descripcionacreditacioninternacional?: string;
   enlaceacreditacioninternacional?: string;
+  imagennoticia?: number | string;
+  fechanoticia?: string;
   planestudios?: PlanEstudiosMateriaAcf[];
 };
 
