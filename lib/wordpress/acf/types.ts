@@ -13,67 +13,46 @@ export type FacultadAcfSchema = {
   content?: FacultadContent;
 };
 
-// Campos ACF planos de la página de inicio de carrera (homepage del micrositio).
 export type InicioPaginaAcfSchema = {
-  // Banner principal
   bannerimagen?: number | string;
   bannerimagentexto?: string;
   bannerimagenenlace?: string;
-
-  // Info cards de carrera
   tituloprofesional?: string;
   jornada?: string;
   duracion?: string;
   modalidad?: string;
-
-  // Misión / Visión
   mision?: string;
   vision?: string;
-
-  // Eslogan, perfil de egreso y campo laboral
-  eslogamotivacional?: string;
+  esloganmotivacional?: string;
   perfilegreso?: string;
   campolaboral?: string;
-  mallacurricular?: string;
-
-  // Noticia destacada
-  imagennoticia?: number | string;
-  fechanoticia?: string; 
-
-  // Acreditación internacional
+  mallacurricular?: string | { url?: string; title?: string; target?: string };
   descripcionacreditacioninternacional?: string;
   enlaceacreditacioninternacional?: string;
-
-  // Plan de estudios — repeater de materias
   planestudios?: PlanEstudiosMateriaAcf[];
 };
 
-/**
- * Fila del repeater "planestudios" en ACF.
- */
 export type PlanEstudiosMateriaAcf = {
   nombremateria?: string;
   resultadoaprendizaje?: string;
   creditos?: number | string;
-  silaboenlace?: number | string; // File field: ID o URL
+  silaboenlace?: number | string;
 };
 
 export type CarreraAcfSchema = InicioPaginaAcfSchema & {
   content?: CarreraContent;
 };
 
-// Tipo: Decano
 export type PersonalAcfDecano = {
   imagendecano?: number | string;
   nombredecano?: string;
   cargoasignado?: string;
-  correoinsitucional?: string;
+  correoinstitucional?: string;
   ubicaciontrabajo?: string;
   horaatencion?: string;
   presentacionbreve?: string;
 };
 
-// Tipo: Dirección de Carrera
 export type PersonalAcfDireccionCarrera = {
   imagen?: number | string;
   nombredireccioncarrera?: string;
@@ -84,7 +63,6 @@ export type PersonalAcfDireccionCarrera = {
   descripciondireccioncarrera?: string;
 };
 
-// Tipo: Docente
 export type PersonalAcfDocente = {
   fotodocente?: number | string;
   nombredocente?: string;
@@ -92,13 +70,12 @@ export type PersonalAcfDocente = {
   areadocencia?: string;
   areaespecializacion?: string;
   formacionacademica?: string;
-  publicaciones?: string; // campo Link en ACF
-  correoinsitucional?: string;
+  publicaciones?: string | { url?: string; title?: string };
+  correoinstitucional?: string;
   ubicaciontrabajo?: string;
   horarioatencion?: string;
 };
 
-// Tipo: Comisión
 export type PersonalAcfComision = {
   imagencomision?: number | string;
   nombrepersonalcomision?: string;
@@ -108,7 +85,6 @@ export type PersonalAcfComision = {
   descripcioncomision?: string;
 };
 
-// Tipo: Administración
 export type PersonalAcfAdministracion = {
   imagenadministracion?: number | string;
   nombreadministracion?: string;
@@ -118,7 +94,6 @@ export type PersonalAcfAdministracion = {
   descripcionbreveadministracionservicio?: string;
 };
 
-// Tipo: Servicios
 export type PersonalAcfServicios = {
   imagenpersonalservicios?: number | string;
   nombrepersonalservicios?: string;
@@ -128,7 +103,6 @@ export type PersonalAcfServicios = {
   horasatencionpersonalservicios?: string;
 };
 
-// Unión de todos los posibles campos ACF del CPT Personal
 export type PersonalPostAcf =
   & Partial<PersonalAcfDecano>
   & Partial<PersonalAcfDireccionCarrera>
@@ -141,6 +115,18 @@ export type PersonalPost = WpAcfEnvelope<PersonalPostAcf> & {
   title: { rendered: string };
 };
 
+export type SemestrePostAcf = {
+  nombremateria?: string;
+  resultadoaprendizaje?: string;
+  creditos?: number | string;
+  silaboenlace?: number | string | { url?: string };
+};
+
+export type SemestrePost = WpAcfEnvelope<SemestrePostAcf> & {
+  title: { rendered: string };
+  nivel: number[];
+};
+
 export type TipoPersonalSlug =
   | "docentes"
   | "administrativo"
@@ -149,7 +135,19 @@ export type TipoPersonalSlug =
   | "comision"
   | "direccion-carrera";
 
-// CPT Noticias — campos ACF reales por entrada de noticia
+export const NIVEL_ID_MAP: Record<number, number> = {
+  82: 1,
+  83: 2,
+  84: 3,
+  85: 4,
+  86: 5,
+  87: 6,
+  88: 7,
+  89: 8,
+  90: 9,
+  91: 10,
+};
+
 export type NoticiaPostAcf = {
   imagennoticia?: number | string;
   fechanoticia?: string;
