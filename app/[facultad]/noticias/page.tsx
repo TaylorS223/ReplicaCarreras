@@ -26,14 +26,13 @@ export default async function NoticiasPage({ params }: NoticiasPageProps) {
         <div className="section-header">
           <h2>Noticias</h2>
         </div>
-
         <div className="news-grid">
           {noticias.map((noticia) => (
             <article key={noticia.slug} className="news-card">
               <img src={noticia.imagen} alt={noticia.alt} />
               <div className="news-date">{noticia.fechaTexto}</div>
               <h3>{noticia.titulo}</h3>
-              <Link href={`noticias/${noticia.slug}`}>Leer más</Link>
+              <Link href={`/${facultad}/noticias/${noticia.slug}`}>Leer más</Link>
             </article>
           ))}
         </div>

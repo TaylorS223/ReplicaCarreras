@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { getPersonalContent } from "@/lib/wordpress/services/getPersonal";
 
-export const PersonalDocenteSection = () => {
+type PersonalDocenteSectionProps = {
+  basePath: string;
+};
+
+export const PersonalDocenteSection = ({ basePath }: PersonalDocenteSectionProps) => {
   const content = getPersonalContent();
 
   return (
@@ -14,7 +18,7 @@ export const PersonalDocenteSection = () => {
         <div className="teacher-grid">
           {content.docentes.map((docente) => (
             <article key={docente.nombre} className="teacher-card">
-              <Link className="teacher-link" href={`/personal/${docente.slug}`}>
+              <Link className="teacher-link" href={`${basePath}/${docente.slug}`}>
                 <figure>
                   <img src={docente.foto} alt={docente.alt} />
                 </figure>

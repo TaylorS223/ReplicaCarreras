@@ -12,7 +12,7 @@ export const ProyectosSection = () => {
           <p>{content.description}</p>
         </div>
         <div className="news-grid">
-          {content.items.map((item) => (
+          {content.items.slice(0, 4).map((item) => (
             <Link key={`${item.titulo}-${item.fechaISO}`} className="news-card" href={item.href}>
               <figure>
                 <img src={item.imagen} alt={item.alt} />

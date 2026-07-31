@@ -7,7 +7,13 @@ import { AcreditacionSection } from "@/features/proyectos/components/Acreditacio
 import { PlanEstudiosSection } from "@/features/plan-estudios/components/PlanEstudiosSection";
 import { PersonalDocenteSection } from "@/features/personal-docente/components/PersonalDocenteSection";
 
-export default function FacultadHomePage() {
+type FacultadHomePageProps = {
+  params: Promise<{ facultad: string }>;
+};
+
+export default async function FacultadHomePage({ params }: FacultadHomePageProps) {
+  const { facultad } = await params;
+
   return (
     <>
       <HeroFacultad />
@@ -15,9 +21,9 @@ export default function FacultadHomePage() {
       <MisionVision />
       <PerfilIngresoEgreso />
       <ProyectosSection />
-      <AcreditacionSection />
+      <AcreditacionSection basePath={`/${facultad}`} />
       <PlanEstudiosSection />
-      <PersonalDocenteSection />
+      <PersonalDocenteSection basePath={`/${facultad}/personal`} />
     </>
   );
 }

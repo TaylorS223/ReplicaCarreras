@@ -4,6 +4,7 @@ import {
   mapCarreraFromAcf,
   mapFacultadFromAcf,
   mapInicioPaginaFromAcf,
+  mapNoticiaPost,
   mapPersonalPostToAdministrativo,
   mapPersonalPostToComisionProfile,
   mapPersonalPostToDecanatoProfile,
@@ -13,8 +14,10 @@ import {
 import {
   getCarreraAcfEntry,
   getFacultadAcfEntry,
+  getNoticiasCpt,
   getPersonalByTipo,
   resolveInicioPaginaImages,
+  resolveNoticiaImages,
   resolvePersonalPostImages,
 } from "@/lib/wordpress/acf/repository";
 import type { FacultadContent } from "@/types/facultad-content";
@@ -105,6 +108,25 @@ export const syncDocentesFromCpt = async (
   };
 };
 
+export const syncNoticiasFromCpt = async (
+  content: CarreraContent,
+): Promise<CarreraContent> => {
+  const posts = await getNoticiasCpt();
+
+  if (posts.length === 0) {
+    return content;
+  }
+
+  const noticias = await Promise.all(
+    posts.map(async (post) => {
+      const images = await resolveNoticiaImages(post);
+      return mapNoticiaPost(post, images);
+    }),
+  );
+
+  return { ...content, noticias };
+};
+
 // Carga los campos ACF de inicio desde el entry de carrera ya cargado e inyecta en el contenido
 const applyInicioPaginaFromAcf = async (
   acf: NonNullable<Awaited<ReturnType<typeof getCarreraAcfEntry>>["acf"]>,
@@ -150,17 +172,18 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     }
 
     const withDocentes = await syncDocentesFromCpt(existing);
-    // Si hay acf (aunque sin content completo) aplicamos los campos del inicio
+    const withNoticias = await syncNoticiasFromCpt(withDocentes);
     const withInicio = entry?.acf
-      ? await applyInicioPaginaFromAcf(entry.acf, withDocentes)
-      : withDocentes;
+      ? await applyInicioPaginaFromAcf(entry.acf, withNoticias)
+      : withNoticias;
     upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
     return withInicio;
   }
 
   const mapped = mapCarreraFromAcf(entry);
   const withDocentes = await syncDocentesFromCpt(mapped);
-  const withInicio = await applyInicioPaginaFromAcf(entry.acf, withDocentes);
+  const withNoticias = await syncNoticiasFromCpt(withDocentes);
+  const withInicio = await applyInicioPaginaFromAcf(entry.acf, withNoticias);
   upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
   return withInicio;
 };

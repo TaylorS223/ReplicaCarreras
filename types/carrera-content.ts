@@ -10,6 +10,7 @@ import type {
   ProyectosContent,
 } from "@/types/api";
 import type { Docente } from "@/types/docente";
+import type { Noticia } from "@/types/noticia";
 
 export type CarreraContent = {
   hero: HeroContent;
@@ -21,6 +22,6 @@ export type CarreraContent = {
   planEstudios: PlanEstudiosContent;
   personal: PersonalContent;
   docentes: Docente[];
-  /** Campos ACF de la página Inicio (opcionales: se rellenan desde WordPress) */
+  noticias: Noticia[];
   inicioPagina?: InicioPaginaContent;
 };

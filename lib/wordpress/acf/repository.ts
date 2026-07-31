@@ -2,6 +2,7 @@ import { wpFetch } from "@/lib/wordpress/client";
 import type {
   CarreraAcfSchema,
   FacultadAcfSchema,
+  NoticiaPost,
   PersonalPost,
   TipoPersonalSlug,
   WpAcfEnvelope,
@@ -107,4 +108,22 @@ export const resolveInicioPaginaImages = async (
   );
 
   return Object.fromEntries(resolved);
+};
+
+export const getNoticiasCpt = async (perPage = 100): Promise<NoticiaPost[]> =>
+  wpFetch<NoticiaPost[]>("noticias", {
+    query: {
+      per_page: perPage,
+      orderby: "date",
+      order: "desc",
+      _fields: "id,slug,title,content,date,acf",
+    },
+    cache: "no-store",
+  });
+
+export const resolveNoticiaImages = async (
+  post: NoticiaPost,
+): Promise<Record<string, string>> => {
+  const resolved = await resolveMediaUrl(post.acf?.imagennoticia);
+  return { imagennoticia: resolved };
 };

@@ -6,10 +6,12 @@ import type { DireccionCarreraProfile } from "@/types/direccionCarrera";
 import type { ComisionProfile } from "@/types/comisiones";
 import type { PersonalAdministrativoItem } from "@/types/administracionServicios";
 import type { InicioPaginaContent, MateriaPlanEstudios } from "@/types/api";
+import type { Noticia } from "@/types/noticia";
 import type {
   CarreraAcfSchema,
   FacultadAcfSchema,
   InicioPaginaAcfSchema,
+  NoticiaPost,
   PersonalPost,
   PlanEstudiosMateriaAcf,
   WpAcfEnvelope,
@@ -189,3 +191,41 @@ export const mapInicioPaginaFromAcf = async (
 
   materiasPlanEstudios: await Promise.all((acf.planestudios ?? []).map(mapMateriaFromAcf)),
 });
+
+export const mapNoticiaPost = (
+  post: NoticiaPost,
+  images: Record<string, string> = {},
+): Noticia => {
+  const rawDate = post.acf?.fechanoticia ?? post.date ?? "";
+  const fechaISO = normalizeAcfDate(rawDate) || rawDate.slice(0, 10);
+
+  const fechaTexto = fechaISO
+    ? new Intl.DateTimeFormat("es-EC", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(new Date(fechaISO + "T00:00:00"))
+    : "";
+
+  const contenidoRaw = post.content?.rendered ?? "";
+  const contenido = contenidoRaw
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+
+  return {
+    slug: post.slug,
+    titulo: post.title?.rendered ?? post.slug,
+    fechaISO,
+    fechaTexto,
+    resumen: contenido.slice(0, 200),
+    contenido,
+    imagen: images["imagennoticia"] ?? resolveImageUrl(post.acf?.imagennoticia),
+    alt: post.title?.rendered ?? post.slug,
+    href: "",
+    autor: post.acf?.autor ?? "gabrielsalvatierra",
+  };
+};

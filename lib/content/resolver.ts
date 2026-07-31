@@ -3,6 +3,7 @@ import { CARRERAS_CONTENT } from "@/lib/content/carreras-data";
 import type { FacultadContent } from "@/types/facultad-content";
 import type { CarreraContent } from "@/types/carrera-content";
 import type { Docente } from "@/types/docente";
+import type { Noticia } from "@/types/noticia";
 
 export type ContentContext = {
   facultadSlug?: string;
@@ -99,3 +100,6 @@ export const getDocenteSlugsByContext = (context?: ContentContext): string[] =>
 
 export const getInicioPaginaContentByContext = (context?: ContentContext) =>
   getCarreraContent(context).inicioPagina ?? null;
+
+export const getNoticiasContentByContext = (context?: ContentContext): Noticia[] =>
+  getCarreraContent(context).noticias;

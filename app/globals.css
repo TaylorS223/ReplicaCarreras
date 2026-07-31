@@ -8,4 +8,7 @@
 @import "../features/personal-docente/components/DocenteDetailSection.css";
 @import "../features/personal-docente/components/AdministracionServiciosSection.css";
 @import "../features/footer/components/SiteFooter.css";
+@import "../shared/styles/NoticiaDetailPage.css";
+@import "../shared/styles/AutorPage.css";
+@import "../shared/styles/BuscarPage.css";
 @import "../shared/styles/responsive.css";

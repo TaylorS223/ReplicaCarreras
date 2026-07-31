@@ -148,3 +148,16 @@ export type TipoPersonalSlug =
   | "decano"
   | "comision"
   | "direccion-carrera";
+
+// CPT Noticias — campos ACF reales por entrada de noticia
+export type NoticiaPostAcf = {
+  imagennoticia?: number | string;
+  fechanoticia?: string;
+  autor?: string;
+};
+
+export type NoticiaPost = WpAcfEnvelope<NoticiaPostAcf> & {
+  title: { rendered: string };
+  content: { rendered: string };
+  date: string;
+};

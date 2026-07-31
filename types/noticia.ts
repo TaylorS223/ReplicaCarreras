@@ -8,4 +8,5 @@ export type Noticia = {
   imagen: string;
   alt: string;
   href: string;
+  autor: string;
 };

@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { getAccreditationContent } from "@/lib/wordpress/services/getAcreditacion";
 
-export const AcreditacionSection = () => {
+type AcreditacionSectionProps = {
+  basePath: string;
+};
+
+export const AcreditacionSection = ({ basePath }: AcreditacionSectionProps) => {
   const content = getAccreditationContent();
+
+  const ctaHref = content.cta.href.startsWith("/")
+    ? `/${basePath.replace(/^\//, "")}${content.cta.href}`
+    : content.cta.href;
 
   return (
     <section id="acreditacion" className="section">
@@ -12,7 +20,7 @@ export const AcreditacionSection = () => {
           {content.paragraphs.map((paragraph, index) => (
             <p key={`${content.title}-${index}`}>{paragraph}</p>
           ))}
-          <Link className="cta" href={content.cta.href}>
+          <Link className="cta" href={ctaHref}>
             {content.cta.label}
           </Link>
         </article>

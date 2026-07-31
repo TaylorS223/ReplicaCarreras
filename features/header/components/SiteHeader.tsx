@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getHeaderContent } from "@/lib/wordpress/services/getHeader";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 
@@ -26,6 +26,18 @@ export const SiteHeader = () => {
   const [isCompact, setIsCompact] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const router = useRouter();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchValue.trim();
+    if (!q) return;
+    const base = currentFacultad ? `/${currentFacultad}` : "";
+    router.push(`${base}/buscar?q=${encodeURIComponent(q)}`);
+    setIsSearchOpen(false);
+    setSearchValue("");
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -79,19 +91,25 @@ export const SiteHeader = () => {
               className="search-toggle"
               aria-label="Abrir búsqueda"
               aria-expanded={isSearchOpen}
-              onClick={() => setIsSearchOpen((value) => !value)}
+              onClick={() => {
+                setIsSearchOpen((v) => !v);
+                setTimeout(() => searchInputRef.current?.focus(), 50);
+              }}
             >
               <span aria-hidden="true">⌕</span>
             </button>
 
             <div className={`search-panel ${isSearchOpen ? "is-open" : ""}`}>
-              <input
-                type="search"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value)}
-                placeholder="Buscar..."
-                aria-label="Buscar contenido"
-              />
+              <form onSubmit={handleSearchSubmit} role="search">
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                  placeholder="Buscar..."
+                  aria-label="Buscar contenido"
+                />
+              </form>
             </div>
           </div>
         </nav>
