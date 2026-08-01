@@ -1,4 +1,4 @@
-8import { draftMode } from "next/headers";
+import { draftMode } from "next/headers";
 import type { ContentContext } from "@/lib/content/resolver";
 import { syncContextContentFromAcf } from "@/lib/wordpress/acf";
 import { isAcfSourceEnabled } from "@/lib/wordpress/source";
