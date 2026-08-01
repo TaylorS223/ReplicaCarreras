@@ -1,11 +1,10 @@
-import { AcreditacionSection } from "@/features/proyectos/components/AcreditacionSection";
-import { ProyectosSection } from "@/features/proyectos/components/ProyectosSection";
+import { redirect } from "next/navigation";
 
-export default function FacultadProyectosPage() {
-  return (
-    <>
-      <ProyectosSection />
-      <AcreditacionSection />
-    </>
-  );
+type Props = {
+  params: Promise<{ facultad: string }>;
+};
+
+export default async function FacultadProyectosPage({ params }: Props) {
+  const { facultad } = await params;
+  redirect(`/${facultad}/proyectos/investigacion`);
 }

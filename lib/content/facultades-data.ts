@@ -24,8 +24,8 @@ export const FACULTADES_CONTENT: Record<string, FacultadContent> = {
           label: "Proyectos",
           href: "/proyectos",
           subItems: [
-            { label: "Vinculacion con el medio", href: "/proyectos#vinculacion" },
-            { label: "Investigacion", href: "/proyectos#investigacion" },
+            { label: "Vinculacion con el medio", href: "/proyectos/vinculacion" },
+            { label: "Investigacion", href: "/proyectos/investigacion" },
           ],
         },
         { label: "Plan de estudios", href: "/carreras/arquitectura/plan-estudios" },
