@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { PreviewBanner } from "@/features/preview/components/PreviewBanner";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 import { buildFacultadThemeVars } from "@/lib/utils/theme";
 import { buildFacultadMetadata } from "@/lib/utils/seo";
@@ -44,11 +46,14 @@ export default async function FacultadLayout({ children, params }: FacultadLayou
     carreraSlug: config.defaultCarreraSlug,
   });
 
+  const { isEnabled: isPreview } = await draftMode();
+
   return (
     <div className="page-shell" style={buildFacultadThemeVars(config.theme)}>
       <Header />
       <main>{children}</main>
       <Footer />
+      {isPreview && <PreviewBanner />}
     </div>
   );
 }

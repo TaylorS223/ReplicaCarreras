@@ -23,7 +23,7 @@ export default async function FacultadHomePage({ params }: FacultadHomePageProps
       <StatsSection />
       <MisionVision />
       <PerfilIngresoEgreso />
-      <ProyectosSection />
+      <ProyectosSection facultadSlug={facultad} />
       <AcreditacionSection basePath={`/${facultad}`} />
       <Pensum facultadSlug={facultad} carreraSlug={carreraSlug} />
       <PersonalDocenteSection basePath={`/${facultad}/personal`} />

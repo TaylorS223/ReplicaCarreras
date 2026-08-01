@@ -1,0 +1,57 @@
+.preview-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: #1a1a2e;
+  border-top: 2px solid #f59e0b;
+  color: #fff;
+  font-family: var(--font-poppins), Arial, sans-serif;
+  font-size: 0.88rem;
+}
+
+.preview-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-banner-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  animation: preview-pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes preview-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.preview-banner-btn {
+  padding: 6px 16px;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  background: transparent;
+  color: #f59e0b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+  white-space: nowrap;
+}
+
+.preview-banner-btn:hover {
+  background: #f59e0b;
+  color: #1a1a2e;
+}
