@@ -2,6 +2,7 @@ import { upsertCarreraContent } from "@/lib/content/carreras-data";
 import { upsertFacultadContent } from "@/lib/content/facultades-data";
 import {
   mapCarreraFromAcf,
+  mapEnlacesInteresFromCpt,
   mapFacultadFromAcf,
   mapInicioPaginaFromAcf,
   mapNoticiaPost,
@@ -11,16 +12,20 @@ import {
   mapPersonalPostToDecanatoProfile,
   mapPersonalPostToDireccionCarreraProfile,
   mapPersonalPostToDocente,
+  mapRedesSocialesFromCpt,
   mapSemestrePostsToPlanEstudios,
   mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
 import {
   getCarreraAcfEntry,
+  getEnlacesInteres,
   getFacultadAcfEntry,
   getNoticiasCpt,
   getPersonalByTipo,
+  getRedesSociales,
   getSemestres,
   resolveInicioPaginaImages,
+  resolveMediaUrl,
   resolveNoticiaImages,
   resolvePersonalPostImages,
 } from "@/lib/wordpress/acf/repository";
@@ -152,19 +157,110 @@ const applyInicioPaginaFromAcf = async (
 export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
   const entry = await getFacultadAcfEntry(facultadSlug);
 
-  if (!entry?.acf?.content) {
-    const { FACULTADES_CONTENT } = await import("@/lib/content/facultades-data");
-    const existing = FACULTADES_CONTENT[facultadSlug];
-    if (!existing) throw new Error(`Sin contenido base para facultad "${facultadSlug}".`);
-    const withPersonal = await syncPersonalFacultadFromCpt(existing);
-    upsertFacultadContent(facultadSlug, withPersonal);
-    return withPersonal;
+  const getBase = async () => {
+    if (!entry?.acf?.content) {
+      const { FACULTADES_CONTENT } = await import("@/lib/content/facultades-data");
+      const existing = FACULTADES_CONTENT[facultadSlug];
+      if (!existing) throw new Error(`Sin contenido base para facultad "${facultadSlug}".`);
+      return existing;
+    }
+    return mapFacultadFromAcf(entry);
+  };
+
+  let result = await getBase();
+  result = await syncPersonalFacultadFromCpt(result);
+
+  // Carga redes sociales desde el CPT redsocial
+  const [redesPosts, enlacesPosts] = await Promise.all([
+    getRedesSociales().catch(() => []),
+    getEnlacesInteres().catch(() => []),
+  ]);
+
+  if (redesPosts.length > 0) {
+    result = {
+      ...result,
+      footer: {
+        ...result.footer,
+        socialLinks: mapRedesSocialesFromCpt(redesPosts),
+      },
+    };
   }
 
-  const mapped = mapFacultadFromAcf(entry);
-  const withPersonal = await syncPersonalFacultadFromCpt(mapped);
-  upsertFacultadContent(facultadSlug, withPersonal);
-  return withPersonal;
+  // Reemplaza el grupo "Enlaces de interés" del mock con los del CPT
+  if (enlacesPosts.length > 0) {
+    const enlacesGroup = mapEnlacesInteresFromCpt(enlacesPosts);
+    const gruposActualizados = result.footer.groups.map((g) =>
+      g.title.toLowerCase().includes("enlaces") ? enlacesGroup : g,
+    );
+    // Si no existía el grupo, lo añade
+    const tieneEnlaces = result.footer.groups.some((g) =>
+      g.title.toLowerCase().includes("enlaces"),
+    );
+    result = {
+      ...result,
+      footer: {
+        ...result.footer,
+        groups: tieneEnlaces ? gruposActualizados : [enlacesGroup, ...result.footer.groups],
+      },
+    };
+  }
+
+  // Logos acreditadora y datos de footer desde la página ACF de carrera
+  const carreraEntry = await getCarreraAcfEntry(facultadSlug, "arquitectura").catch(() => null);
+  if (carreraEntry?.acf) {
+    const acf = carreraEntry.acf;
+
+    // Logo navbar (campo "logo")
+    if (acf.logo) {
+      const logoNavbar = await resolveMediaUrl(acf.logo);
+      if (logoNavbar) {
+        result = {
+          ...result,
+          header: { ...result.header, logoAcreditadoraNavbar: logoNavbar },
+        };
+      }
+    }
+
+    // Logo footer
+    if (acf.logoacreditadorafooter) {
+      const logoFooter = await resolveMediaUrl(acf.logoacreditadorafooter);
+      if (logoFooter) {
+        result = {
+          ...result,
+          footer: { ...result.footer, logoAcreditadoraFooter: logoFooter },
+        };
+      }
+    }
+
+    // Correo y ubicación del footer
+    if (acf.correocarrera) {
+      result = {
+        ...result,
+        footer: { ...result.footer, email: acf.correocarrera },
+      };
+    }
+    if (acf.ubicacion) {
+      result = {
+        ...result,
+        footer: { ...result.footer, location: acf.ubicacion },
+      };
+    }
+    if (acf.aliadosestrategicos) {
+      result = {
+        ...result,
+        footer: { ...result.footer, aliadosEstrategicos: acf.aliadosestrategicos },
+      };
+    }
+    if (acf.copyright) {
+      result = {
+        ...result,
+        footer: { ...result.footer, copyright: acf.copyright },
+      };
+    }
+  }
+
+  upsertFacultadContent(facultadSlug, result);
+  return result;
 };
 
 export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {

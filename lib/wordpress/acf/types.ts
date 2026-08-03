@@ -29,6 +29,12 @@ export type InicioPaginaAcfSchema = {
   mallacurricular?: string | { url?: string; title?: string; target?: string };
   descripcionacreditacioninternacional?: string;
   enlaceacreditacioninternacional?: string;
+  logo?: number | string;              // logoAcreditadoraNavbar (nombre real en la API)
+  logoacreditadorafooter?: number | string;
+  ubicacion?: string;
+  correocarrera?: string;
+  aliadosestrategicos?: string;
+  copyright?: string;
   imagennoticia?: number | string;
   fechanoticia?: string;
   planestudios?: PlanEstudiosMateriaAcf[];
@@ -161,4 +167,41 @@ export type NoticiaPost = WpAcfEnvelope<NoticiaPostAcf> & {
   title: { rendered: string };
   content: { rendered: string };
   date: string;
+};
+
+// CPT Redes Sociales
+export type RedSocialPostAcf = {
+  redessociales?: {
+    title?: string;
+    url?: string;
+    target?: string;
+  };
+};
+
+export type RedSocialPost = WpAcfEnvelope<RedSocialPostAcf> & {
+  title: { rendered: string };
+  tipo_de_red_social: number[];
+};
+
+export type TipoRedSocialSlug = "instagram" | "facebook" | "tiktok" | "youtube";
+
+// Mapa de IDs de términos de tipo_de_red_social → slug
+export const RED_SOCIAL_ID_MAP: Record<number, TipoRedSocialSlug> = {
+  92: "instagram",
+  93: "facebook",
+  94: "tiktok",
+  95: "youtube",
+};
+
+// CPT enlace_de_interes
+export type EnlaceInteresPostAcf = {
+  enlaces?: {
+    title?: string;
+    url?: string;
+    target?: string;
+  };
+};
+
+export type EnlaceInteresPost = WpAcfEnvelope<EnlaceInteresPostAcf> & {
+  title: { rendered: string };
 };

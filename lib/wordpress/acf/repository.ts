@@ -1,9 +1,11 @@
 import { wpFetch } from "@/lib/wordpress/client";
 import type {
   CarreraAcfSchema,
+  EnlaceInteresPost,
   FacultadAcfSchema,
   NoticiaPost,
   PersonalPost,
+  RedSocialPost,
   SemestrePost,
   TipoPersonalSlug,
   WpAcfEnvelope,
@@ -73,6 +75,28 @@ export const getNoticias = async (perPage = 100): Promise<NoticiaPost[]> => {
   return wpFetch<NoticiaPost[]>("noticias", {
     query: {
       per_page: perPage,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  });
+};
+
+// Fetch de todas las redes sociales del CPT redsocial
+export const getRedesSociales = async (): Promise<RedSocialPost[]> => {
+  return wpFetch<RedSocialPost[]>("redsocial", {
+    query: {
+      per_page: 100,
+      _fields: "id,slug,title,acf,tipo_de_red_social",
+    },
+    cache: "no-store",
+  });
+};
+
+// Fetch de todos los enlaces de interés del CPT enlace_de_interes
+export const getEnlacesInteres = async (): Promise<EnlaceInteresPost[]> => {
+  return wpFetch<EnlaceInteresPost[]>("enlace_de_interes", {
+    query: {
+      per_page: 100,
       _fields: "id,slug,title,acf",
     },
     cache: "no-store",

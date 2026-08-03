@@ -85,9 +85,11 @@ export type FooterContent = {
   socialLinks: Array<{
     label: string;
     href: string;
-    platform: "facebook" | "instagram";
+    platform: "facebook" | "instagram" | "tiktok" | "youtube";
   }>;
   copyright: string;
+  logoAcreditadoraFooter?: string;
+  aliadosEstrategicos?: string;
 };
 
 export type HeaderContent = {
@@ -95,6 +97,7 @@ export type HeaderContent = {
   brandAlt: string;
   brandHref: string;
   navItems: NavItem[];
+  logoAcreditadoraNavbar?: string;
 };
 
 export type PersonalContent = {

@@ -5,7 +5,7 @@ import type { DecanatoProfile } from "@/types/decanato";
 import type { DireccionCarreraProfile } from "@/types/direccionCarrera";
 import type { ComisionProfile } from "@/types/comisiones";
 import type { PersonalAdministrativoItem } from "@/types/administracionServicios";
-import type { InicioPaginaContent, MateriaPlanEstudios, PlanEstudiosContent, StudyLevel, Course } from "@/types/api";
+import type { FooterContent, InicioPaginaContent, MateriaPlanEstudios, PlanEstudiosContent, StudyLevel, Course } from "@/types/api";
 import type { Noticia } from "@/types/noticia";
 import type { Proyecto } from "@/types/proyecto";
 import type {
@@ -15,9 +15,12 @@ import type {
   NoticiaPost,
   PersonalPost,
   PlanEstudiosMateriaAcf,
+  RedSocialPost,
   SemestrePost,
+  TipoRedSocialSlug,
   WpAcfEnvelope,
 } from "@/lib/wordpress/acf/types";
+import { RED_SOCIAL_ID_MAP } from "@/lib/wordpress/acf/types";
 import { NIVEL_ID_MAP } from "@/lib/wordpress/acf/types";
 import { resolveMediaUrl } from "@/lib/wordpress/acf/repository";
 
@@ -206,9 +209,10 @@ export const mapPersonalPostToDocente = (
   slug: post.slug,
   nombre: post.acf?.nombredocente ?? post.title.rendered,
   titulo: post.acf?.profesion ?? "",
+  areadocencia: post.acf?.areadocencia ?? "",
   foto: images["fotodocente"] ?? resolveImageUrl(post.acf?.fotodocente),
   alt: post.acf?.nombredocente ?? post.title.rendered,
-  especializacion: post.acf?.areaespecializacion ?? post.acf?.areadocencia ?? "",
+  especializacion: post.acf?.areaespecializacion ?? "",
   formacionAcademica: post.acf?.formacionacademica ? [post.acf.formacionacademica] : [],
   publicaciones: post.acf?.publicaciones
     ? [{
@@ -220,6 +224,7 @@ export const mapPersonalPostToDocente = (
     : [],
   email: post.acf?.correoinstitucional ?? "",
   ubicacion: post.acf?.ubicaciontrabajo ?? "",
+  horario: post.acf?.horarioatencion ?? "",
 });
 
 export const mapPersonalPostToDecanatoProfile = (
@@ -377,4 +382,38 @@ export const mapInicioPaginaFromAcf = async (
   descripcionAcreditacionInternacional: acf.descripcionacreditacioninternacional ?? "",
   enlaceAcreditacionInternacional: acf.enlaceacreditacioninternacional ?? "",
   materiasPlanEstudios: await Promise.all((acf.planestudios ?? []).map(mapMateriaFromAcf)),
+});
+
+// ── CPT Redes Sociales ────────────────────────────────────────────────────────
+
+export const mapRedesSocialesFromCpt = (
+  posts: RedSocialPost[],
+): FooterContent["socialLinks"] => {
+  return posts
+    .map((post) => {
+      const tipoId = post.tipo_de_red_social?.[0];
+      const platform = tipoId !== undefined ? RED_SOCIAL_ID_MAP[tipoId] : undefined;
+      const url = post.acf?.redessociales?.url ?? "";
+      if (!platform || !url) return null;
+      return {
+        label: platform.charAt(0).toUpperCase() + platform.slice(1),
+        href: url,
+        platform,
+      } as FooterContent["socialLinks"][number];
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
+};
+
+// ── CPT enlaces de interés ────────────────────────────────────────────────────
+
+export const mapEnlacesInteresFromCpt = (
+  posts: import("@/lib/wordpress/acf/types").EnlaceInteresPost[],
+): import("@/types/api").FooterLinkGroup => ({
+  title: "Enlaces de interés",
+  links: posts
+    .map((post) => ({
+      label: post.acf?.enlaces?.title ?? post.title.rendered,
+      href: post.acf?.enlaces?.url ?? "",
+    }))
+    .filter((link) => link.href),
 });

@@ -1,7 +1,8 @@
 export type Docente = {
   slug: string;
   nombre: string;
-  titulo: string;
+  titulo: string;       // campo profesion — usado en homepage (tarjeta)
+  areadocencia: string; // campo areadocencia — usado en perfil individual (subtítulo)
   foto: string;
   alt: string;
   especializacion: string;
@@ -12,4 +13,5 @@ export type Docente = {
   }>;
   email: string;
   ubicacion: string;
+  horario?: string;
 };

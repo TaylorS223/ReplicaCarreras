@@ -3,12 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getHeaderContent } from "@/lib/wordpress/services/getHeader";
 import { getFacultadConfig } from "@/lib/facultades/registry";
+import type { HeaderContent } from "@/types/api";
 
-export const SiteHeader = () => {
+type SiteHeaderProps = {
+  content: HeaderContent;
+};
+
+export const SiteHeader = ({ content }: SiteHeaderProps) => {
   const pathname = usePathname();
-  const content = getHeaderContent();
   const firstSegment = pathname.split("/").filter(Boolean)[0] ?? "";
   const currentFacultad = getFacultadConfig(firstSegment) ? firstSegment : null;
 
@@ -56,7 +59,10 @@ export const SiteHeader = () => {
     <header className={`site-header ${isCompact ? "is-compact" : ""}`}>
       <div className="container header-inner">
         <Link className="brand" href={content.brandHref} aria-label={content.brandAlt}>
-          <img src={content.brandImage} alt={content.brandAlt} />
+          <img
+            src={content.logoAcreditadoraNavbar ?? content.brandImage}
+            alt={content.logoAcreditadoraNavbar ? "Logo acreditadora" : content.brandAlt}
+          />
         </Link>
         <nav className="main-nav" aria-label="Navegación principal">
           {content.navItems.map((item) => {
