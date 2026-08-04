@@ -58,39 +58,43 @@ export const syncPersonalFacultadFromCpt = async (
 
   const result = { ...content };
 
-  if (decanatoPosts.length > 0) {
-    result.decanato = {
-      ...result.decanato,
-      profiles: await withImages(decanatoPosts, mapPersonalPostToDecanatoProfile),
-    };
+  // Siempre sobreescribe — si está vacío limpia el mock, si tiene datos lo reemplaza
+  result.decanato = {
+    ...result.decanato,
+    profiles: decanatoPosts.length > 0
+      ? await withImages(decanatoPosts, mapPersonalPostToDecanatoProfile)
+      : [],
+  };
+
+  result.direccionCarrera = {
+    ...result.direccionCarrera,
+    profiles: direccionCarreraPosts.length > 0
+      ? await withImages(direccionCarreraPosts, mapPersonalPostToDireccionCarreraProfile)
+      : [],
+  };
+
+  result.comisiones = {
+    ...result.comisiones,
+    profiles: comisionesPosts.length > 0
+      ? await withImages(comisionesPosts, mapPersonalPostToComisionProfile)
+      : [],
+  };
+
+  const adminItems = await withImages(adminPosts, mapPersonalPostToAdministrativo);
+  const serviciosItems = await withImages(serviciosPosts, mapPersonalPostToAdministrativo);
+
+  // Siempre sobreescribe — grupos vacíos si no hay posts
+  const groups = [];
+  if (adminItems.length > 0) {
+    groups.push({ title: "Personal administrativo", items: adminItems });
   }
-
-  if (direccionCarreraPosts.length > 0) {
-    result.direccionCarrera = {
-      ...result.direccionCarrera,
-      profiles: await withImages(direccionCarreraPosts, mapPersonalPostToDireccionCarreraProfile),
-    };
+  if (serviciosItems.length > 0) {
+    groups.push({ title: "Personal servicios varios", items: serviciosItems });
   }
-
-  if (comisionesPosts.length > 0) {
-    result.comisiones = {
-      ...result.comisiones,
-      profiles: await withImages(comisionesPosts, mapPersonalPostToComisionProfile),
-    };
-  }
-
-  const todosAdminItems = [
-    ...await withImages(adminPosts, mapPersonalPostToAdministrativo),
-    ...await withImages(serviciosPosts, mapPersonalPostToAdministrativo),
-  ];
-
-  if (todosAdminItems.length > 0) {
-    result.administracionServicios = {
-      ...result.administracionServicios,
-      groups: [{ title: "Personal Administrativo y de Servicios", items: todosAdminItems }],
-    };
-  }
-
+  result.administracionServicios = {
+    ...result.administracionServicios,
+    groups,
+  };
   return result;
 };
 
@@ -108,6 +112,9 @@ export const syncDocentesFromCpt = async (
   if (docentesPosts.length > 0) {
     const docentes = await withImages(docentesPosts, mapPersonalPostToDocente);
     result = { ...result, docentes, personal: { ...result.personal, docentes } };
+  } else {
+    // Sin posts en WordPress: limpia los mocks
+    result = { ...result, docentes: [], personal: { ...result.personal, docentes: [] } };
   }
 
   if (semestresPosts.length > 0) {
@@ -188,11 +195,10 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
 
   // Reemplaza el grupo "Enlaces de interés" del mock con los del CPT
   if (enlacesPosts.length > 0) {
-    const enlacesGroup = mapEnlacesInteresFromCpt(enlacesPosts);
+    const enlacesGroup = { ...mapEnlacesInteresFromCpt(enlacesPosts), fromWordPress: true as const };
     const gruposActualizados = result.footer.groups.map((g) =>
       g.title.toLowerCase().includes("enlaces") ? enlacesGroup : g,
     );
-    // Si no existía el grupo, lo añade
     const tieneEnlaces = result.footer.groups.some((g) =>
       g.title.toLowerCase().includes("enlaces"),
     );
@@ -200,7 +206,22 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
       ...result,
       footer: {
         ...result.footer,
+        enlacesFromWordPress: true,
         groups: tieneEnlaces ? gruposActualizados : [enlacesGroup, ...result.footer.groups],
+      },
+    };
+  } else {
+    // Sin posts en el CPT: quita el flag fromWordPress para que se oculte
+    result = {
+      ...result,
+      footer: {
+        ...result.footer,
+        enlacesFromWordPress: false,
+        groups: result.footer.groups.map((g) =>
+          g.title.toLowerCase().includes("enlaces")
+            ? { ...g, fromWordPress: false }
+            : g,
+        ),
       },
     };
   }
@@ -219,6 +240,22 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
           header: { ...result.header, logoAcreditadoraNavbar: logoNavbar },
         };
       }
+    }
+
+    // Labels del menú navbar
+    if (acf.menuinicio || acf.menupersonal || acf.menuproyectos || acf.menuplanestudio) {
+      result = {
+        ...result,
+        header: {
+          ...result.header,
+          menuLabels: {
+            inicio: acf.menuinicio || undefined,
+            personal: acf.menupersonal || undefined,
+            proyectos: acf.menuproyectos || undefined,
+            planEstudio: acf.menuplanestudio || undefined,
+          },
+        },
+      };
     }
 
     // Logo footer
@@ -245,12 +282,14 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
         footer: { ...result.footer, location: acf.ubicacion },
       };
     }
-    if (acf.aliadosestrategicos) {
-      result = {
-        ...result,
-        footer: { ...result.footer, aliadosEstrategicos: acf.aliadosestrategicos },
-      };
-    }
+    // Siempre actualiza aliadosEstrategicos — vacío o con valor
+    result = {
+      ...result,
+      footer: {
+        ...result.footer,
+        aliadosEstrategicos: acf.aliadosestrategicos || "",
+      },
+    };
     if (acf.copyright) {
       result = {
         ...result,

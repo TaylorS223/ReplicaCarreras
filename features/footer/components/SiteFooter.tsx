@@ -1,4 +1,11 @@
-import { getFooterContent } from "@/lib/wordpress/services/getFooter";
+"use client";
+
+import { useState } from "react";
+import type { FooterContent } from "@/types/api";
+
+type SiteFooterProps = {
+  content: FooterContent;
+};
 
 type SocialPlatform = "facebook" | "instagram" | "tiktok" | "youtube";
 
@@ -10,7 +17,6 @@ const SocialIcon = ({ platform }: { platform: SocialPlatform }) => {
       </svg>
     );
   }
-
   if (platform === "instagram") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -18,7 +24,6 @@ const SocialIcon = ({ platform }: { platform: SocialPlatform }) => {
       </svg>
     );
   }
-
   if (platform === "tiktok") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -26,8 +31,6 @@ const SocialIcon = ({ platform }: { platform: SocialPlatform }) => {
       </svg>
     );
   }
-
-  // youtube
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M23 7s-.3-1.9-1.1-2.7c-1.1-1.1-2.3-1.1-2.8-1.2C16.2 3 12 3 12 3s-4.2 0-7.1.1c-.5.1-1.7.1-2.8 1.2C1.3 5.1 1 7 1 7S.7 9.2.7 11.4v2.1C.7 15.7 1 17.9 1 17.9s.3 1.9 1.1 2.7c1.1 1.1 2.5 1.1 3.1 1.2C7.2 22 12 22 12 22s4.2 0 7.1-.2c.5-.1 1.7-.1 2.8-1.2.8-.8 1.1-2.7 1.1-2.7s.3-2.2.3-4.4v-2.1C23.3 9.2 23 7 23 7ZM9.7 15.5V8.4l7.6 3.6-7.6 3.5Z" />
@@ -35,49 +38,111 @@ const SocialIcon = ({ platform }: { platform: SocialPlatform }) => {
   );
 };
 
-export const SiteFooter = () => {
-  const content = getFooterContent();
+type ColapsableGroupProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+const ColapsableGroup = ({ title, children }: ColapsableGroupProps) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="footer-group-colapsable">
+      {/* Desktop: siempre visible */}
+      <div className="footer-group-desktop">
+        <h3 className="footer-title">{title}</h3>
+        <div className="footer-title-line" aria-hidden="true" />
+        {children}
+      </div>
+
+      {/* Mobile: dropmenu */}
+      <div className="footer-group-mobile">
+        <button
+          type="button"
+          className={`footer-group-toggle ${open ? "is-open" : ""}`}
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+        >
+          <span>{title}</span>
+          <span className="footer-toggle-icon" aria-hidden="true">{open ? "▲" : "▼"}</span>
+        </button>
+        {open && <div className="footer-group-body">{children}</div>}
+      </div>
+    </div>
+  );
+};
+
+export const SiteFooter = ({ content }: SiteFooterProps) => {
+
+  const visibleGroups = content.groups.filter((group) => {
+    // Siempre oculta los grupos de mock de enlaces y aliados
+    // Solo se muestran si vienen explícitamente de WordPress (fromWordPress: true)
+    if (group.title.toLowerCase().includes("aliados")) return !!group.fromWordPress;
+    if (group.title.toLowerCase().includes("enlaces")) return !!group.fromWordPress;
+    return true;
+  });
+
+  const hasAliados = !!content.aliadosEstrategicos && content.aliadosEstrategicos.trim() !== "";
+  const hasGroups = visibleGroups.length > 0 || hasAliados;
+  // Sin grupos: 2 cols (logo + contacto). Con grupos: 1 col brand + grupos
+  const totalCols = hasGroups
+    ? 1 + visibleGroups.length + (hasAliados ? 1 : 0)
+    : 2;
+
+  const renderLinks = (links: Array<{ label: string; href: string }>) => (
+    <ul className="footer-links">
+      {links.map((link) => (
+        <li key={link.label}>
+          <a href={link.href} target="_blank" rel="noopener noreferrer">
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <footer className="site-footer">
-      <div className="container footer-grid">
-        <div className="footer-brand">
-          <img
-            src={content.logoAcreditadoraFooter || content.brandImage}
-            alt={content.logoAcreditadoraFooter ? "Logo acreditadora" : content.brandAlt}
-          />
-          <p>{content.location}</p>
-          <p>{content.email}</p>
-          <div className="footer-brand-line" aria-hidden="true" />
-        </div>
+      <div className="container footer-grid" data-cols={totalCols}>
 
-        {content.groups
-          .filter((group) =>
-            // Si hay aliados de WordPress, oculta el grupo "Aliados estratégicos" del mock
-            !(content.aliadosEstrategicos && group.title.toLowerCase().includes("aliados"))
-          )
-          .map((group) => (
-            <div key={group.title}>
-              <h3 className="footer-title">{group.title}</h3>
-              <div className="footer-title-line" aria-hidden="true" />
-              <ul className="footer-links">
-                {group.links.map((link) => (
-                  <li key={`${group.title}-${link.label}`}>
-                    <a href={link.href} target="_blank" rel="noopener noreferrer">
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+        {hasGroups ? (
+          /* Con grupos: logo y contacto juntos en una columna */
+          <div className="footer-brand">
+            <img
+              src={content.logoAcreditadoraFooter || content.brandImage}
+              alt={content.logoAcreditadoraFooter ? "Logo acreditadora" : content.brandAlt}
+            />
+            <p>{content.location}</p>
+            <p>{content.email}</p>
+            <div className="footer-brand-line" aria-hidden="true" />
+          </div>
+        ) : (
+          /* Sin grupos: logo y contacto en columnas separadas */
+          <>
+            <div className="footer-brand-logo">
+              <img
+                src={content.logoAcreditadoraFooter || content.brandImage}
+                alt={content.logoAcreditadoraFooter ? "Logo acreditadora" : content.brandAlt}
+              />
             </div>
-          ))}
+            <div className="footer-brand-contact">
+              <p>{content.location}</p>
+              <p>{content.email}</p>
+              <div className="footer-brand-line" aria-hidden="true" />
+            </div>
+          </>
+        )}
 
-        {content.aliadosEstrategicos && (
-          <div>
-            <h3 className="footer-title">Aliados estratégicos</h3>
-            <div className="footer-title-line" aria-hidden="true" />
+        {visibleGroups.map((group) => (
+          <ColapsableGroup key={group.title} title={group.title}>
+            {renderLinks(group.links)}
+          </ColapsableGroup>
+        ))}
+
+        {hasAliados && (
+          <ColapsableGroup title="Aliados estratégicos">
             <ul className="footer-links">
-              {content.aliadosEstrategicos
+              {content.aliadosEstrategicos!
                 .split(/[;\n]/)
                 .map((item) => item.trim())
                 .filter(Boolean)
@@ -85,25 +150,26 @@ export const SiteFooter = () => {
                   <li key={item}>{item}</li>
                 ))}
             </ul>
-          </div>
+          </ColapsableGroup>
         )}
       </div>
 
       <div className="site-footer-meta">
         <div className="container footer-meta-grid">
           <div className="footer-social">
-            {content.socialLinks.map((social) => (
-              <a
-                key={social.platform}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                title={social.label}
-              >
-                <SocialIcon platform={social.platform as SocialPlatform} />
-              </a>
-            ))}
+            {content.socialLinks.length > 0 &&
+              content.socialLinks.map((social) => (
+                <a
+                  key={social.platform}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  title={social.label}
+                >
+                  <SocialIcon platform={social.platform as SocialPlatform} />
+                </a>
+              ))}
           </div>
           <div className="footer-bottom">{content.copyright}</div>
         </div>

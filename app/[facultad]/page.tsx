@@ -7,6 +7,7 @@ import { AcreditacionSection } from "@/features/proyectos/components/Acreditacio
 import { Pensum } from "@/components/carrera/Pensum";
 import { PersonalDocenteSection } from "@/features/personal-docente/components/PersonalDocenteSection";
 import { getFacultadConfig } from "@/lib/facultades/registry";
+import { notFound } from "next/navigation";
 
 type FacultadHomePageProps = {
   params: Promise<{ facultad: string }>;
@@ -16,6 +17,10 @@ export default async function FacultadHomePage({ params }: FacultadHomePageProps
   const { facultad } = await params;
   const config = getFacultadConfig(facultad);
   const carreraSlug = config?.defaultCarreraSlug;
+
+  if (!config) {
+    notFound();
+  }
 
   return (
     <>

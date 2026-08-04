@@ -81,7 +81,7 @@ export type FooterContent = {
   brandAlt: string;
   location: string;
   email: string;
-  groups: FooterLinkGroup[];
+  groups: Array<FooterLinkGroup & { fromWordPress?: boolean }>;
   socialLinks: Array<{
     label: string;
     href: string;
@@ -90,6 +90,7 @@ export type FooterContent = {
   copyright: string;
   logoAcreditadoraFooter?: string;
   aliadosEstrategicos?: string;
+  enlacesFromWordPress?: boolean;
 };
 
 export type HeaderContent = {
@@ -98,6 +99,12 @@ export type HeaderContent = {
   brandHref: string;
   navItems: NavItem[];
   logoAcreditadoraNavbar?: string;
+  menuLabels?: {
+    inicio?: string;
+    personal?: string;
+    proyectos?: string;
+    planEstudio?: string;
+  };
 };
 
 export type PersonalContent = {

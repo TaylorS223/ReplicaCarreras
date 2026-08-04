@@ -32,26 +32,25 @@ export const getFacultadAcfEntry = async (facultadSlug: string) =>
 export const getCarreraAcfEntry = async (facultadSlug: string, carreraSlug: string) =>
   fetchPageBySlug<CarreraAcfSchema>(`carrera-${facultadSlug}-${carreraSlug}`);
 
-// IDs reales de los términos de la taxonomía tipo_personal en WordPress
-const TIPO_PERSONAL_IDS: Record<TipoPersonalSlug, number> = {
-  administrativo: 3,
-  comision: 6,
-  decano: 5,
-  "direccion-carrera": 8,
-  docentes: 7,
-  servicios: 4,
+// Mapa de tipo de personal → endpoint REST del CPT correspondiente
+const TIPO_PERSONAL_ENDPOINT: Record<TipoPersonalSlug, string> = {
+  decano: "decano",
+  docentes: "docentes",
+  comision: "comision",
+  administrativo: "administracion",
+  servicios: "servicios",
+  "direccion-carrera": "direccion_carrera",
 };
 
-// Fetch del CPT "personal" filtrado por ID de término de la taxonomía tipo_personal
+// Fetch del CPT de personal por tipo — ahora usa CPTs separados sin taxonomía
 export const getPersonalByTipo = async (
   tipo: TipoPersonalSlug,
   perPage = 100,
 ): Promise<PersonalPost[]> => {
-  const termId = TIPO_PERSONAL_IDS[tipo];
+  const endpoint = TIPO_PERSONAL_ENDPOINT[tipo];
 
-  return wpFetch<PersonalPost[]>("personal", {
+  return wpFetch<PersonalPost[]>(endpoint, {
     query: {
-      tipo_personal: termId,
       per_page: perPage,
       _fields: "id,slug,title,acf",
     },

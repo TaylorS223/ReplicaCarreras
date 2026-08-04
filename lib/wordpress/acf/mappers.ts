@@ -280,12 +280,17 @@ export const mapPersonalPostToAdministrativo = (
     post.acf?.nombrepersonalservicios ||
     post.title.rendered;
   const cargo = post.acf?.tipocargo || post.acf?.tipocargoservicios || "";
-  const email = post.acf?.emailadministracionservicios || post.acf?.emilpersonalservicios || "";
+  const email =
+    post.acf?.emailadministracionservicios ||
+    post.acf?.emailpersonalservicios ||   // nombre correcto del campo servicios
+    "";
   const ubicacion =
-    post.acf?.telefonoadminstracionservicio || post.acf?.ubicaclonfacultadservicios || "";
+    post.acf?.telefonoadminstracionservicio ||
+    post.acf?.ubicacionfacultadservicios ||  // nombre correcto del campo servicios
+    "";
   const horario =
     post.acf?.descripcionbreveadministracionservicio ||
-    post.acf?.horasatencionpersonalservicios ||
+    post.acf?.horaatencionpersonalservicios ||  // nombre correcto del campo servicios
     "";
   const foto =
     images["imagenadministracion"] ||

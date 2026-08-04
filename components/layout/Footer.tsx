@@ -1,5 +1,7 @@
 import { SiteFooter } from "@/features/footer/components/SiteFooter";
+import { getFooterContent } from "@/lib/wordpress/services/getFooter";
 
 export const Footer = () => {
-  return <SiteFooter />;
+  const content = getFooterContent();
+  return <SiteFooter content={content} />;
 };

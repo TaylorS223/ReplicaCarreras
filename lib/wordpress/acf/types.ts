@@ -35,6 +35,10 @@ export type InicioPaginaAcfSchema = {
   correocarrera?: string;
   aliadosestrategicos?: string;
   copyright?: string;
+  menuinicio?: string;
+  menupersonal?: string;
+  menuproyectos?: string;
+  menuplanestudio?: string;
   imagennoticia?: number | string;
   fechanoticia?: string;
   planestudios?: PlanEstudiosMateriaAcf[];

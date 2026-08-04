@@ -10,9 +10,77 @@
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 1.05fr 1fr 1fr;
+    grid-template-columns: auto 1fr 1fr 1fr;
     gap: 36px;
     padding-bottom: 34px;
+    align-items: start;
+}
+
+/* 2 cols = solo logo + contacto (sin grupos) */
+.footer-grid[data-cols="2"] {
+    grid-template-columns: auto 1fr;
+}
+
+/* 3 cols = logo+contacto en 1 col + 2 grupos */
+.footer-grid[data-cols="3"] {
+    grid-template-columns: 1.05fr 1fr 1fr;
+}
+
+/* 2 grupos: 1 brand col + 2 grupos */
+.footer-grid[data-cols="3"] {
+    grid-template-columns: 1.05fr 1fr 1fr;
+}
+
+/* 1 grupo solo */
+.footer-grid[data-cols="2"][data-has-groups] {
+    grid-template-columns: 1.05fr 1fr;
+}
+
+.footer-brand-logo img {
+    width: 250px;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+.footer-brand-contact {
+    padding-top: 4px;
+}
+
+.footer-brand {
+    min-width: 0;
+}
+
+/* Mobile: logo y contacto vuelven a estar en bloque */
+.footer-group-desktop {
+    display: block;
+}
+
+.footer-group-mobile {
+    display: none;
+}
+
+.footer-group-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-toggle-icon {
+    font-size: 0.9rem;
+    color: #8f8f8f;
+}
+
+.footer-group-body {
+    padding-top: 12px;
 }
 
 .footer-brand img {
@@ -114,9 +182,26 @@
 }
 
 @media (max-width: 1100px) {
-    .footer-grid {
+    .footer-grid,
+    .footer-grid[data-cols="1"],
+    .footer-grid[data-cols="2"],
+    .footer-grid[data-cols="3"] {
         grid-template-columns: 1fr;
-        gap: 34px;
+        gap: 24px;
+    }
+
+    .footer-brand-logo,
+    .footer-brand-contact {
+        display: block;
+    }
+
+    /* En mobile muestra el dropmenu y oculta la versión desktop */
+    .footer-group-desktop {
+        display: none;
+    }
+
+    .footer-group-mobile {
+        display: block;
     }
 
     .footer-title {
