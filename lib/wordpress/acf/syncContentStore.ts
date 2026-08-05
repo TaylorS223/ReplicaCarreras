@@ -17,6 +17,7 @@ import {
   mapSemestrePostsToPlanEstudios,
   mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
+import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
 import {
   getCarreraAcfEntry,
   getCarruselCarrera,
@@ -300,6 +301,36 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
       };
     }
   }
+
+  // ── Visibilidad de submenús de Proyectos según CPTs GraphQL ──────────────
+  const proyectosVisibility = await checkProyectosVisibility().catch(() => ({
+    hasVinculacion: false,
+    hasInvestigacion: false,
+  }));
+
+  result = {
+    ...result,
+    header: {
+      ...result.header,
+      navItems: result.header.navItems.map((item) => {
+        if (!item.href.includes("proyectos")) return item;
+        const filteredSubItems = (item.subItems ?? []).filter((sub) => {
+          if (sub.href.includes("vinculacion")) return proyectosVisibility.hasVinculacion;
+          if (sub.href.includes("investigacion")) return proyectosVisibility.hasInvestigacion;
+          return true;
+        });
+        // Si no hay subItems, ocultar el ítem padre también
+        return filteredSubItems.length > 0
+          ? { ...item, subItems: filteredSubItems }
+          : { ...item, subItems: [] };
+      }).filter((item) => {
+        if (item.href.includes("proyectos")) {
+          return (item.subItems?.length ?? 0) > 0;
+        }
+        return true;
+      }),
+    },
+  };
 
   upsertFacultadContent(facultadSlug, result);
   return result;

@@ -76,6 +76,158 @@
   text-underline-offset: 3px;
 }
 
+/* ── Contenido Gutenberg (WordPress block editor) ───────────── */
+.nd-wp-content {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #3a4a65;
+}
+
+.nd-wp-content p {
+  margin: 0 0 20px;
+}
+
+.nd-wp-content h2 {
+  margin: 40px 0 16px;
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  color: #1d2f52;
+  line-height: 1.2;
+}
+
+.nd-wp-content h3 {
+  margin: 32px 0 12px;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  color: #1d2f52;
+  line-height: 1.25;
+}
+
+.nd-wp-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 24px 0;
+}
+
+.nd-wp-content ul,
+.nd-wp-content ol {
+  margin: 0 0 20px;
+  padding-left: 32px;
+}
+
+.nd-wp-content ul {
+  list-style-type: disc;
+}
+
+.nd-wp-content ol {
+  list-style-type: decimal;
+}
+
+.nd-wp-content ul ul {
+  list-style-type: circle;
+}
+
+.nd-wp-content li {
+  margin-bottom: 8px;
+  display: list-item;
+}
+
+.nd-wp-content a {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nd-wp-content blockquote {
+  margin: 24px 0;
+  padding: 16px 24px;
+  border-left: 4px solid var(--accent);
+  background: #f4f7fc;
+  border-radius: 0 6px 6px 0;
+  color: #4a5a72;
+  font-style: italic;
+}
+
+.nd-wp-content figure {
+  margin: 24px 0;
+}
+
+.nd-wp-content figcaption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8a9ab5;
+  margin-top: 8px;
+}
+
+/* Bloques Gutenberg específicos */
+.nd-wp-content .wp-block-image {
+  margin: 24px 0;
+}
+
+/* Galería — dos o más imágenes lado a lado */
+.nd-wp-content .wp-block-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+  align-items: flex-start;
+}
+
+.nd-wp-content .wp-block-gallery .wp-block-image {
+  flex: 1 1 200px;
+  margin: 0;
+}
+
+.nd-wp-content .wp-block-gallery .wp-block-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  margin: 0;
+}
+
+/* Bloque de columnas */
+.nd-wp-content .wp-block-columns {
+  display: flex;
+  gap: 24px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.nd-wp-content .wp-block-column {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+/* Bloque group con flex */
+.nd-wp-content .is-layout-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nd-wp-content .wp-block-quote {
+  margin: 24px 0;
+  padding: 16px 24px;
+  border-left: 4px solid var(--accent);
+  background: #f4f7fc;
+}
+
+.nd-wp-content .wp-block-separator {
+  border: none;
+  border-top: 2px solid #e0e8f0;
+  margin: 40px 0;
+}
+
+/* Responsive — en móvil las galerías van en columna */
+@media (max-width: 560px) {
+  .nd-wp-content .wp-block-gallery,
+  .nd-wp-content .wp-block-columns {
+    flex-direction: column;
+  }
+}
+
 /* ── Post Nav (Previous / Next) ─────────────────────────────── */
 .nd-post-nav {
   display: grid;

@@ -4,6 +4,8 @@ import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import { ComentarioForm } from "@/features/noticias/components/ComentarioForm";
+import { getNoticiaContent } from "@/lib/wordpress/graphql/noticias";
+import { isAcfSourceEnabled } from "@/lib/wordpress/source";
 
 type NoticiaDetailPageProps = {
   params: Promise<{ facultad: string; slug: string }>;
@@ -37,7 +39,14 @@ export default async function NoticiaDetailPage({ params }: NoticiaDetailPagePro
   const anteriorNoticia = index > 0 ? noticias[index - 1] : null;
   const siguienteNoticia = noticias[index + 1] ?? null;
   const relacionadas = noticias.filter((n) => n.slug !== slug).slice(0, 3);
-  const parrafos = noticia.contenido
+
+  // Obtiene el contenido HTML del editor Gutenberg via GraphQL
+  const contenidoHtml = isAcfSourceEnabled()
+    ? await getNoticiaContent(slug)
+    : "";
+
+  // Fallback: si no hay contenido HTML, usa los párrafos del contenido plano
+  const parrafos = !contenidoHtml && noticia.contenido
     ? noticia.contenido.split("\n\n").filter(Boolean)
     : [];
 
@@ -70,19 +79,28 @@ export default async function NoticiaDetailPage({ params }: NoticiaDetailPagePro
       {/* Cuerpo del artículo */}
       <div className="container nd-body">
         <article className="nd-article">
-          {parrafos.map((p, i) => {
-            const urlRegex = /^https?:\/\/\S+$/;
-            if (urlRegex.test(p.trim())) {
-              return (
-                <p key={i}>
-                  <a href={p.trim()} target="_blank" rel="noopener noreferrer">
-                    {p.trim()}
-                  </a>
-                </p>
-              );
-            }
-            return <p key={i}>{p}</p>;
-          })}
+          {contenidoHtml ? (
+            /* Contenido HTML del editor Gutenberg de WordPress */
+            <div
+              className="nd-wp-content"
+              dangerouslySetInnerHTML={{ __html: contenidoHtml }}
+            />
+          ) : (
+            /* Fallback: párrafos planos del campo contenido de ACF */
+            parrafos.map((p, i) => {
+              const urlRegex = /^https?:\/\/\S+$/;
+              if (urlRegex.test(p.trim())) {
+                return (
+                  <p key={i}>
+                    <a href={p.trim()} target="_blank" rel="noopener noreferrer">
+                      {p.trim()}
+                    </a>
+                  </p>
+                );
+              }
+              return <p key={i}>{p}</p>;
+            })
+          )}
         </article>
       </div>
 
