@@ -197,6 +197,48 @@ export const RED_SOCIAL_ID_MAP: Record<number, TipoRedSocialSlug> = {
   95: "youtube",
 };
 
+export type EnlaceInteresPost = WpAcfEnvelope<EnlaceInteresPostAcf> & {
+  title: { rendered: string };
+};
+export type CarruselCarreraAcfSchema = {
+  // Slide 1 — Acreditación
+  slide1_imagen_fondo?: number | string;
+  slide1_imagen_superior?: number | string;
+  slide1_logo_acreditacion?: number | string;
+  slide1_titulo?: string;
+  slide1_badge_texto?: string;
+  slide1_duracion?: string;
+  slide1_modalidad_sedes?: string;
+  slide1_texto_acreditacion?: string;
+  slide1_boton_enlace?: string | { url?: string; title?: string; target?: string };
+
+  // Slide 2 — Carrera
+  slide2_imagen_fondo?: number | string;
+  slide2_imagen_superior?: number | string;
+  slide2_titulo?: string;
+  slide2_etiqueta_superior?: string;
+  slide2_subtitulo?: string;
+
+  // Slide 3 — Taller
+  slide3_imagen_fondo?: number | string;
+  slide3_imagen_superior?: number | string;
+  slide3_titulo?: string;
+  slide3_etiqueta_superior?: string;
+  slide3_subtitulo?: string;
+
+  // Slide 4 — Espacios
+  slide4_imagen_fondo?: number | string;
+  slide4_imagen_superior?: number | string;
+  slide4_titulo?: string;
+  slide4_etiqueta_superior?: string;
+  slide4_subtitulo?: string;
+};
+
+export type CarruselCarreraPost = WpAcfEnvelope<CarruselCarreraAcfSchema> & {
+  title: { rendered: string };
+  slug: string;
+};
+
 // CPT enlace_de_interes
 export type EnlaceInteresPostAcf = {
   enlaces?: {
@@ -204,8 +246,4 @@ export type EnlaceInteresPostAcf = {
     url?: string;
     target?: string;
   };
-};
-
-export type EnlaceInteresPost = WpAcfEnvelope<EnlaceInteresPostAcf> & {
-  title: { rendered: string };
 };

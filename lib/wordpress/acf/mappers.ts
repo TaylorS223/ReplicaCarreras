@@ -389,7 +389,73 @@ export const mapInicioPaginaFromAcf = async (
   materiasPlanEstudios: await Promise.all((acf.planestudios ?? []).map(mapMateriaFromAcf)),
 });
 
-// ── CPT Redes Sociales ────────────────────────────────────────────────────────
+// ── CPT carrusel_carrera → HeroContent slides ─────────────────────────────────
+
+export const mapCarruselFromAcf = (
+  acf: import("@/lib/wordpress/acf/types").CarruselCarreraAcfSchema,
+  images: Record<string, string>,
+): import("@/types/api").HeroContent["images"] => {
+  // Retorna los slides como array de imágenes para mantener compatibilidad
+  // El HeroSection usa los campos directamente via heroSlides
+  return [
+    { src: images["slide1_imagen_fondo"] ?? "", alt: acf.slide1_titulo ?? "" },
+    { src: images["slide2_imagen_fondo"] ?? "", alt: acf.slide2_titulo ?? "" },
+    { src: images["slide3_imagen_fondo"] ?? "", alt: acf.slide3_titulo ?? "" },
+    { src: images["slide4_imagen_fondo"] ?? "", alt: acf.slide4_titulo ?? "" },
+  ].filter((img) => img.src !== "");
+};
+
+const resolveCtaUrl = (value: string | { url?: string; title?: string; target?: string } | undefined): string => {
+  if (!value) return "#";
+  if (typeof value === "string") return value;
+  return value.url ?? "#";
+};
+
+export const mapCarruselToHeroSlides = (
+  acf: import("@/lib/wordpress/acf/types").CarruselCarreraAcfSchema,
+  images: Record<string, string>,
+): import("@/types/carrera-content").HeroSlide[] => [
+  {
+    type: "acreditacion" as const,
+    position: "center" as const,
+    bg: images["slide1_imagen_fondo"] ?? "",
+    overlay: images["slide1_imagen_superior"] ?? "",
+    logoAcreditacion: images["slide1_logo_acreditacion"] ?? "",
+    titulo: acf.slide1_titulo ?? "",
+    badgeTexto: acf.slide1_badge_texto ?? "",
+    duracion: acf.slide1_duracion ?? "",
+    modalidadSedes: acf.slide1_modalidad_sedes ?? "",
+    textoAcreditacion: acf.slide1_texto_acreditacion ?? "",
+    botonEnlace: resolveCtaUrl(acf.slide1_boton_enlace),
+  },
+  {
+    type: "carrera" as const,
+    position: "center" as const,
+    bg: images["slide2_imagen_fondo"] ?? "",
+    overlay: images["slide2_imagen_superior"] ?? "",
+    titulo: acf.slide2_titulo ?? "",
+    eyebrow: acf.slide2_etiqueta_superior ?? "",
+    subtitulo: acf.slide2_subtitulo ?? "",
+  },
+  {
+    type: "taller" as const,
+    position: "left" as const,
+    bg: images["slide3_imagen_fondo"] ?? "",
+    overlay: images["slide3_imagen_superior"] ?? "",
+    titulo: acf.slide3_titulo ?? "",
+    eyebrow: acf.slide3_etiqueta_superior ?? "",
+    subtitulo: acf.slide3_subtitulo ?? "",
+  },
+  {
+    type: "espacios" as const,
+    position: "left" as const,
+    bg: images["slide4_imagen_fondo"] ?? "",
+    overlay: images["slide4_imagen_superior"] ?? "",
+    titulo: acf.slide4_titulo ?? "",
+    eyebrow: acf.slide4_etiqueta_superior ?? "",
+    subtitulo: acf.slide4_subtitulo ?? "",
+  },
+].filter((slide) => slide.bg !== "");
 
 export const mapRedesSocialesFromCpt = (
   posts: RedSocialPost[],

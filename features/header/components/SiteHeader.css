@@ -293,6 +293,12 @@
         font-size: 0.95rem;
         color: #5f6878;
     }
+
+    /* Limitar logo en mobile para que no empuje el hamburger */
+    .brand img {
+        width: min(100%, 320px);
+        height: 52px;
+    }
 }
 
 /* ── Nav mobile panel ────────────────────────────────────────────────────── */

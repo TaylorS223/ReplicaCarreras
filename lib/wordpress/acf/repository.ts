@@ -1,6 +1,7 @@
 import { wpFetch } from "@/lib/wordpress/client";
 import type {
   CarreraAcfSchema,
+  CarruselCarreraPost,
   EnlaceInteresPost,
   FacultadAcfSchema,
   NoticiaPost,
@@ -151,6 +152,63 @@ export const resolveInicioPaginaImages = async (
     imageFields.map(async ([key, val]) => [key, await resolveMediaUrl(val)] as [string, string]),
   );
 
+  return Object.fromEntries(resolved);
+};
+
+export const getCarruselCarrera = async (carreraSlug: string): Promise<CarruselCarreraPost | null> => {
+  // Primero intenta buscar por slug exacto (ej: "arquitectura")
+  const bySlug = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
+    query: {
+      slug: carreraSlug,
+      per_page: 1,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  }).catch(() => [] as CarruselCarreraPost[]);
+
+  if (bySlug.length > 0) return bySlug[0];
+
+  // Fallback: busca por slug con prefijo "slider-{carreraSlug}"
+  const byPrefixSlug = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
+    query: {
+      slug: `slider-${carreraSlug}`,
+      per_page: 1,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  }).catch(() => [] as CarruselCarreraPost[]);
+
+  if (byPrefixSlug.length > 0) return byPrefixSlug[0];
+
+  // Último fallback: trae el primer post del CPT
+  const all = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
+    query: {
+      per_page: 1,
+      _fields: "id,slug,title,acf",
+    },
+    cache: "no-store",
+  }).catch(() => [] as CarruselCarreraPost[]);
+
+  return all[0] ?? null;
+};
+
+export const resolveCarruselImages = async (
+  acf: import("@/lib/wordpress/acf/types").CarruselCarreraAcfSchema,
+): Promise<Record<string, string>> => {
+  const fields: Array<[string, number | string | undefined]> = [
+    ["slide1_imagen_fondo",    acf.slide1_imagen_fondo],
+    ["slide1_imagen_superior", acf.slide1_imagen_superior],
+    ["slide1_logo_acreditacion", acf.slide1_logo_acreditacion],
+    ["slide2_imagen_fondo",    acf.slide2_imagen_fondo],
+    ["slide2_imagen_superior", acf.slide2_imagen_superior],
+    ["slide3_imagen_fondo",    acf.slide3_imagen_fondo],
+    ["slide3_imagen_superior", acf.slide3_imagen_superior],
+    ["slide4_imagen_fondo",    acf.slide4_imagen_fondo],
+    ["slide4_imagen_superior", acf.slide4_imagen_superior],
+  ];
+  const resolved = await Promise.all(
+    fields.map(async ([key, val]) => [key, await resolveMediaUrl(val)] as [string, string]),
+  );
   return Object.fromEntries(resolved);
 };
 

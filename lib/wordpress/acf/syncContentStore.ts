@@ -2,6 +2,7 @@ import { upsertCarreraContent } from "@/lib/content/carreras-data";
 import { upsertFacultadContent } from "@/lib/content/facultades-data";
 import {
   mapCarreraFromAcf,
+  mapCarruselToHeroSlides,
   mapEnlacesInteresFromCpt,
   mapFacultadFromAcf,
   mapInicioPaginaFromAcf,
@@ -18,12 +19,14 @@ import {
 } from "@/lib/wordpress/acf/mappers";
 import {
   getCarreraAcfEntry,
+  getCarruselCarrera,
   getEnlacesInteres,
   getFacultadAcfEntry,
   getNoticiasCpt,
   getPersonalByTipo,
   getRedesSociales,
   getSemestres,
+  resolveCarruselImages,
   resolveInicioPaginaImages,
   resolveMediaUrl,
   resolveNoticiaImages,
@@ -326,8 +329,20 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     ? await applyInicioPaginaFromAcf(entry.acf, withNoticias)
     : withNoticias;
 
-  upsertCarreraContent(facultadSlug, carreraSlug, withInicio);
-  return withInicio;
+  // ── Carrusel hero desde CPT carrusel_carrera ──────────────────────────────
+  const carruselPost = await getCarruselCarrera(carreraSlug).catch(() => null);
+  const withCarrusel = carruselPost?.acf
+    ? await (async () => {
+        const images = await resolveCarruselImages(carruselPost.acf!);
+        const heroSlides = mapCarruselToHeroSlides(carruselPost.acf!, images);
+        return heroSlides.length > 0
+          ? { ...withInicio, heroSlides }
+          : withInicio;
+      })()
+    : withInicio;
+
+  upsertCarreraContent(facultadSlug, carreraSlug, withCarrusel);
+  return withCarrusel;
 };
 
 export const syncContextContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {

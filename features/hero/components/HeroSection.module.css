@@ -14,6 +14,24 @@
   z-index: 0;
 }
 
+.slideOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.slideOverlayImg {
+  max-height: 85%;
+  max-width: 60%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
+  /* Sin opacidad reducida — imagen clara */
+}
+
 .slide {
   position: absolute;
   inset: 0;
@@ -36,8 +54,8 @@
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(96deg, rgba(8, 17, 30, 0.7) 0%, rgba(8, 17, 30, 0.38) 46%, rgba(8, 17, 30, 0.76) 100%),
-    radial-gradient(circle at 68% 45%, rgba(52, 79, 144, 0.2), transparent 58%);
+    linear-gradient(96deg, rgba(8, 17, 30, 0.65) 0%, rgba(8, 17, 30, 0.45) 46%, rgba(8, 17, 30, 0.75) 100%),
+    radial-gradient(circle at 68% 45%, rgba(52, 79, 144, 0.15), transparent 58%);
 }
 
 .heroInner {
@@ -46,19 +64,199 @@
   width: 100%;
   padding: 58px 0 64px;
   display: flex;
-  justify-content: flex-end;
+  /* El wrapper se posiciona solo con margin según data-position */
+  align-items: center;
 }
 
+/* Wrapper animado — posición controlada por data-position */
+.panelWrapper {
+  animation: panel-in 680ms ease both;
+  width: min(100%, 580px);
+  flex-shrink: 0;
+}
+
+/* Derecha (slider 1) */
+.panelWrapper[data-position="right"] {
+  margin-left: auto;
+}
+
+/* Centro (slider 2) */
+.panelWrapper[data-position="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Izquierda (sliders 3 y 4) — con margen izquierdo para no quedar pegado al borde */
+.panelWrapper[data-position="left"] {
+  margin-right: auto;
+  margin-left: 60px;
+}
+
+/* Slider 1 — wrapper más ancho para acomodar logo + texto */
+.panelWrapper[data-type="acreditacion"] {
+  width: min(100%, 700px);
+  margin-left: auto;
+  margin-right: 140px;
+  margin-top: -80px;
+}
+
+/* Panel base — sin fondo visible para sliders 2, 3, 4 */
 .infoPanel {
-  width: min(100%, 760px);
-  min-height: 390px;
-  padding: 42px 36px;
+  width: 100%;
+  min-height: 320px;
+  padding: 36px 28px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* ─── Slider 1: panel con fondo — fila: logo | barra | (texto+botón) ─── */
+.infoPanelAccreditacion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  min-height: 0;
+  padding: 28px 32px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(41, 63, 112, 0.54);
-  backdrop-filter: blur(2px);
+  background: rgba(15, 28, 55, 0.72);
+  backdrop-filter: blur(4px);
   box-shadow: 0 22px 60px rgba(7, 13, 23, 0.34);
-  animation: panel-in 680ms ease both;
+}
+
+/* Fila interior: logo | barra | texto */
+.acreditadoraRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.acreditadoraLogo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 24px;
+}
+
+.acreditadoraLogoImg {
+  width: 170px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* Barra vertical entre logo y texto */
+.acreditadoraDivider {
+  flex-shrink: 0;
+  width: 2px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.85);
+  margin: 0 24px;
+}
+
+.acreditadoraText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 8px;
+}
+
+/* Título del slider 1 — tamaño propio para caber en el panel */
+.acreditadoraTitulo {
+  margin: 0 0 2px;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* Badge del slider 1 */
+.acreditadoraBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: #4857b0;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  width: fit-content;
+}
+
+/* panelCta dentro de acreditadoraText — debajo de ACREDITACIÓN DE EXCELENCIA */
+.acreditadoraText .panelCta {
+  margin-top: 10px;
+  align-self: flex-start;
+}
+
+/* Meta líneas del slider 1 */
+.panelMeta {
+  margin: 3px 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.panelMetaSub {
+  margin: 2px 0 0;
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.panelHighlight {
+  margin: 3px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panelCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  width: fit-content;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.panelCta:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+}
+
+/* Lista para slider 4 */
+.panelList {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(0.88rem, 1.5vw, 1.05rem);
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.9;
 }
 
 .panelRule {
@@ -91,23 +289,28 @@
 
 .panelTitle {
   margin: 0;
-  font-size: clamp(2.1rem, 4.5vw, 4.2rem);
+  font-size: clamp(1.8rem, 3.8vw, 3.6rem);
   line-height: 1;
   font-weight: 400;
   letter-spacing: 0.02em;
+  white-space: normal;
   animation-delay: 430ms;
+  /* Caja azul detrás del título — igual que en el original */
+  background: rgba(52, 68, 160, 0.85);
+  display: inline-block;
+  padding: 6px 14px;
 }
 
 .panelBadge {
-  margin-top: 10px;
+  margin-top: 4px;
   display: inline-flex;
   align-items: center;
-  padding: 8px 14px;
+  padding: 5px 10px;
   background: #4857b0;
-  font-size: clamp(1.2rem, 3.2vw, 2.1rem);
-  line-height: 1.06;
+  font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+  line-height: 1.1;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   animation-delay: 550ms;
 }
 
@@ -177,6 +380,7 @@
 }
 
 .hero[data-reduced-motion="true"] .slide,
+.hero[data-reduced-motion="true"] .panelWrapper,
 .hero[data-reduced-motion="true"] .infoPanel,
 .hero[data-reduced-motion="true"] .panelRule,
 .hero[data-reduced-motion="true"] .panelEyebrow,
@@ -191,6 +395,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .slide,
+  .panelWrapper,
   .infoPanel,
   .panelRule,
   .panelEyebrow,
@@ -209,13 +414,18 @@
     min-height: 620px;
   }
 
+  .panelWrapper {
+    width: min(100%, 520px);
+  }
+}
+
+@media (max-width: 820px) {
   .heroInner {
-    justify-content: center;
+    padding: 40px 0 48px;
   }
 
-  .infoPanel {
-    min-height: 330px;
-    width: min(100%, 860px);
+  .panelWrapper {
+    width: min(100%, 460px);
   }
 }
 
@@ -229,20 +439,57 @@
     padding: 34px 0 36px;
   }
 
+  /* En móvil todo va al centro */
+  .panelWrapper,
+  .panelWrapper[data-position="right"],
+  .panelWrapper[data-position="center"],
+  .panelWrapper[data-position="left"] {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .infoPanel {
     width: 100%;
     min-height: 0;
-    padding: 24px 20px;
+    padding: 20px 16px;
+  }
+
+  .infoPanelAccreditacion {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 20px 16px;
+  }
+
+  .acreditadoraRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .acreditadoraDivider {
+    width: 40px;
+    height: 2px;
+    margin: 0;
+  }
+
+  .acreditadoraLogoImg {
+    width: 90px;
   }
 
   .panelRule {
-    height: 62px;
+    height: 56px;
     margin-bottom: 8px;
   }
 
   .panelEyebrow {
     letter-spacing: 0.08em;
     font-size: 0.76rem;
+  }
+
+  .panelTitle {
+    font-size: clamp(1.8rem, 8vw, 3rem);
   }
 
   .panelDescription {
@@ -261,5 +508,9 @@
 
   .carouselControlNext {
     right: 10px;
+  }
+
+  .slideOverlayImg {
+    max-width: 70%;
   }
 }
