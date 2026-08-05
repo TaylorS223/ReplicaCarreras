@@ -23,12 +23,17 @@ export type InicioPaginaAcfSchema = {
   modalidad?: string;
   mision?: string;
   vision?: string;
+  titulomision?: string;
+  titulovision?: string;
   esloganmotivacional?: string;
   perfilegreso?: string;
+  tituloperfilegreso?: string;
   campolaboral?: string;
+  titulocampolaboral?: string;
   mallacurricular?: string | { url?: string; title?: string; target?: string };
   descripcionacreditacioninternacional?: string;
   enlaceacreditacioninternacional?: string;
+  tituloacreditacioninternacional?: string;
   logo?: number | string;              // logoAcreditadoraNavbar (nombre real en la API)
   logoacreditadorafooter?: number | string;
   ubicacion?: string;
@@ -41,7 +46,16 @@ export type InicioPaginaAcfSchema = {
   menuplanestudio?: string;
   imagennoticia?: number | string;
   fechanoticia?: string;
+  hometitulonoticiaactualidad?: string;
   planestudios?: PlanEstudiosMateriaAcf[];
+  // Imágenes de fondo para las InfoCards
+  imagentituloprofesional?: number | string;
+  imagenjornada?: number | string;
+  imagenduracion?: number | string;
+  imagenmodalidad?: number | string;
+  // Video para sección de acreditación
+  videourl?: string | { url?: string; title?: string; target?: string };
+  miniaturavideo?: number | string;
 };
 
 export type PlanEstudiosMateriaAcf = {
@@ -82,7 +96,8 @@ export type PersonalAcfDocente = {
   areadocencia?: string;
   areaespecializacion?: string;
   formacionacademica?: string;
-  publicaciones?: string | { url?: string; title?: string };
+  publicaciongooglescholar?: string | { url?: string; title?: string; target?: string } | null;
+  publicacionresearchgate?: string | { url?: string; title?: string; target?: string } | null;
   correoinstitucional?: string;
   ubicaciontrabajo?: string;
   horarioatencion?: string;

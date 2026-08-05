@@ -129,13 +129,21 @@ export const mergeCarreraFromInicioPagina = async (
     };
   }
 
-  if (acf.mision || acf.vision) {
+  if (acf.mision || acf.vision || acf.titulomision || acf.titulovision) {
     result.misionVision = existing.misionVision.map((item) => {
       if (item.title.toLowerCase().includes("misión") || item.title.toLowerCase().includes("mision")) {
-        return { ...item, description: acf.mision || item.description };
+        return {
+          ...item,
+          ...(acf.mision ? { description: acf.mision } : {}),
+          ...(acf.titulomision ? { title: acf.titulomision } : {}),
+        };
       }
       if (item.title.toLowerCase().includes("visión") || item.title.toLowerCase().includes("vision")) {
-        return { ...item, description: acf.vision || item.description };
+        return {
+          ...item,
+          ...(acf.vision ? { description: acf.vision } : {}),
+          ...(acf.titulovision ? { title: acf.titulovision } : {}),
+        };
       }
       return item;
     });
@@ -148,6 +156,12 @@ export const mergeCarreraFromInicioPagina = async (
   if (acf.perfilegreso && result.profile.cards.length > 0) {
     const cards = [...result.profile.cards];
     cards[0] = { ...cards[0], paragraphs: [acf.perfilegreso] };
+    result.profile = { ...result.profile, cards };
+  }
+
+  if (acf.tituloperfilegreso && result.profile.cards.length > 0) {
+    const cards = [...result.profile.cards];
+    cards[0] = { ...cards[0], title: acf.tituloperfilegreso };
     result.profile = { ...result.profile, cards };
   }
 
@@ -168,6 +182,21 @@ export const mergeCarreraFromInicioPagina = async (
     result.profile = { ...result.profile, cards };
   }
 
+  if (acf.titulocampolaboral && result.profile.cards.length > 1) {
+    const cards = [...result.profile.cards];
+    cards[1] = { ...cards[1], title: acf.titulocampolaboral };
+    result.profile = { ...result.profile, cards };
+  }
+
+  // Normaliza videourl: puede llegar como string o como objeto link {url, title, target}
+  const resolveVideoUrl = (v: typeof acf.videourl): string => {
+    if (!v) return "";
+    if (typeof v === "string") return v;
+    return v.url ?? "";
+  };
+
+  const rawVideoUrl = resolveVideoUrl(acf.videourl);
+
   if (acf.descripcionacreditacioninternacional) {
     result.accreditation = {
       ...result.accreditation,
@@ -175,7 +204,25 @@ export const mergeCarreraFromInicioPagina = async (
       ...(acf.enlaceacreditacioninternacional
         ? { cta: { ...result.accreditation.cta, href: acf.enlaceacreditacioninternacional } }
         : {}),
+      ...(acf.tituloacreditacioninternacional ? { title: acf.tituloacreditacioninternacional } : {}),
+      ...(rawVideoUrl ? { videoUrl: rawVideoUrl } : {}),
     };
+  } else if (rawVideoUrl) {
+    result.accreditation = {
+      ...result.accreditation,
+      videoUrl: rawVideoUrl,
+    };
+  }
+
+  if (acf.tituloacreditacioninternacional && !acf.descripcionacreditacioninternacional) {
+    result.accreditation = { ...result.accreditation, title: acf.tituloacreditacioninternacional };
+  }
+
+  if (acf.miniaturavideo) {
+    const thumbnailUrl = await resolveMediaUrl(acf.miniaturavideo);
+    if (thumbnailUrl) {
+      result.accreditation = { ...result.accreditation, thumbnailUrl };
+    }
   }
 
   if (acf.tituloprofesional || acf.jornada || acf.duracion || acf.modalidad) {
@@ -197,6 +244,45 @@ export const mergeCarreraFromInicioPagina = async (
     });
   }
 
+  // Imágenes de fondo para cada InfoCard
+  if (acf.imagentituloprofesional || acf.imagenjornada || acf.imagenduracion || acf.imagenmodalidad) {
+    const [imgTitulo, imgJornada, imgDuracion, imgModalidad] = await Promise.all([
+      resolveMediaUrl(acf.imagentituloprofesional),
+      resolveMediaUrl(acf.imagenjornada),
+      resolveMediaUrl(acf.imagenduracion),
+      resolveMediaUrl(acf.imagenmodalidad),
+    ]);
+
+    result.infoCards = result.infoCards.map((card) => {
+      const title = card.title.toLowerCase();
+      if ((title.includes("titulo") || title.includes("título") || title.includes("profesional")) && imgTitulo) {
+        return { ...card, imagenFondo: imgTitulo };
+      }
+      if (title.includes("jornada") && imgJornada) {
+        return { ...card, imagenFondo: imgJornada };
+      }
+      if ((title.includes("duración") || title.includes("duracion")) && imgDuracion) {
+        return { ...card, imagenFondo: imgDuracion };
+      }
+      if (title.includes("modalidad") && imgModalidad) {
+        return { ...card, imagenFondo: imgModalidad };
+      }
+      return card;
+    });
+  }
+
+  if (acf.menuplanestudio) {
+    result.planEstudios = { ...result.planEstudios, title: acf.menuplanestudio };
+  }
+
+  if (acf.menupersonal) {
+    result.personal = { ...result.personal, title: acf.menupersonal };
+  }
+
+  if (acf.hometitulonoticiaactualidad) {
+    result.proyectos = { ...result.proyectos, title: acf.hometitulonoticiaactualidad };
+  }
+
   return result;
 };
 
@@ -214,14 +300,19 @@ export const mapPersonalPostToDocente = (
   alt: post.acf?.nombredocente ?? post.title.rendered,
   especializacion: post.acf?.areaespecializacion ?? "",
   formacionAcademica: post.acf?.formacionacademica ? [post.acf.formacionacademica] : [],
-  publicaciones: post.acf?.publicaciones
-    ? [{
-        label: "Publicaciones",
-        href: typeof post.acf.publicaciones === "string"
-          ? post.acf.publicaciones
-          : (post.acf.publicaciones.url ?? ""),
-      }]
-    : [],
+  publicaciones: (() => {
+    const resolveLink = (v: typeof post.acf.publicaciongooglescholar): string => {
+      if (!v) return "";
+      if (typeof v === "string") return v;
+      return v.url ?? "";
+    };
+    const links: Array<{ label: string; href: string }> = [];
+    const gs = resolveLink(post.acf?.publicaciongooglescholar);
+    if (gs) links.push({ label: "Google Scholar", href: gs });
+    const rg = resolveLink(post.acf?.publicacionresearchgate);
+    if (rg) links.push({ label: "ResearchGate", href: rg });
+    return links;
+  })(),
   email: post.acf?.correoinstitucional ?? "",
   ubicacion: post.acf?.ubicaciontrabajo ?? "",
   horario: post.acf?.horarioatencion ?? "",

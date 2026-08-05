@@ -245,6 +245,25 @@
 @media (max-width: 900px) {
     .mobile-menu-toggle {
         display: flex;
+        flex-shrink: 0;
+    }
+
+    /* Logo limitado en mobile para que el hamburger no se vaya abajo */
+    .brand img {
+        width: auto;
+        max-width: 200px;
+        height: 44px;
+    }
+
+    .header-inner {
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .brand {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .main-nav {

@@ -14,6 +14,7 @@ export type InfoCard = {
   iconClass: string;
   title: string;
   value: string;
+  imagenFondo?: string;
 };
 
 export type MisionVisionItem = {
@@ -48,6 +49,8 @@ export type AccreditationContent = {
     src: string;
     alt: string;
   };
+  videoUrl?: string;
+  thumbnailUrl?: string;
 };
 
 export type Course = {

@@ -352,6 +352,9 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     } else {
       base = await mergeCarreraFromInicioPagina(entry.acf, existing);
     }
+    // Siempre aplica los campos ACF planos (videoacreditacion, menuplanestudio, etc.)
+    // independientemente de si existe acf.content
+    base = await mergeCarreraFromInicioPagina(entry.acf, base);
   }
 
   const withDocentes = await syncDocentesFromCpt(base, facultadSlug);

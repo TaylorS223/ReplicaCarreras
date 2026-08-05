@@ -1,31 +1,51 @@
 import Link from "next/link";
 import { getAccreditationContent } from "@/lib/wordpress/services/getAcreditacion";
+import { VideoPlayer } from "@/features/proyectos/components/VideoPlayer";
 
 type AcreditacionSectionProps = {
   basePath: string;
+  facultadSlug?: string;
+  carreraSlug?: string;
 };
 
-export const AcreditacionSection = ({ basePath }: AcreditacionSectionProps) => {
-  const content = getAccreditationContent();
+export const AcreditacionSection = ({ basePath, facultadSlug, carreraSlug }: AcreditacionSectionProps) => {
+  const content = getAccreditationContent(
+    facultadSlug && carreraSlug ? { facultadSlug, carreraSlug } : undefined,
+  );
 
-  const ctaHref = content.cta.href.startsWith("/")
-    ? `/${basePath.replace(/^\//, "")}${content.cta.href}`
-    : content.cta.href;
+  const rawHref = typeof content.cta.href === "string"
+    ? content.cta.href
+    : (content.cta.href as unknown as { url?: string })?.url ?? "";
+
+  const ctaHref = rawHref.startsWith("/")
+    ? `/${basePath.replace(/^\//, "")}${rawHref}`
+    : rawHref;
 
   return (
-    <section id="acreditacion" className="section">
-      <div className="container accreditation-grid">
-        <article className="surface-card dark">
-          <h3>{content.title}</h3>
+    <section id="acreditacion" className="section" style={{ padding: 0 }}>
+      <div className="accreditation-grid">
+        <article className="surface-card dark" style={{ borderRadius: 0, margin: 0, padding: "48px 56px" }}>
+          <h3 style={{ textTransform: "uppercase", fontSize: "1.1rem", letterSpacing: "0.05em" }}>
+            {content.title}
+          </h3>
           {content.paragraphs.map((paragraph, index) => (
-            <p key={`${content.title}-${index}`}>{paragraph}</p>
+            <p key={`${content.title}-${index}`} style={{ fontSize: "0.95rem", lineHeight: 1.7 }}>
+              {paragraph}
+            </p>
           ))}
-          <Link className="cta" href={ctaHref}>
-            {content.cta.label}
+          <Link className="accreditation-cta" href={ctaHref}>
+            Leer mas &rarr;
           </Link>
         </article>
+
         <div className="video-frame">
-          <img src={content.image.src} alt={content.image.alt} />
+          <VideoPlayer
+            videoUrl={content.videoUrl ?? ""}
+            thumbnailUrl={content.thumbnailUrl}
+            fallbackImageSrc={content.image.src}
+            fallbackImageAlt={content.image.alt}
+            title={content.title}
+          />
         </div>
       </div>
     </section>

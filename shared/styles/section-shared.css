@@ -75,13 +75,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 58px;
-    height: 58px;
+    width: 44px;
+    height: 44px;
     margin: 0 auto 14px;
     border-radius: 999px;
     background: linear-gradient(180deg, #e8f0ff, #dbe8ff);
     color: #1f4d95;
-    font-size: 1.35rem;
+    font-size: 1rem;
 }
 
 .profile-card h3 {
