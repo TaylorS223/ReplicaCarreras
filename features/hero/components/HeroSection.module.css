@@ -20,16 +20,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 3;  /* Por encima del heroShade (z-index: 1) y slideLayer (z-index: 0) */
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.slideOverlayActive {
+  opacity: 1;
 }
 
 .slideOverlayImg {
-  max-height: 85%;
-  max-width: 60%;
+  max-height: 95%;
+  max-width: 75%;
   object-fit: contain;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.35));
-  /* Sin opacidad reducida — imagen clara */
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.25));
 }
 
 .slide {
@@ -60,16 +65,16 @@
 
 .heroInner {
   position: relative;
-  z-index: 2;
+  z-index: 4;
   width: 100%;
   padding: 58px 0 64px;
   display: flex;
-  /* El wrapper se posiciona solo con margin según data-position */
   align-items: center;
+  pointer-events: none;
 }
 
-/* Wrapper animado — posición controlada por data-position */
 .panelWrapper {
+  pointer-events: auto;
   animation: panel-in 680ms ease both;
   width: min(100%, 580px);
   flex-shrink: 0;
@@ -84,6 +89,7 @@
 .panelWrapper[data-position="center"] {
   margin-left: auto;
   margin-right: auto;
+  margin-top: -400px;
 }
 
 /* Izquierda (sliders 3 y 4) — con margen izquierdo para no quedar pegado al borde */
@@ -326,7 +332,7 @@
 .carouselControl {
   position: absolute;
   top: 50%;
-  z-index: 4;
+  z-index: 10;
   transform: translateY(-50%);
   width: 52px;
   height: 52px;

@@ -1,45 +1,175 @@
-.section#plan {
-    padding-bottom: 0;
+/* ── Sección ─────────────────────────────────────────────────────────────── */
+.plan-carousel-section {
+    padding-bottom: 48px;
 }
 
-.accordion {
-    padding: 0;
+/* ── Viewport: overflow oculto para efecto peek lateral ─────────────────── */
+.plan-carousel-viewport {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 8px;
 }
 
-.study-level {
-    border-top: 1px solid rgba(31, 61, 119, 0.12);
-    padding: 18px 0;
+/* ── Track: la tarjeta activa in-flow define la altura ───────────────────── */
+.plan-carousel-track {
+    position: relative;
+    display: block;
 }
 
-.study-level:first-child {
-    border-top: 0;
-    padding-top: 0;
+/* ── Base de tarjetas ────────────────────────────────────────────────────── */
+.plan-carousel-card {
+    border-radius: 24px;
+    border: 1px solid rgba(31, 61, 119, 0.12);
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(15, 29, 57, 0.1);
+    padding: 28px 32px 32px;
+    transition:
+        transform 420ms cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 420ms cubic-bezier(0.4, 0, 0.2, 1),
+        scale 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+    width: 78%;
 }
 
-.study-level summary {
+/* Tarjeta activa — in-flow, centrada, define la altura del track */
+.plan-carousel-card--active {
+    position: relative;
+    margin: 0 auto;
+    opacity: 1;
+    scale: 1;
+    transform: none;
+    pointer-events: auto;
+    z-index: 3;
+    box-shadow: 0 24px 60px rgba(15, 29, 57, 0.14);
+}
+
+/* Tarjetas adyacentes e invisibles — absolute para el peek */
+.plan-carousel-card--prev,
+.plan-carousel-card--next,
+.plan-carousel-card--hidden {
+    position: absolute;
+    top: 0;
+    left: 50%;
+}
+
+/* Anterior — asoma a la izquierda */
+.plan-carousel-card--prev {
+    opacity: 0.42;
+    scale: 0.92;
+    transform: translateX(calc(-50% - 80%));
+    pointer-events: none;
+    z-index: 2;
+    filter: blur(2px);
+}
+
+/* Siguiente — asoma a la derecha */
+.plan-carousel-card--next {
+    opacity: 0.42;
+    scale: 0.92;
+    transform: translateX(calc(-50% + 80%));
+    pointer-events: none;
+    z-index: 2;
+    filter: blur(2px);
+}
+
+/* Ocultas */
+.plan-carousel-card--hidden {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transform: translateX(-50%);
+}
+
+/* ── Interior de la tarjeta ──────────────────────────────────────────────── */
+.plan-level-heading {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 18px;
-    list-style: none;
-    cursor: pointer;
-    font-weight: 800;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.plan-level-heading h3 {
+    margin: 0;
+    font-size: 1.16rem;
     color: #1f4686;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    font-size: 1.05rem;
 }
 
-.study-level summary::-webkit-details-marker {
-    display: none;
+.level-note {
+    color: #8190a8;
+    font-size: 0.95rem;
+    white-space: nowrap;
 }
 
-.study-items {
-    margin-top: 18px;
+.plan-carousel-courses {
     display: grid;
-    gap: 14px;
+    gap: 12px;
 }
 
+/* ── Botones prev / next ─────────────────────────────────────────────────── */
+.plan-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(31, 61, 119, 0.18);
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(15, 29, 57, 0.12);
+    color: #1f4686;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 200ms, box-shadow 200ms, opacity 200ms;
+    padding: 0;
+}
+
+.plan-carousel-btn:disabled {
+    opacity: 0.22;
+    cursor: default;
+}
+
+.plan-carousel-btn:not(:disabled):hover {
+    background: #f0f5ff;
+    box-shadow: 0 12px 32px rgba(15, 29, 57, 0.16);
+}
+
+.plan-carousel-btn--prev { left: 12px; }
+.plan-carousel-btn--next { right: 12px; }
+
+/* ── Dots ────────────────────────────────────────────────────────────────── */
+.plan-carousel-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.plan-carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(31, 61, 119, 0.18);
+    cursor: pointer;
+    padding: 0;
+    transition: background 250ms, width 250ms;
+}
+
+.plan-carousel-dot--active {
+    background: #1f4686;
+    width: 24px;
+}
+
+/* ── Acordeón de materias ────────────────────────────────────────────────── */
 .course-item {
     border-radius: 20px;
     border: 1px solid rgba(31, 61, 119, 0.12);
@@ -58,9 +188,7 @@
     list-style: none;
 }
 
-.course-item summary::-webkit-details-marker {
-    display: none;
-}
+.course-item summary::-webkit-details-marker { display: none; }
 
 .course-title {
     color: #1f4d95;
@@ -84,15 +212,8 @@
     margin-left: auto;
 }
 
-.course-toggle::before {
-    content: "+";
-    font-size: 1rem;
-    line-height: 1;
-}
-
-.course-item[open] .course-toggle::before {
-    content: "–";
-}
+.course-toggle::before { content: "+"; font-size: 1rem; line-height: 1; }
+.course-item[open] .course-toggle::before { content: "–"; }
 
 .course-content {
     border-top: 1px solid rgba(31, 61, 119, 0.08);
@@ -115,10 +236,7 @@
     color: #6f7c90;
 }
 
-.course-meta strong {
-    color: #1f4d95;
-    font-size: 1.05rem;
-}
+.course-meta strong { color: #1f4d95; font-size: 1.05rem; }
 
 .course-syllabus {
     display: inline-flex;
@@ -133,129 +251,58 @@
     box-shadow: 0 10px 22px rgba(35, 105, 198, 0.22);
 }
 
-.level-note {
-    margin-top: 18px;
-    text-align: right;
-    color: #8190a8;
-    font-size: 0.95rem;
+/* ── Móvil: acordeón simple (sin carrusel) ───────────────────────────────── */
+@media (max-width: 768px) {
+    /* Ocultar el carrusel en móvil */
+    .plan-carousel-viewport,
+    .plan-carousel-btn,
+    .plan-carousel-dots {
+        display: none !important;
+    }
+
+    /* Mostrar acordeón */
+    .plan-accordion-mobile {
+        display: block !important;
+    }
 }
 
-.plan-stack-wrapper {
-    --plan-levels: 4;
-    --plan-pin-top: 91px;
-    --plan-level-width: 980px;
-    --plan-level-height: calc(100vh - var(--plan-pin-top));
-    position: relative;
-    /* la altura ahora la fija el JS en línea (wrapperElement.style.height) */
+/* Acordeón móvil — oculto en desktop */
+.plan-accordion-mobile {
+    display: none;
 }
 
-.plan-stack-sticky {
-    position: sticky;
-    top: var(--plan-pin-top);
-    height: var(--plan-level-height);
+.plan-accordion-mobile .study-level {
+    border-top: 1px solid rgba(31, 61, 119, 0.12);
+    padding: 18px 0;
+}
+
+.plan-accordion-mobile .study-level:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.plan-accordion-mobile .study-level summary {
     display: flex;
-    align-items: stretch;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.plan-stack-stage {
-    position: relative;
-    width: min(var(--plan-level-width), 100%);
-    height: 100%;
-    padding-bottom: 0;
-}
-
-.plan-level-card {
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    border: 1px solid rgba(31, 61, 119, 0.12);
-    background: #fff;
-    box-shadow: 0 20px 48px rgba(15, 29, 57, 0.12);
-    padding: 24px;
-    opacity: 0;
-    transform: translateY(14%) scale(0.98);
-    transition: opacity 420ms ease, transform 420ms ease;
-    overflow: hidden;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-}
-
-.plan-level-card .study-items {
-    margin-top: 14px;
-    flex: 0 0 auto;
-    min-height: auto;
-    overflow: visible;
-    padding-right: 8px;
-}
-
-.plan-level-card.is-active {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    z-index: 3;
-    pointer-events: auto;
-}
-
-.plan-level-card.is-stacked {
-    opacity: 0.42;
-    transform: translateY(-5%) scale(0.98);
-    z-index: 2;
-}
-
-.plan-level-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-}
-
-.plan-level-heading h3 {
-    margin: 0;
-    font-size: 1.16rem;
+    align-items: center;
+    gap: 18px;
+    list-style: none;
+    cursor: pointer;
+    font-weight: 800;
     color: #1f4686;
     text-transform: uppercase;
     letter-spacing: 0.06em;
+    font-size: 1.05rem;
 }
 
-.plan-level-heading .level-note {
-    margin-top: 0;
-    white-space: nowrap;
+.plan-accordion-mobile .study-level summary::-webkit-details-marker { display: none; }
+
+.plan-accordion-mobile .study-items {
+    margin-top: 18px;
+    display: grid;
+    gap: 14px;
 }
 
-@supports (animation-timeline: scroll()) {
-    .plan-level-card {
-        animation-name: level-hint;
-        animation-duration: 1s;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: scroll();
-    }
-
-    @keyframes level-hint {
-        from {
-            filter: saturate(0.98);
-        }
-
-        to {
-            filter: saturate(1);
-        }
-    }
-}
-
-@media (max-width: 1100px) {
-    .plan-level-card {
-        padding: 20px;
-    }
-
-    .plan-stack-sticky {
-        top: var(--plan-pin-top);
-    }
-}
-
-@media (max-width: 900px) {
-    .plan-stack-wrapper {
-        display: none;
-    }
+.plan-accordion-mobile .level-note {
+    margin-top: 12px;
+    text-align: right;
 }

@@ -49,3 +49,41 @@
     color: #717b8f;
     font-size: 1.02rem;
 }
+
+/* ── Carrusel móvil de docentes ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .teacher-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 0;
+        padding-bottom: 16px;
+        /* Oculta scrollbar pero mantiene swipe */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .teacher-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .teacher-card {
+        flex: 0 0 72%;
+        scroll-snap-align: center;
+        padding: 16px 12px;
+        margin-right: 12px;
+    }
+
+    .teacher-card:last-child {
+        margin-right: 0;
+        /* Padding derecho para que el último no quede pegado al borde */
+        padding-right: 16px;
+    }
+
+    .teacher-card figure {
+        width: 110px;
+        height: 110px;
+    }
+}

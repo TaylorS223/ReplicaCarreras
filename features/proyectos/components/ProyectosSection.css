@@ -148,3 +148,37 @@
         min-height: 260px;
     }
 }
+
+/* ── Carrusel móvil de noticias ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .news-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 0;
+        padding-bottom: 16px;
+        /* Oculta scrollbar pero mantiene swipe */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .news-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .news-card {
+        flex: 0 0 85%;
+        scroll-snap-align: center;
+        margin-right: 14px;
+    }
+
+    .news-card:last-child {
+        margin-right: 0;
+    }
+
+    .news-card figure {
+        border-radius: 12px;
+    }
+}

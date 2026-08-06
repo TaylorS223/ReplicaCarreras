@@ -42,16 +42,15 @@
         width: min(100% - 20px, 1200px);
     }
 
-    .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
     .brand img {
         width: min(360px, 100%);
-        height: auto;
+        height: 78px;   /* antes: auto — ahora fijo, más grande, como te gustaba arriba */
     }
 
+    .site-header.is-compact .brand img {
+        width: min(340px, 100%);
+        height: 68px;   /* se mantiene el achique sutil al hacer scroll */
+    }
     .section {
         padding: 48px 0;
     }

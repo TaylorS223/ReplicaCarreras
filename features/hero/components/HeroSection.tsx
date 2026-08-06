@@ -240,7 +240,7 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
 
   return (
     <section className={styles.hero} data-reduced-motion={reducedMotion}>
-      {/* Capa de slides */}
+      {/* Capa de slides — solo el fondo */}
       <div className={styles.slideLayer}>
         {SLIDES.map((slide, index) => (
           <div
@@ -248,19 +248,25 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
             className={`${styles.slide} ${index === currentIndex ? styles.slideActive : ""}`}
             style={{ backgroundImage: `url(${slide.bg})` }}
             aria-hidden={index !== currentIndex}
-          >
-            {/* Imagen superpuesta centrada */}
-            <div className={styles.slideOverlay}>
-              <img
-                src={slide.overlay}
-                alt=""
-                className={styles.slideOverlayImg}
-                aria-hidden="true"
-              />
-            </div>
-          </div>
+          />
         ))}
       </div>
+
+      {/* Overlay de persona — solo el slide activo, por encima del heroShade */}
+      {currentSlide.overlay && (
+        <div
+          className={`${styles.slideOverlay} ${styles.slideOverlayActive}`}
+          aria-hidden="true"
+          key={`overlay-${currentIndex}`}
+        >
+          <img
+            src={currentSlide.overlay}
+            alt=""
+            className={styles.slideOverlayImg}
+            aria-hidden="true"
+          />
+        </div>
+      )}
 
       <div className={styles.heroShade} aria-hidden="true" />
 

@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Course, PlanEstudiosContent, StudyLevel } from "@/types/api";
 
-const MOBILE_FALLBACK_QUERY =
-  "(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)";
-
-const LEVEL_SCROLL_SENSITIVITY = 0.42;
-const LAST_LEVEL_HOLD_FACTOR = 0.45;
-const FALLBACK_HEADER_HEIGHT = 91;
-const SCROLL_EASING_FACTOR = 0.18;
-const MIN_PROGRESS_DELTA = 0.001;
+// ── Sub-componentes ───────────────────────────────────────────────────────────
 
 const PlanCourseAccordion = ({ course }: { course: Course }) => (
   <details className="course-item" {...(course.open ? { open: true } : {})}>
@@ -35,212 +28,149 @@ const PlanCourseAccordion = ({ course }: { course: Course }) => (
   </details>
 );
 
-const PlanLevelAccordion = ({ level }: { level: StudyLevel }) => (
-  <details className="study-level" {...(level.open ? { open: true } : {})}>
-    <summary>{level.title}</summary>
-    <div className="study-items">
+const PlanLevelCard = ({
+  level,
+  state,
+}: {
+  level: StudyLevel;
+  state: "active" | "prev" | "next" | "hidden";
+}) => (
+  <article className={`plan-carousel-card plan-carousel-card--${state}`} aria-hidden={state === "hidden"}>
+    <div className="plan-level-heading">
+      <h3>{level.title}</h3>
+      <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
+    </div>
+    <div className="plan-carousel-courses">
       {level.courses.map((course) => (
         <PlanCourseAccordion key={course.title} course={course} />
       ))}
     </div>
-    <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
-  </details>
+  </article>
 );
 
+// ── Componente principal ──────────────────────────────────────────────────────
+
 export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent }) => {
-  const [isFallback, setIsFallback] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(0);
+  const total = content.levels.length;
 
-  const wrapperStyle = useMemo(
-    () => ({ "--plan-levels": content.levels.length } as CSSProperties),
-    [content.levels.length],
-  );
+  // Touch / swipe
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
+  const prev = useCallback(() => setActive((i) => Math.max(0, i - 1)), []);
+  const next = useCallback(() => setActive((i) => Math.min(total - 1, i + 1)), [total]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Solo swipe horizontal (dx dominante)
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) next();
+      else prev();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  // Keyboard
   useEffect(() => {
-    const mediaQuery = window.matchMedia(MOBILE_FALLBACK_QUERY);
-    const updateMode = () => {
-      const stickySupported = CSS.supports("position", "sticky");
-      setIsFallback(mediaQuery.matches || !stickySupported);
+    const onKey = (e: KeyboardEvent) => {
+      const section = document.getElementById("plan");
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (!inView) return;
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
     };
-    updateMode();
-    mediaQuery.addEventListener("change", updateMode);
-    return () => mediaQuery.removeEventListener("change", updateMode);
-  }, []);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [next, prev]);
 
-  useEffect(() => {
-    if (isFallback) return;
-    setActiveIndex(0);
-
-    const wrapperElement = wrapperRef.current;
-    if (!wrapperElement) return;
-
-    const findScrollParent = (element: HTMLElement): HTMLElement | Window => {
-      let node = element.parentElement;
-      while (node) {
-        const style = getComputedStyle(node);
-        if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight) {
-          return node;
-        }
-        node = node.parentElement;
-      }
-      return window;
-    };
-
-    const scrollParent = findScrollParent(wrapperElement);
-
-    const getHeaderHeight = () => {
-      const header = document.querySelector(".site-header");
-      if (header instanceof HTMLElement) {
-        return Math.max(0, Math.round(header.getBoundingClientRect().height));
-      }
-
-      return FALLBACK_HEADER_HEIGHT;
-    };
-
-    const getViewportHeight = () =>
-      scrollParent instanceof HTMLElement ? scrollParent.clientHeight : window.innerHeight;
-
-    const applyWrapperHeight = () => {
-      const viewportHeight = getViewportHeight();
-      const headerHeight = getHeaderHeight();
-      const stickyHeight = Math.max(1, viewportHeight - headerHeight);
-      const steps = Math.max(0, content.levels.length - 1);
-      const stepDistance = Math.max(24, stickyHeight * LEVEL_SCROLL_SENSITIVITY);
-      const lastLevelHold = stickyHeight * LAST_LEVEL_HOLD_FACTOR;
-      const wrapperHeight = stickyHeight + steps * stepDistance + lastLevelHold;
-
-
-      wrapperElement.style.setProperty("--plan-pin-top", `${headerHeight}px`);
-      wrapperElement.style.setProperty("--plan-level-height", `${stickyHeight}px`);
-
-      wrapperElement.style.height = `${wrapperHeight}px`;
-      wrapperElement.style.minHeight = `${wrapperHeight}px`;
-    };
-
-    let ticking = false;
-    let animationFrameId: number | null = null;
-    let isAnimating = false;
-    let targetProgress = 0;
-    let displayProgress = 0;
-
-    const updateActiveIndex = (progressValue: number) => {
-      const rawIndex = Math.floor(progressValue * content.levels.length);
-      const clampedIndex = Math.min(content.levels.length - 1, Math.max(0, rawIndex));
-      setActiveIndex(clampedIndex);
-    };
-
-    const animateProgress = () => {
-      const delta = targetProgress - displayProgress;
-
-      if (Math.abs(delta) <= MIN_PROGRESS_DELTA) {
-        displayProgress = targetProgress;
-        updateActiveIndex(displayProgress);
-        isAnimating = false;
-        animationFrameId = null;
-        return;
-      }
-
-      displayProgress += delta * SCROLL_EASING_FACTOR;
-      updateActiveIndex(displayProgress);
-
-      animationFrameId = window.requestAnimationFrame(animateProgress);
-    };
-
-    const updateActive = () => {
-      ticking = false;
-      const rect = wrapperElement.getBoundingClientRect();
-      const containerTop = scrollParent instanceof HTMLElement ? scrollParent.getBoundingClientRect().top : 0;
-      const viewportHeight = getViewportHeight();
-      const stickyHeight = Math.max(
-        1,
-        Number.parseFloat(getComputedStyle(wrapperElement).getPropertyValue("--plan-level-height")) ||
-          viewportHeight,
-      );
-      const totalScrollable = Math.max(1, rect.height - stickyHeight);
-      const scrolled = Math.max(0, containerTop - rect.top);
-      targetProgress = Math.min(1, scrolled / totalScrollable);
-
-      if (!isAnimating) {
-        isAnimating = true;
-        animationFrameId = window.requestAnimationFrame(animateProgress);
-      }
-    };
-
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(updateActive);
-      }
-    };
-
-    const onResize = () => {
-      applyWrapperHeight();
-      updateActive();
-    };
-
-    applyWrapperHeight();
-    updateActive();
-
-    const target = scrollParent instanceof HTMLElement ? scrollParent : window;
-    target.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      target.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-
-      if (animationFrameId !== null) {
-        window.cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [content.levels.length, isFallback]);
+  const getState = (i: number): "active" | "prev" | "next" | "hidden" => {
+    if (i === active) return "active";
+    if (i === active - 1) return "prev";
+    if (i === active + 1) return "next";
+    return "hidden";
+  };
 
   return (
-    <section id="plan" className="section">
+    <section id="plan" className="section plan-carousel-section">
       <div className="container">
         <div className="section-header">
           <h2>{content.title}</h2>
-          <p>{content.description}</p>
+          {content.description && <p>{content.description}</p>}
+        </div>
+      </div>
+
+      {/* ── Carrusel peek — visible en desktop ── */}
+      <div
+        className="plan-carousel-viewport"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        aria-roledescription="carrusel"
+        aria-label="Niveles del plan de estudios"
+      >
+        <div className="plan-carousel-track">
+          {content.levels.map((level, i) => (
+            <PlanLevelCard key={level.title} level={level} state={getState(i)} />
+          ))}
         </div>
 
-        {isFallback ? (
-          <div className="accordion" data-plan-mode="fallback">
-            {content.levels.map((level) => (
-              <PlanLevelAccordion key={level.title} level={level} />
-            ))}
-          </div>
-        ) : (
-          <div ref={wrapperRef} className="plan-stack-wrapper" style={wrapperStyle}>
-            <div className="plan-stack-sticky">
-              <div className="plan-stack-stage">
-                {content.levels.map((level, index) => {
-                  const stacked = index < activeIndex;
-                  const active = index === activeIndex;
-                  return (
-                    <article
-                      key={level.title}
-                      className={`plan-level-card ${stacked ? "is-stacked" : ""} ${
-                        active ? "is-active" : ""
-                      }`}
-                      aria-hidden={!active}
-                    >
-                      <div className="plan-level-heading">
-                        <h3>{level.title}</h3>
-                        <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
-                      </div>
-                      <div className="study-items">
-                        {level.courses.map((course) => (
-                          <PlanCourseAccordion key={course.title} course={course} />
-                        ))}
-                      </div>
-                    </article>
-                  );
-                })}
+        <button
+          className="plan-carousel-btn plan-carousel-btn--prev"
+          onClick={prev}
+          disabled={active === 0}
+          aria-label="Nivel anterior"
+        >
+          &#8249;
+        </button>
+        <button
+          className="plan-carousel-btn plan-carousel-btn--next"
+          onClick={next}
+          disabled={active === total - 1}
+          aria-label="Nivel siguiente"
+        >
+          &#8250;
+        </button>
+      </div>
+
+      {/* Dots */}
+      <div className="plan-carousel-dots" role="tablist" aria-label="Niveles">
+        {content.levels.map((level, i) => (
+          <button
+            key={level.title}
+            role="tab"
+            aria-selected={i === active}
+            aria-label={`Ir a ${level.title}`}
+            className={`plan-carousel-dot${i === active ? " plan-carousel-dot--active" : ""}`}
+            onClick={() => setActive(i)}
+          />
+        ))}
+      </div>
+
+      {/* ── Acordeón — visible solo en móvil ── */}
+      <div className="container">
+        <div className="plan-accordion-mobile">
+          {content.levels.map((level) => (
+            <details key={level.title} className="study-level">
+              <summary>{level.title}</summary>
+              <div className="study-items">
+                {level.courses.map((course) => (
+                  <PlanCourseAccordion key={course.title} course={course} />
+                ))}
               </div>
-            </div>
-          </div>
-        )}
+              <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );
