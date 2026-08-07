@@ -13,7 +13,7 @@ export const DatosCarrera = () => {
             style={
               card.imagenFondo
                 ? {
-                    backgroundImage: `linear-gradient(rgba(10,10,12,0.82), rgba(10,10,12,0.82)), url(${card.imagenFondo})`,
+                    backgroundImage: `linear-gradient(rgba(20,20,24,0.55), rgba(20,20,24,0.55)), url(${card.imagenFondo})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }

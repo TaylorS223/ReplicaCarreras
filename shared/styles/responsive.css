@@ -1,12 +1,16 @@
+
 @media (max-width: 1100px) {
     .hero-grid,
     .split-grid,
-    .container-info-grid,
     .card-grid,
     .accreditation-grid,
     .footer-grid,
     .study-items {
         grid-template-columns: 1fr;
+    }
+
+    .container-info-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .news-grid,
@@ -60,11 +64,6 @@
         align-items: flex-start;
     }
 
-    .container-info-section {
-        padding-top: 24px;
-        padding-bottom: 36px;
-    }
-
     .info-card,
     .info-panel {
         min-height: 0;
@@ -78,7 +77,6 @@
         padding: 16px 18px 20px;
     }
 
-    .teacher-grid,
     .news-grid {
         grid-template-columns: 1fr;
     }

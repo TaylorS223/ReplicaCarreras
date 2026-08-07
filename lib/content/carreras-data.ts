@@ -24,10 +24,10 @@ export const CARRERAS_CONTENT: Record<string, CarreraContent> = {
     },
 
     infoCards: [
-      { iconClass: "fa fa-graduation-cap", title: "Titulo profesional", value: "Arquitecto" },
-      { iconClass: "fa fa-calendar", title: "Jornada", value: "Diurno / vespertino" },
-      { iconClass: "fa fa-clock-o", title: "Duración", value: "10 semestres" },
-      { iconClass: "fa fa-users", title: "Modalidad", value: "Presencial" },
+      { iconClass: "fa fa-graduation-cap", title: "Titulo profesional", value: "Arquitecto", imagenFondo: "/01/IMG6.jpeg" },
+      { iconClass: "fa fa-calendar", title: "Jornada", value: "Diurno / vespertino", imagenFondo: "/01/IMG2.jpg" },
+      { iconClass: "fa fa-clock-o", title: "Duración", value: "10 semestres", imagenFondo: "/01/IMG5.jpeg" },
+      { iconClass: "fa fa-users", title: "Modalidad", value: "Presencial", imagenFondo: "/01/IMG4.jpg" },
     ],
 
     misionVision: [
