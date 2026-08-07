@@ -6,13 +6,14 @@
 const getGraphqlEndpoint = (): string => {
   const base =
     process.env.WORDPRESS_API_BASE_URL ??
-    process.env.NEXT_PUBLIC_WORDPRESS_API_BASE_URL ??
-    "http://fcvt-backend.local/wp-json/wp/v2";
+    "http://localhost/wp-json/wp/v2";
 
   // Reemplaza /wp-json/wp/v2 por /graphql, o simplemente agrega /graphql al dominio
   const origin = base.replace(/\/wp-json.*$/, "").replace(/\/+$/, "");
   return `${origin}/graphql`;
 };
+
+const IS_DEV = process.env.NODE_ENV === "development";
 
 export const gqlFetch = async <T>(
   query: string,
@@ -24,7 +25,7 @@ export const gqlFetch = async <T>(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
-    cache: "no-store",
+    next: IS_DEV ? { revalidate: 0 } : { revalidate: 3600, tags: ["graphql"] },
   });
 
   if (!response.ok) {

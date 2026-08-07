@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
@@ -6,10 +7,33 @@ import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import { ComentarioForm } from "@/features/noticias/components/ComentarioForm";
 import { getNoticiaContent } from "@/lib/wordpress/graphql/noticias";
 import { isAcfSourceEnabled } from "@/lib/wordpress/source";
+import type { Metadata } from "next";
 
 type NoticiaDetailPageProps = {
   params: Promise<{ facultad: string; slug: string }>;
 };
+
+export async function generateMetadata({ params }: NoticiaDetailPageProps): Promise<Metadata> {
+  const { facultad, slug } = await params;
+  const config = getFacultadConfig(facultad);
+  if (!config) return { title: "Noticia" };
+
+  await hydrateContentForContext({ facultadSlug: facultad, carreraSlug: config.defaultCarreraSlug });
+  const noticias = getNoticias({ facultadSlug: facultad, carreraSlug: config.defaultCarreraSlug });
+  const noticia = noticias.find((n) => n.slug === slug);
+
+  if (!noticia) return { title: "Noticia" };
+
+  return {
+    title: `${noticia.titulo} | ${config.nombre}`,
+    description: noticia.resumen,
+    openGraph: {
+      title: noticia.titulo,
+      description: noticia.resumen,
+      images: noticia.imagen ? [{ url: noticia.imagen, alt: noticia.alt }] : [],
+    },
+  };
+}
 
 export default async function NoticiaDetailPage({ params }: NoticiaDetailPageProps) {
   const { facultad, slug } = await params;
@@ -156,8 +180,16 @@ export default async function NoticiaDetailPage({ params }: NoticiaDetailPagePro
                 href={`/${facultad}/noticias/${n.slug}`}
                 className="nd-related-card"
               >
-                <div className="nd-related-img">
-                  <img src={n.imagen} alt={n.alt} />
+                <div className="nd-related-img" style={{ position: "relative" }}>
+                  {n.imagen ? (
+                    <Image
+                      src={n.imagen}
+                      alt={n.alt}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : null}
                 </div>
                 <div className="nd-related-body">
                   <div className="nd-related-meta">

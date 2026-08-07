@@ -26,6 +26,24 @@
   transition: opacity 700ms ease;
 }
 
+/* Desktop: mismo comportamiento que slideOverlay original */
+.slideOverlayDesktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+/* Móvil: oculto por defecto, visible solo en breakpoint móvil */
+.slideOverlayMobile {
+  display: none;
+}
+
 .slideOverlayActive {
   opacity: 1;
 }
@@ -437,75 +455,149 @@
 
 @media (max-width: 720px) {
   .hero {
-    min-height: 560px;
-    align-items: flex-end;
+    min-height: 0;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .slideLayer {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+  }
+
+  .heroShade {
+    background:
+      linear-gradient(180deg, rgba(8, 17, 30, 0.78) 0%, rgba(8, 17, 30, 0.6) 50%, rgba(8, 17, 30, 0.25) 100%);
   }
 
   .heroInner {
-    padding: 34px 0 36px;
+    position: relative;
+    z-index: 4;
+    padding: 28px 0 0;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    pointer-events: none;
   }
 
-  /* En móvil todo va al centro */
+  /* Todo al centro en móvil */
   .panelWrapper,
   .panelWrapper[data-position="right"],
   .panelWrapper[data-position="center"],
   .panelWrapper[data-position="left"] {
     width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
+    pointer-events: auto;
   }
 
+  /* ── Panel base (sliders 2, 3, 4): centrado ── */
   .infoPanel {
     width: 100%;
     min-height: 0;
-    padding: 20px 16px;
+    padding: 20px 20px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
+  /* ── Slider 1 (acreditación): logo arriba centrado, texto centrado ── */
   .infoPanelAccreditacion {
     flex-direction: column;
-    gap: 12px;
+    align-items: center;
+    gap: 14px;
     width: 100%;
-    padding: 20px 16px;
+    padding: 24px 20px 20px;
+    text-align: center;
   }
 
   .acreditadoraRow {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
   }
 
+  .acreditadoraLogo {
+    padding-right: 0;
+    justify-content: center;
+  }
+
+  .acreditadoraLogoImg {
+    width: 110px;
+  }
+
+  /* Divisor horizontal debajo del logo */
   .acreditadoraDivider {
-    width: 40px;
+    width: 60px;
     height: 2px;
     margin: 0;
   }
 
-  .acreditadoraLogoImg {
-    width: 90px;
+  .acreditadoraText {
+    align-items: center;
+    text-align: center;
+    padding-left: 0;
   }
 
+  /* Badge del slider 1 centrado */
+  .acreditadoraBadge {
+    align-self: center;
+  }
+
+  /* CTA del slider 1 centrado */
+  .acreditadoraText .panelCta {
+    align-self: center;
+  }
+
+  /* ── Tipografía más grande y centrada ── */
   .panelRule {
     height: 56px;
     margin-bottom: 8px;
   }
 
   .panelEyebrow {
-    letter-spacing: 0.08em;
-    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+    text-align: center;
   }
 
   .panelTitle {
-    font-size: clamp(1.8rem, 8vw, 3rem);
+    font-size: clamp(2.2rem, 9vw, 3.4rem);
+    text-align: center;
+    display: block;
+    width: 100%;
   }
 
   .panelDescription {
-    font-size: 1rem;
+    font-size: 1.15rem;
+    text-align: center;
+    max-width: 100%;
   }
 
+  .panelMeta,
+  .panelMetaSub,
+  .panelHighlight {
+    text-align: center;
+  }
+
+  .panelList {
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .acreditadoraTitulo {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  /* ── Controles al centro vertical del texto ── */
   .carouselControl {
     width: 42px;
     height: 42px;
     font-size: 1.45rem;
+    top: 28%;
   }
 
   .carouselControlPrev {
@@ -516,7 +608,30 @@
     right: 10px;
   }
 
+  /* ── Overlay desktop oculto ── */
+  .slideOverlayDesktop {
+    display: none;
+  }
+
+  /* ── Overlay móvil: persona más grande y prominente ── */
+  .slideOverlayMobile {
+    display: flex;
+    position: relative;
+    inset: unset;
+    z-index: 4;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+    margin-top: 8px;
+    padding-bottom: 0;
+    min-height: 320px;
+  }
+
   .slideOverlayImg {
-    max-width: 70%;
+    max-height: 360px;
+    max-width: 95%;
+    width: auto;
+    object-fit: contain;
   }
 }

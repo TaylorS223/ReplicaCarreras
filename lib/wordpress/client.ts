@@ -3,8 +3,15 @@ import { getWordpressApiBaseUrl } from "@/lib/wordpress/config";
 type QueryValue = string | number | boolean | undefined;
 type QueryParams = Record<string, QueryValue>;
 
+// Tipo para las opciones de Next.js fetch (revalidate, tags)
+type NextFetchRequestConfig = {
+  revalidate?: number | false;
+  tags?: string[];
+};
+
 type WordpressFetchOptions = RequestInit & {
   query?: QueryParams;
+  next?: NextFetchRequestConfig;
 };
 
 const buildQueryString = (query?: QueryParams) => {
@@ -35,7 +42,7 @@ const buildWordpressUrl = (path: string, query?: QueryParams) => {
 };
 
 export const wpFetch = async <T>(path: string, options?: WordpressFetchOptions) => {
-  const { query, headers, ...init } = options ?? {};
+  const { query, headers, next, ...init } = options ?? {};
   const url = buildWordpressUrl(path, query);
 
   const response = await fetch(url, {
@@ -44,6 +51,7 @@ export const wpFetch = async <T>(path: string, options?: WordpressFetchOptions) 
       "Content-Type": "application/json",
       ...headers,
     },
+    ...(next ? { next } : {}),
   });
 
   if (!response.ok) {

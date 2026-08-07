@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getAdministracionServiciosContent } from "@/lib/wordpress/services/getAdministracionServicios";
 
 export const AdministracionServiciosSection = () => {
@@ -13,9 +14,9 @@ export const AdministracionServiciosSection = () => {
             <div className="administracion-grid">
               {group.items.map((item) => (
                 <div key={item.slug} className="administracion-card">
-                  <figure>
+                  <figure style={{ position: "relative" }}>
                     {item.foto ? (
-                      <img src={item.foto} alt={item.alt} />
+                      <Image src={item.foto} alt={item.alt} fill style={{ objectFit: "cover" }} sizes="120px" />
                     ) : (
                       <svg viewBox="0 0 160 160" aria-hidden="true" className="docente-placeholder-avatar">
                         <circle cx="80" cy="80" r="80" fill="#e8edf5" />

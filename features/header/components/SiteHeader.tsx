@@ -20,6 +20,8 @@ export const SiteHeader = ({ content }: SiteHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileSubmenus, setOpenMobileSubmenus] = useState<Record<string, boolean>>({});
   const [searchValue, setSearchValue] = useState("");
+  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number; opacity: number }>({ left: 0, width: 0, opacity: 0 });
+  const navRef = useRef<HTMLElement>(null);
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,6 +69,39 @@ export const SiteHeader = ({ content }: SiteHeaderProps) => {
     return defaultLabel;
   };
 
+  // Mueve el indicador al elemento hovereado
+  const moveIndicatorTo = (el: HTMLElement) => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const navRect = nav.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const padding = 6; // px extra a cada lado
+    setIndicatorStyle({
+      left: elRect.left - navRect.left - padding,
+      width: elRect.width + padding * 2,
+      opacity: 1,
+    });
+  };
+
+  // Vuelve el indicador al elemento activo
+  const resetIndicatorToActive = () => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const active = nav.querySelector<HTMLElement>("a.is-active");
+    if (active) {
+      moveIndicatorTo(active);
+    } else {
+      setIndicatorStyle((s) => ({ ...s, opacity: 0 }));
+    }
+  };
+
+  // Posiciona el indicador en el activo al montar y cuando cambia la ruta
+  useEffect(() => {
+    // Pequeño delay para que el DOM esté listo
+    const t = setTimeout(resetIndicatorToActive, 80);
+    return () => clearTimeout(t);
+  }, [pathname]);
+
   return (
     <header className={`site-header ${isCompact ? "is-compact" : ""}`}>
       <div className="container header-inner">
@@ -91,18 +126,43 @@ export const SiteHeader = ({ content }: SiteHeaderProps) => {
         </button>
 
         {/* Nav desktop */}
-        <nav className="main-nav desktop-nav" aria-label="Navegación principal">
+        <nav ref={navRef} className="main-nav desktop-nav" aria-label="Navegación principal" onMouseLeave={resetIndicatorToActive}>
+          {/* Indicador deslizante */}
+          <span
+            className="nav-indicator"
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: indicatorStyle.left,
+              width: indicatorStyle.width,
+              height: 4,
+              borderRadius: 999,
+              background: "#c8db39",
+              opacity: indicatorStyle.opacity,
+              transition: "left 220ms ease, width 220ms ease, opacity 180ms ease",
+              pointerEvents: "none",
+            }}
+          />
           {content.navItems.map((item) => {
-            const isActive =
-              resolveHref(item.href) === "/"
-                ? pathname === "/"
-                : pathname === resolveHref(item.href) ||
-                  pathname.startsWith(`${resolveHref(item.href)}/`);
+            const resolvedHref = resolveHref(item.href);
+            const isHome = item.href === "/" || resolvedHref === `/${currentFacultad}`;
+            const isActive = isHome
+              ? pathname === resolvedHref
+              : pathname === resolvedHref ||
+                pathname.startsWith(`${resolvedHref}/`);
             const displayLabel = getDisplayLabel(item.href, item.label);
 
             return (
-              <div key={item.href} className="nav-item-group">
-                <Link href={resolveHref(item.href)} className={isActive ? "is-active" : undefined}>
+              <div
+                key={item.href}
+                className="nav-item-group"
+                onMouseEnter={(e) => {
+                  const link = e.currentTarget.querySelector<HTMLElement>("a");
+                  if (link) moveIndicatorTo(link);
+                }}
+              >
+                <Link href={resolvedHref} className={isActive ? "is-active" : undefined}>
                   {displayLabel}
                 </Link>
                 {item.subItems?.length ? (

@@ -13,6 +13,22 @@ import type {
   WpRestCollectionResponse,
 } from "@/lib/wordpress/acf/types";
 
+// NOTA DE RENDIMIENTO (N+1 queries en imágenes ACF):
+// Los campos ACF de tipo "Image" configurados para retornar "ID" obligan a una llamada
+// adicional a /media/{id} por cada imagen. Para eliminar estas N+1 calls, configura
+// los campos ACF en WordPress para que retornen "URL" directamente en lugar de "ID".
+// Eso elimina por completo las llamadas a resolveMediaUrl para esos campos.
+
+// En desarrollo: no-store → cada petición va directo a WordPress (cambios visibles al instante).
+// En producción: ISR con revalidate + tags → caché de 1 hora, invalidable por webhook.
+const IS_DEV = process.env.NODE_ENV === "development";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const wpCache = (tags: string[]): { next: any } =>
+  IS_DEV
+    ? { next: { revalidate: 0 } }
+    : { next: { revalidate: 3600, tags } };
+
 const getFirstOrNull = <T>(items: T[]): T | null => items[0] ?? null;
 
 const fetchPageBySlug = async <TAcf>(slug: string) => {
@@ -21,7 +37,7 @@ const fetchPageBySlug = async <TAcf>(slug: string) => {
       slug,
       _fields: "id,slug,acf",
     },
-    cache: "no-store",
+    ...wpCache(["wp-pages"]),
   });
 
   return getFirstOrNull(pages);
@@ -43,7 +59,7 @@ const TIPO_PERSONAL_ENDPOINT: Record<TipoPersonalSlug, string> = {
   "direccion-carrera": "direccion_carrera",
 };
 
-// Fetch del CPT de personal por tipo — ahora usa CPTs separados sin taxonomía
+// Fetch del CPT de personal por tipo
 export const getPersonalByTipo = async (
   tipo: TipoPersonalSlug,
   perPage = 100,
@@ -55,7 +71,7 @@ export const getPersonalByTipo = async (
       per_page: perPage,
       _fields: "id,slug,title,acf",
     },
-    cache: "no-store",
+    ...wpCache(["personal", `personal-${tipo}`]),
   });
 };
 
@@ -66,7 +82,7 @@ export const getSemestres = async (perPage = 100): Promise<SemestrePost[]> => {
       per_page: perPage,
       _fields: "id,slug,title,acf,nivel",
     },
-    cache: "no-store",
+    ...wpCache(["semestres"]),
   });
 };
 
@@ -77,7 +93,7 @@ export const getNoticias = async (perPage = 100): Promise<NoticiaPost[]> => {
       per_page: perPage,
       _fields: "id,slug,title,acf",
     },
-    cache: "no-store",
+    ...wpCache(["noticias"]),
   });
 };
 
@@ -88,7 +104,7 @@ export const getRedesSociales = async (): Promise<RedSocialPost[]> => {
       per_page: 100,
       _fields: "id,slug,title,acf,tipo_de_red_social",
     },
-    cache: "no-store",
+    ...wpCache(["redes-sociales"]),
   });
 };
 
@@ -99,16 +115,17 @@ export const getEnlacesInteres = async (): Promise<EnlaceInteresPost[]> => {
       per_page: 100,
       _fields: "id,slug,title,acf",
     },
-    cache: "no-store",
+    ...wpCache(["enlaces-interes"]),
   });
 };
+
 export const resolveMediaUrl = async (value: number | string | undefined): Promise<string> => {
   if (!value) return "";
   if (typeof value === "string") return value;
 
   try {
     const media = await wpFetch<{ source_url?: string }>(`media/${value}`, {
-      cache: "no-store",
+      ...wpCache(["wp-media"]),
     });
     return media.source_url ?? "";
   } catch {
@@ -117,7 +134,6 @@ export const resolveMediaUrl = async (value: number | string | undefined): Promi
 };
 
 // Resuelve todas las imágenes de un post de personal en paralelo
-// y devuelve un mapa campo → URL
 export const resolvePersonalPostImages = async (
   post: PersonalPost,
 ): Promise<Record<string, string>> => {
@@ -137,9 +153,7 @@ export const resolvePersonalPostImages = async (
   return Object.fromEntries(resolved);
 };
 
-/*
- * Resuelve los campos Image de la página Inicio (bannerimagen, imagennoticia).
- */
+// Resuelve los campos Image de la página Inicio (bannerimagen, imagennoticia)
 export const resolveInicioPaginaImages = async (
   acf: Pick<CarreraAcfSchema, "bannerimagen" | "imagennoticia">,
 ): Promise<Record<string, string>> => {
@@ -156,37 +170,23 @@ export const resolveInicioPaginaImages = async (
 };
 
 export const getCarruselCarrera = async (carreraSlug: string): Promise<CarruselCarreraPost | null> => {
-  // Primero intenta buscar por slug exacto (ej: "arquitectura")
   const bySlug = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
-    query: {
-      slug: carreraSlug,
-      per_page: 1,
-      _fields: "id,slug,title,acf",
-    },
-    cache: "no-store",
+    query: { slug: carreraSlug, per_page: 1, _fields: "id,slug,title,acf" },
+    ...wpCache(["carrusel"]),
   }).catch(() => [] as CarruselCarreraPost[]);
 
   if (bySlug.length > 0) return bySlug[0];
 
-  // Fallback: busca por slug con prefijo "slider-{carreraSlug}"
   const byPrefixSlug = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
-    query: {
-      slug: `slider-${carreraSlug}`,
-      per_page: 1,
-      _fields: "id,slug,title,acf",
-    },
-    cache: "no-store",
+    query: { slug: `slider-${carreraSlug}`, per_page: 1, _fields: "id,slug,title,acf" },
+    ...wpCache(["carrusel"]),
   }).catch(() => [] as CarruselCarreraPost[]);
 
   if (byPrefixSlug.length > 0) return byPrefixSlug[0];
 
-  // Último fallback: trae el primer post del CPT
   const all = await wpFetch<CarruselCarreraPost[]>("carrusel_carrera", {
-    query: {
-      per_page: 1,
-      _fields: "id,slug,title,acf",
-    },
-    cache: "no-store",
+    query: { per_page: 1, _fields: "id,slug,title,acf" },
+    ...wpCache(["carrusel"]),
   }).catch(() => [] as CarruselCarreraPost[]);
 
   return all[0] ?? null;
@@ -196,15 +196,15 @@ export const resolveCarruselImages = async (
   acf: import("@/lib/wordpress/acf/types").CarruselCarreraAcfSchema,
 ): Promise<Record<string, string>> => {
   const fields: Array<[string, number | string | undefined]> = [
-    ["slide1_imagen_fondo",    acf.slide1_imagen_fondo],
-    ["slide1_imagen_superior", acf.slide1_imagen_superior],
+    ["slide1_imagen_fondo",      acf.slide1_imagen_fondo],
+    ["slide1_imagen_superior",   acf.slide1_imagen_superior],
     ["slide1_logo_acreditacion", acf.slide1_logo_acreditacion],
-    ["slide2_imagen_fondo",    acf.slide2_imagen_fondo],
-    ["slide2_imagen_superior", acf.slide2_imagen_superior],
-    ["slide3_imagen_fondo",    acf.slide3_imagen_fondo],
-    ["slide3_imagen_superior", acf.slide3_imagen_superior],
-    ["slide4_imagen_fondo",    acf.slide4_imagen_fondo],
-    ["slide4_imagen_superior", acf.slide4_imagen_superior],
+    ["slide2_imagen_fondo",      acf.slide2_imagen_fondo],
+    ["slide2_imagen_superior",   acf.slide2_imagen_superior],
+    ["slide3_imagen_fondo",      acf.slide3_imagen_fondo],
+    ["slide3_imagen_superior",   acf.slide3_imagen_superior],
+    ["slide4_imagen_fondo",      acf.slide4_imagen_fondo],
+    ["slide4_imagen_superior",   acf.slide4_imagen_superior],
   ];
   const resolved = await Promise.all(
     fields.map(async ([key, val]) => [key, await resolveMediaUrl(val)] as [string, string]),
@@ -220,7 +220,7 @@ export const getNoticiasCpt = async (perPage = 100): Promise<NoticiaPost[]> =>
       order: "desc",
       _fields: "id,slug,title,content,date,acf",
     },
-    cache: "no-store",
+    ...wpCache(["noticias"]),
   });
 
 export const resolveNoticiaImages = async (

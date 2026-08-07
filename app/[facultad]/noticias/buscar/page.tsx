@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
@@ -84,8 +85,17 @@ export default async function BuscarNoticiasPage({
                   <Link
                     href={`/${facultad}/noticias/${noticia.slug}`}
                     className="ap-post-img-link"
+                    style={{ position: "relative", display: "block", aspectRatio: "16/9", overflow: "hidden" }}
                   >
-                    <img src={noticia.imagen} alt={noticia.alt} className="ap-post-img" />
+                    {noticia.imagen ? (
+                      <Image
+                        src={noticia.imagen}
+                        alt={noticia.alt}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 768px) 100vw, 680px"
+                      />
+                    ) : null}
                   </Link>
 
                   <div className="ap-post-head">

@@ -1,11 +1,27 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 type NoticiasPageProps = {
   params: Promise<{ facultad: string }>;
 };
+
+export async function generateMetadata({ params }: NoticiasPageProps): Promise<Metadata> {
+  const { facultad } = await params;
+  const config = getFacultadConfig(facultad);
+  if (!config) return { title: "Noticias" };
+  return {
+    title: `Noticias | ${config.nombre}`,
+    description: `Últimas noticias y actualidad de ${config.nombre}`,
+    openGraph: {
+      title: `Noticias | ${config.nombre}`,
+      description: `Últimas noticias y actualidad de ${config.nombre}`,
+    },
+  };
+}
 
 export default async function NoticiasPage({ params }: NoticiasPageProps) {
   const { facultad } = await params;
@@ -38,8 +54,16 @@ export default async function NoticiasPage({ params }: NoticiasPageProps) {
 
             return (
               <article key={noticia.slug} className="ap-post">
-                <Link href={`/${facultad}/noticias/${noticia.slug}`} className="ap-post-img-link">
-                  <img src={noticia.imagen} alt={noticia.alt} className="ap-post-img" />
+                <Link href={`/${facultad}/noticias/${noticia.slug}`} className="ap-post-img-link" style={{ position: "relative", display: "block", aspectRatio: "16/9", overflow: "hidden" }}>
+                  {noticia.imagen ? (
+                    <Image
+                      src={noticia.imagen}
+                      alt={noticia.alt}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      sizes="(max-width: 768px) 100vw, 680px"
+                    />
+                  ) : null}
                 </Link>
 
                 <div className="ap-post-head">

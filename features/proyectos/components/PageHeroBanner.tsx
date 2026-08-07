@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styles from "./PageHeroBanner.module.css";
 
 type PageHeroBannerProps = {
@@ -10,7 +11,18 @@ type PageHeroBannerProps = {
 export const PageHeroBanner = ({ id, title, imageSrc, imageAlt = "" }: PageHeroBannerProps) => {
   return (
     <section id={id} className={styles.banner} aria-label={title}>
-      <img className={styles.bg} src={imageSrc} alt={imageAlt} aria-hidden="true" />
+      {imageSrc ? (
+        <Image
+          className={styles.bg}
+          src={imageSrc}
+          alt={imageAlt}
+          aria-hidden="true"
+          fill
+          priority
+          style={{ objectFit: "cover" }}
+          sizes="100vw"
+        />
+      ) : null}
       <div className={styles.overlay} aria-hidden="true" />
       <div className={`container ${styles.inner}`}>
         <h1 className={styles.title}>{title}</h1>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Docente } from "@/types/docente";
 
 type DocenteDetailSectionProps = {
@@ -22,9 +23,9 @@ export const DocenteDetailSection = ({ docente }: DocenteDetailSectionProps) => 
     <section className="docente-detail section">
       <div className="container docente-detail-grid">
         <aside>
-          <figure className="docente-detail-avatar">
+          <figure className="docente-detail-avatar" style={{ position: "relative" }}>
             {docente.foto ? (
-              <img src={docente.foto} alt={docente.alt} />
+              <Image src={docente.foto} alt={docente.alt} fill style={{ objectFit: "cover" }} sizes="160px" />
             ) : (
               <svg viewBox="0 0 160 160" aria-hidden="true" className="docente-placeholder-avatar">
                 <circle cx="80" cy="80" r="80" fill="#e8edf5" />

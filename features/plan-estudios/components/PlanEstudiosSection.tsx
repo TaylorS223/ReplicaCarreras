@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Course, PlanEstudiosContent, StudyLevel } from "@/types/api";
+import { useReveal } from "@/shared/hooks/useReveal";
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
 
@@ -53,6 +54,7 @@ const PlanLevelCard = ({
 export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent }) => {
   const [active, setActive] = useState(0);
   const total = content.levels.length;
+  const [sectionRef, visible] = useReveal<HTMLElement>();
 
   // Touch / swipe
   const touchStartX = useRef<number | null>(null);
@@ -102,7 +104,11 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
   };
 
   return (
-    <section id="plan" className="section plan-carousel-section">
+    <section
+      id="plan"
+      ref={sectionRef}
+      className={`section plan-carousel-section reveal${visible ? " reveal--visible" : ""}`}
+    >
       <div className="container">
         <div className="section-header">
           <h2>{content.title}</h2>

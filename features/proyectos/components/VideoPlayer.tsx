@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 type VideoPlayerProps = {
   videoUrl: string;
@@ -35,8 +36,16 @@ export const VideoPlayer = ({
 
   if (!embedUrl) {
     return (
-      <div className="accreditation-img-wrapper">
-        <img src={posterSrc} alt={posterAlt} />
+      <div className="accreditation-img-wrapper" style={{ position: "relative" }}>
+        {posterSrc ? (
+          <Image
+            src={posterSrc}
+            alt={posterAlt}
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        ) : null}
         <div className="accreditation-play">
           <span>&#9654;</span>
         </div>
@@ -60,11 +69,19 @@ export const VideoPlayer = ({
     <div
       className="accreditation-img-wrapper"
       onClick={() => setPlaying(true)}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", position: "relative" }}
       role="button"
       aria-label={`Reproducir video: ${title}`}
     >
-      <img src={posterSrc} alt={posterAlt} />
+      {posterSrc ? (
+        <Image
+          src={posterSrc}
+          alt={posterAlt}
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+      ) : null}
       <div className="accreditation-play">
         <span>&#9654;</span>
       </div>

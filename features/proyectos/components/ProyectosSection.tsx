@@ -1,24 +1,28 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getProyectosContent } from "@/lib/wordpress/services/getProyectosContent";
-import { getHeaderContentByContext } from "@/lib/content/resolver";
+import { ProyectosSectionWrapper } from "./ProyectosSectionWrapper";
 
 type ProyectosSectionProps = {
   facultadSlug: string;
 };
 
+/**
+ * Server Component — renderiza las tarjetas de noticias/proyectos en servidor.
+ * El reveal-on-scroll lo gestiona ProyectosSectionWrapper (client).
+ */
 export const ProyectosSection = ({ facultadSlug }: ProyectosSectionProps) => {
   const content = getProyectosContent({ facultadSlug });
 
   const buildHref = (itemHref: string) => {
     if (!itemHref) return `/${facultadSlug}/noticias`;
     if (itemHref.startsWith("http")) return itemHref;
-    // Si el href ya tiene el facultadSlug lo dejamos, si no lo añadimos
     if (itemHref.startsWith(`/${facultadSlug}`)) return itemHref;
     return `/${facultadSlug}${itemHref.startsWith("/") ? itemHref : `/${itemHref}`}`;
   };
 
   return (
-    <section id="proyectos" className="section">
+    <ProyectosSectionWrapper>
       <div className="container">
         <div className="section-header">
           <Link href={`/${facultadSlug}/noticias`} className="section-title-link">
@@ -33,8 +37,16 @@ export const ProyectosSection = ({ facultadSlug }: ProyectosSectionProps) => {
               className="news-card"
               href={buildHref(item.href)}
             >
-              <figure>
-                {item.imagen ? <img src={item.imagen} alt={item.alt} /> : null}
+              <figure style={{ position: "relative" }}>
+                {item.imagen ? (
+                  <Image
+                    src={item.imagen}
+                    alt={item.alt}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    sizes="(max-width: 768px) 85vw, 25vw"
+                  />
+                ) : null}
               </figure>
               <time dateTime={item.fechaISO}>{item.fechaTexto}</time>
               <h3>{item.titulo}</h3>
@@ -42,6 +54,6 @@ export const ProyectosSection = ({ facultadSlug }: ProyectosSectionProps) => {
           ))}
         </div>
       </div>
-    </section>
+    </ProyectosSectionWrapper>
   );
 };

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getComisionesContent } from "@/lib/wordpress/services/getComisiones";
 
 const splitBySemicolon = (value: string): string[] =>
@@ -19,8 +20,8 @@ export const ComisionesSection = () => {
             <div key={profile.slug} className="docente-detail-grid decanato-profile">
               <aside>
                 {profile.foto && (
-                  <figure className="docente-detail-avatar">
-                    <img src={profile.foto} alt={profile.alt} />
+                  <figure className="docente-detail-avatar" style={{ position: "relative" }}>
+                    <Image src={profile.foto} alt={profile.alt} fill style={{ objectFit: "cover" }} sizes="160px" />
                   </figure>
                 )}
               </aside>

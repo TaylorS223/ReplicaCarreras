@@ -1,0 +1,70 @@
+/* ─── Reveal on scroll ────────────────────────────────────────────────────────
+   Base state: invisible + displaced downward.
+   .reveal--visible: animates to final position (once, via IntersectionObserver).
+   Variants:
+     .reveal--up      fade + slide up (default for sections)
+     .reveal--fade    fade only (subtle, for containers with inner stagger)
+     .reveal--left    fade + slide from left
+     .reveal--right   fade + slide from right
+   Delay helpers: .reveal--d1 … .reveal--d5
+──────────────────────────────────────────────────────────────────────────────── */
+
+/* Default = up */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+.reveal--fade {
+  opacity: 0;
+  transform: none;
+  transition: opacity 600ms ease;
+  will-change: opacity;
+}
+
+.reveal--left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition:
+    opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+.reveal--right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition:
+    opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+/* Visible state — same for all variants */
+.reveal--visible {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Stagger delays */
+.reveal--d1 { transition-delay: 80ms; }
+.reveal--d2 { transition-delay: 160ms; }
+.reveal--d3 { transition-delay: 240ms; }
+.reveal--d4 { transition-delay: 320ms; }
+.reveal--d5 { transition-delay: 400ms; }
+
+/* Respect prefers-reduced-motion: skip animations entirely */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal--fade,
+  .reveal--left,
+  .reveal--right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

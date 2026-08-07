@@ -252,12 +252,12 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
         ))}
       </div>
 
-      {/* Overlay de persona — solo el slide activo, por encima del heroShade */}
+      {/* Desktop: overlay absoluto sobre el fondo */}
       {currentSlide.overlay && (
         <div
-          className={`${styles.slideOverlay} ${styles.slideOverlayActive}`}
+          className={`${styles.slideOverlayDesktop} ${styles.slideOverlayActive}`}
           aria-hidden="true"
-          key={`overlay-${currentIndex}`}
+          key={`overlay-desktop-${currentIndex}`}
         >
           <img
             src={currentSlide.overlay}
@@ -288,6 +288,7 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
       </button>
 
       <div className={`container ${styles.heroInner}`}>
+        {/* Texto — siempre arriba en móvil */}
         <div
           key={sequenceKey}
           className={styles.panelWrapper}
@@ -296,6 +297,22 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
         >
           <SlidePanel text={currentSlide.text} />
         </div>
+
+        {/* Móvil: overlay dentro del flujo, debajo del texto */}
+        {currentSlide.overlay && (
+          <div
+            className={styles.slideOverlayMobile}
+            aria-hidden="true"
+            key={`overlay-mobile-${currentIndex}`}
+          >
+            <img
+              src={currentSlide.overlay}
+              alt=""
+              className={styles.slideOverlayImg}
+              aria-hidden="true"
+            />
+          </div>
+        )}
       </div>
     </section>
   );
