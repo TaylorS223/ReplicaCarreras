@@ -3,16 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 
 interface UseRevealOptions {
-  /** Fraction of the element that must be visible before triggering (0–1). Default: 0.12 */
   threshold?: number;
-  /** Margin around the root. Default: "0px 0px -48px 0px" (triggers slightly before entering) */
   rootMargin?: string;
 }
 
 /**
  * Returns [ref, isVisible].
  * Once the element intersects the viewport it becomes visible and never resets.
- * Respects prefers-reduced-motion: starts as visible immediately if motion is reduced.
+ * Respects prefers-reduced-motion — handled entirely client-side to avoid hydration mismatch.
  */
 export function useReveal<T extends Element = HTMLElement>(
   options: UseRevealOptions = {}
@@ -20,14 +18,13 @@ export function useReveal<T extends Element = HTMLElement>(
   const ref = useRef<T>(null);
   const { threshold = 0.12, rootMargin = "0px 0px -48px 0px" } = options;
 
-  const prefersReduced =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
-
-  const [visible, setVisible] = useState(prefersReduced);
+  // Always start as false on server and client — avoids hydration mismatch.
+  // prefers-reduced-motion is checked inside useEffect (client-only).
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     if (prefersReduced) {
       setVisible(true);
       return;
@@ -40,7 +37,7 @@ export function useReveal<T extends Element = HTMLElement>(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.disconnect(); // once — never fires again
+          observer.disconnect();
         }
       },
       { threshold, rootMargin }
@@ -48,7 +45,7 @@ export function useReveal<T extends Element = HTMLElement>(
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [threshold, rootMargin, prefersReduced]);
+  }, [threshold, rootMargin]);
 
   return [ref, visible];
 }

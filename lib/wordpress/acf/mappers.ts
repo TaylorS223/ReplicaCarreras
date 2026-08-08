@@ -421,7 +421,7 @@ export const mapNoticiaPost = (
     imagen: images["imagennoticia"] ?? resolveImageUrl(post.acf?.imagennoticia),
     alt: post.title?.rendered ?? post.slug,
     href: "",
-    autor: post.acf?.autor ?? "gabrielsalvatierra",
+    autor: post.acf?.autor ?? "",
   };
 };
 
