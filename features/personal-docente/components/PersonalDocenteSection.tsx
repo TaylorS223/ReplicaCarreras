@@ -2,17 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { getPersonalContent } from "@/lib/wordpress/services/getPersonal";
 import { PersonalDocenteWrapper } from "./PersonalDocenteWrapper";
+import type { ContentContext } from "@/lib/content/resolver";
 
 type PersonalDocenteSectionProps = {
   basePath: string;
-};
+} & ContentContext;
 
-/**
- * Server Component — renderiza las tarjetas de docentes en servidor.
- * El reveal-on-scroll lo gestiona PersonalDocenteWrapper (client).
- */
-export const PersonalDocenteSection = ({ basePath }: PersonalDocenteSectionProps) => {
-  const content = getPersonalContent();
+export const PersonalDocenteSection = ({ basePath, facultadSlug, carreraSlug }: PersonalDocenteSectionProps) => {
+  const content = getPersonalContent({ facultadSlug, carreraSlug });
 
   return (
     <PersonalDocenteWrapper>

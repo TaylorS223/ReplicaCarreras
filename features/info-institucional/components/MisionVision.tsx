@@ -1,13 +1,9 @@
 import { getMisionVisionItems } from "@/lib/wordpress/services/getInfo";
 import { MisionVisionWrapper } from "./MisionVisionWrapper";
+import type { ContentContext } from "@/lib/content/resolver";
 
-/**
- * Server Component — renderiza el contenido en servidor.
- * El reveal-on-scroll lo gestiona MisionVisionWrapper (client).
- */
-export const MisionVision = () => {
-  const items = getMisionVisionItems();
-
+export const MisionVision = (ctx?: ContentContext) => {
+  const items = getMisionVisionItems(ctx);
   return (
     <MisionVisionWrapper>
       <div className="container card-grid">

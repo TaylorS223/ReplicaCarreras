@@ -5,14 +5,15 @@ import { ProyectosSectionWrapper } from "./ProyectosSectionWrapper";
 
 type ProyectosSectionProps = {
   facultadSlug: string;
+  carreraSlug?: string;
 };
 
 /**
  * Server Component — renderiza las tarjetas de noticias/proyectos en servidor.
  * El reveal-on-scroll lo gestiona ProyectosSectionWrapper (client).
  */
-export const ProyectosSection = ({ facultadSlug }: ProyectosSectionProps) => {
-  const content = getProyectosContent({ facultadSlug });
+export const ProyectosSection = ({ facultadSlug, carreraSlug }: ProyectosSectionProps) => {
+  const content = getProyectosContent({ facultadSlug, carreraSlug });
 
   const buildHref = (itemHref: string) => {
     if (!itemHref) return `/${facultadSlug}/noticias`;

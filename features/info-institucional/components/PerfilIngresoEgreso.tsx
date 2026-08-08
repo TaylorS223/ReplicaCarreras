@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { getProfileContent } from "@/lib/wordpress/services/getInfo";
 import { PerfilIngresoEgresoWrapper } from "./PerfilIngresoEgresoWrapper";
+import type { ContentContext } from "@/lib/content/resolver";
 
-/**
- * Server Component — lee los datos ya hidratados desde el store del servidor.
- * El reveal-on-scroll y el canvas de partículas los gestiona PerfilIngresoEgresoWrapper (client).
- */
-export const PerfilIngresoEgreso = () => {
-  const content = getProfileContent();
-
+export const PerfilIngresoEgreso = (ctx?: ContentContext) => {
+  const content = getProfileContent(ctx);
   return (
     <PerfilIngresoEgresoWrapper sectionTitle={content.sectionTitle}>
       {content.cards.map((card) => (
@@ -19,12 +15,7 @@ export const PerfilIngresoEgreso = () => {
             <p key={`${card.title}-${index}`}>{paragraph}</p>
           ))}
           {card.cta ? (
-            <Link
-              className="cta"
-              href={card.cta.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link className="cta" href={card.cta.href} target="_blank" rel="noopener noreferrer">
               {card.cta.label}
             </Link>
           ) : null}

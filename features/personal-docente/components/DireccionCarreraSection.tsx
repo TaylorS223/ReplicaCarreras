@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { getDireccionCarreraContent } from "@/lib/wordpress/services/getDireccionCarrera";
+import type { ContentContext } from "@/lib/content/resolver";
 
-export const DireccionCarreraSection = () => {
-  const content = getDireccionCarreraContent();
+export const DireccionCarreraSection = (ctx?: ContentContext) => {
+  const content = getDireccionCarreraContent(ctx);
 
   return (
     <section className="docente-detail section decanato-section">

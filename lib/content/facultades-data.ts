@@ -261,6 +261,44 @@ export const FACULTADES_CONTENT: Record<string, FacultadContent> = {
   },
 };
 
+// ── Software — estructura base vacía ─────────────────────────────────────────
+// El sync de ACF sobreescribe estos valores con datos reales de WordPress.
+FACULTADES_CONTENT["software"] = {
+  header: {
+    brandImage: "",
+    brandAlt: "Software",
+    brandHref: "/",
+    navItems: [
+      { label: "Inicio", href: "/", isActive: true },
+      {
+        label: "Personal",
+        href: "/personal",
+        subItems: [
+          { label: "Decanato", href: "/personal/decanato" },
+          { label: "Dirección Carrera", href: "/personal/direccion-carrera" },
+          { label: "Docentes", href: "/personal#docentes" },
+          { label: "Comisiones", href: "/personal/comisiones" },
+          { label: "Administración y servicios", href: "/personal/administracion-servicios" },
+        ],
+      },
+      { label: "Plan de estudios", href: "/carreras/software/plan-estudios" },
+    ],
+  },
+  footer: {
+    brandImage: "",
+    brandAlt: "Software",
+    location: "",
+    email: "",
+    groups: [],
+    socialLinks: [],
+    copyright: "",
+  },
+  decanato:              { title: "Decanato",             description: "", profiles: [] },
+  direccionCarrera:      { title: "Dirección de Carrera", description: "", profiles: [] },
+  comisiones:            { title: "Comisiones",           description: "", profiles: [] },
+  administracionServicios: { title: "Administración y servicios", description: "", groups: [] },
+};
+
 export const upsertFacultadContent = (facultadSlug: string, content: FacultadContent) => {
   FACULTADES_CONTENT[facultadSlug] = content;
 };

@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { getComisionesContent } from "@/lib/wordpress/services/getComisiones";
+import type { ContentContext } from "@/lib/content/resolver";
 
 const splitBySemicolon = (value: string): string[] =>
   value.split(";").map((item) => item.trim()).filter(Boolean);
 
-export const ComisionesSection = () => {
-  const content = getComisionesContent();
+export const ComisionesSection = (ctx?: ContentContext) => {
+  const content = getComisionesContent(ctx);
 
   return (
     <section className="docente-detail section decanato-section">

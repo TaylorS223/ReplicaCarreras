@@ -50,14 +50,15 @@ const withImages = async <T>(
 
 export const syncPersonalFacultadFromCpt = async (
   content: FacultadContent,
+  facultadSlug = "arquitectura",
 ): Promise<FacultadContent> => {
   const [decanatoPosts, direccionCarreraPosts, comisionesPosts, adminPosts, serviciosPosts] =
     await Promise.all([
-      getPersonalByTipo("decano"),
-      getPersonalByTipo("direccion-carrera"),
-      getPersonalByTipo("comision"),
-      getPersonalByTipo("administrativo"),
-      getPersonalByTipo("servicios"),
+      getPersonalByTipo("decano", 100, facultadSlug, facultadSlug),
+      getPersonalByTipo("direccion-carrera", 100, facultadSlug, facultadSlug),
+      getPersonalByTipo("comision", 100, facultadSlug, facultadSlug),
+      getPersonalByTipo("administrativo", 100, facultadSlug, facultadSlug),
+      getPersonalByTipo("servicios", 100, facultadSlug, facultadSlug),
     ]);
 
   const result = { ...content };
@@ -105,10 +106,11 @@ export const syncPersonalFacultadFromCpt = async (
 export const syncDocentesFromCpt = async (
   content: CarreraContent,
   facultadSlug = "arquitectura",
+  carreraSlug = "arquitectura",
 ): Promise<CarreraContent> => {
   const [docentesPosts, semestresPosts] = await Promise.all([
-    getPersonalByTipo("docentes"),
-    getSemestres(),
+    getPersonalByTipo("docentes", 100, carreraSlug, facultadSlug),
+    getSemestres(100, carreraSlug, facultadSlug),
   ]);
 
   let result = { ...content };
@@ -134,8 +136,9 @@ export const syncDocentesFromCpt = async (
 export const syncNoticiasFromCpt = async (
   content: CarreraContent,
   facultadSlug = "arquitectura",
+  carreraSlug = "arquitectura",
 ): Promise<CarreraContent> => {
-  const posts = await getNoticiasCpt();
+  const posts = await getNoticiasCpt(100, carreraSlug, facultadSlug);
 
   if (posts.length === 0) return content;
 
@@ -165,7 +168,7 @@ const applyInicioPaginaFromAcf = async (
   return { ...content, inicioPagina };
 };
 
-export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
+export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSlug = "arquitectura") => {
   const entry = await getFacultadAcfEntry(facultadSlug);
 
   const getBase = async () => {
@@ -179,12 +182,12 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string) => {
   };
 
   let result = await getBase();
-  result = await syncPersonalFacultadFromCpt(result);
+  result = await syncPersonalFacultadFromCpt(result, facultadSlug);
 
-  // Carga redes sociales desde el CPT redsocial
+  // Carga redes sociales y enlaces filtrados por carrera usando jerarquía nativa de WP
   const [redesPosts, enlacesPosts] = await Promise.all([
-    getRedesSociales().catch(() => []),
-    getEnlacesInteres().catch(() => []),
+    getRedesSociales(carreraSlug, facultadSlug).catch(() => []),
+    getEnlacesInteres(carreraSlug, facultadSlug).catch(() => []),
   ]);
 
   if (redesPosts.length > 0) {
@@ -357,14 +360,14 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     base = await mergeCarreraFromInicioPagina(entry.acf, base);
   }
 
-  const withDocentes = await syncDocentesFromCpt(base, facultadSlug);
-  const withNoticias = await syncNoticiasFromCpt(withDocentes, facultadSlug);
+  const withDocentes = await syncDocentesFromCpt(base, facultadSlug, carreraSlug);
+  const withNoticias = await syncNoticiasFromCpt(withDocentes, facultadSlug, carreraSlug);
   const withInicio = entry !== null && entry.acf
     ? await applyInicioPaginaFromAcf(entry.acf, withNoticias)
     : withNoticias;
 
   // ── Carrusel hero desde CPT carrusel_carrera ──────────────────────────────
-  const carruselPost = await getCarruselCarrera(carreraSlug).catch(() => null);
+  const carruselPost = await getCarruselCarrera(carreraSlug, facultadSlug).catch(() => null);
   const withCarrusel = carruselPost?.acf
     ? await (async () => {
         const images = await resolveCarruselImages(carruselPost.acf!);
@@ -381,7 +384,7 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
 
 export const syncContextContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {
   const [facultad, carrera] = await Promise.all([
-    syncFacultadContentFromAcf(facultadSlug),
+    syncFacultadContentFromAcf(facultadSlug, carreraSlug),
     syncCarreraContentFromAcf(facultadSlug, carreraSlug),
   ]);
   return { facultad, carrera };

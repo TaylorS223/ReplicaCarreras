@@ -1,13 +1,9 @@
 import { getInfoCards } from "@/lib/wordpress/services/getInfo";
 import { DatosCarreraWrapper } from "./DatosCarreraWrapper";
+import type { ContentContext } from "@/lib/content/resolver";
 
-/**
- * Server Component — renderiza las tarjetas de datos en servidor.
- * El reveal-on-scroll lo gestiona DatosCarreraWrapper (client).
- */
-export const DatosCarrera = () => {
-  const cards = getInfoCards();
-
+export const DatosCarrera = (ctx?: ContentContext) => {
+  const cards = getInfoCards(ctx);
   return (
     <DatosCarreraWrapper>
       <div className="container-info-grid">

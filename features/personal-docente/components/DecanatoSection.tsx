@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { getDecanatoContent } from "@/lib/wordpress/services/getDecanato";
+import type { ContentContext } from "@/lib/content/resolver";
 
-export const DecanatoSection = () => {
-  const content = getDecanatoContent();
+export const DecanatoSection = (ctx?: ContentContext) => {
+  const content = getDecanatoContent(ctx);
 
   return (
     <section className="docente-detail section decanato-section">
@@ -11,7 +12,9 @@ export const DecanatoSection = () => {
           <div key={profile.slug} className="docente-detail-grid decanato-profile">
             <aside>
               <figure className="docente-detail-avatar" style={{ position: "relative" }}>
-                <Image src={profile.foto} alt={profile.alt} fill style={{ objectFit: "cover" }} sizes="160px" />
+                {profile.foto ? (
+                  <Image src={profile.foto} alt={profile.alt} fill style={{ objectFit: "cover" }} sizes="160px" />
+                ) : null}
               </figure>
             </aside>
 

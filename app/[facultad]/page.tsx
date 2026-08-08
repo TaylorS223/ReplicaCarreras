@@ -7,7 +7,6 @@ import { AcreditacionSection } from "@/features/proyectos/components/Acreditacio
 import { Pensum } from "@/components/carrera/Pensum";
 import { PersonalDocenteSection } from "@/features/personal-docente/components/PersonalDocenteSection";
 import { getFacultadConfig } from "@/lib/facultades/registry";
-import { notFound } from "next/navigation";
 
 type FacultadHomePageProps = {
   params: Promise<{ facultad: string }>;
@@ -16,22 +15,21 @@ type FacultadHomePageProps = {
 export default async function FacultadHomePage({ params }: FacultadHomePageProps) {
   const { facultad } = await params;
   const config = getFacultadConfig(facultad);
-  const carreraSlug = config?.defaultCarreraSlug;
 
-  if (!config) {
-    notFound();
-  }
+  // El carreraSlug puede venir del config local o usar el slug de la URL por convención
+  const carreraSlug = config?.defaultCarreraSlug ?? facultad;
+  const ctx = { facultadSlug: facultad, carreraSlug };
 
   return (
     <>
       <HeroFacultad facultadSlug={facultad} carreraSlug={carreraSlug} />
-      <StatsSection />
-      <MisionVision />
-      <PerfilIngresoEgreso />
-      <ProyectosSection facultadSlug={facultad} />
+      <StatsSection {...ctx} />
+      <MisionVision {...ctx} />
+      <PerfilIngresoEgreso {...ctx} />
+      <ProyectosSection facultadSlug={facultad} carreraSlug={carreraSlug} />
       <AcreditacionSection basePath={`/${facultad}`} facultadSlug={facultad} carreraSlug={carreraSlug} />
       <Pensum facultadSlug={facultad} carreraSlug={carreraSlug} />
-      <PersonalDocenteSection basePath={`/${facultad}/personal`} />
+      <PersonalDocenteSection basePath={`/${facultad}/personal`} facultadSlug={facultad} carreraSlug={carreraSlug} />
     </>
   );
 }

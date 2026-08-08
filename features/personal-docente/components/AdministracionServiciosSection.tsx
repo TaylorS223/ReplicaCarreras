@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { getAdministracionServiciosContent } from "@/lib/wordpress/services/getAdministracionServicios";
+import type { ContentContext } from "@/lib/content/resolver";
 
-export const AdministracionServiciosSection = () => {
-  const content = getAdministracionServiciosContent();
+export const AdministracionServiciosSection = (ctx?: ContentContext) => {
+  const content = getAdministracionServiciosContent(ctx);
 
   return (
     <section className="section administracion-servicios-section">
