@@ -21,7 +21,7 @@ const IS_DEV = process.env.NODE_ENV === "development";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const wpCache = (tags: string[]): { next: any } =>
   IS_DEV
-    ? { next: { revalidate: 0 } }
+    ? { cache: "no-store" as const }
     : { next: { revalidate: 3600, tags } };
 
 const getFirstOrNull = <T>(items: T[]): T | null => items[0] ?? null;
@@ -59,8 +59,9 @@ const fetchPageBySlug = async <TAcf>(slug: string) => {
 export const getFacultadAcfEntry = async (facultadSlug: string) =>
   fetchPageBySlug<FacultadAcfSchema>(`facultad-${facultadSlug}`);
 
-export const getCarreraAcfEntry = async (facultadSlug: string, carreraSlug: string) =>
-  fetchPageBySlug<CarreraAcfSchema>(`carrera-${facultadSlug}-${carreraSlug}`);
+/** Busca la page de carrera con slug carrera-{carreraSlug} */
+export const getCarreraAcfEntry = async (carreraSlug: string) =>
+  fetchPageBySlug<CarreraAcfSchema>(`carrera-${carreraSlug}`);
 
 // ── CPT Personal ──────────────────────────────────────────────────────────────
 

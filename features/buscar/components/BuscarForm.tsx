@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { Sugerencia } from "@/app/[facultad]/buscar/sugerencias/route";
+import type { Sugerencia } from "@/app/[carrera]/buscar/sugerencias/route";
 
 type BuscarFormProps = {
-  facultad: string;
+  carrera: string;
   initialQuery: string;
 };
 
-export const BuscarForm = ({ facultad, initialQuery }: BuscarFormProps) => {
+export const BuscarForm = ({ carrera, initialQuery }: BuscarFormProps) => {
   const [value, setValue] = useState(initialQuery);
   const [sugerencias, setSugerencias] = useState<Sugerencia[]>([]);
   const [abierto, setAbierto] = useState(false);
@@ -30,29 +30,20 @@ export const BuscarForm = ({ facultad, initialQuery }: BuscarFormProps) => {
 
   const fetchSugerencias = (q: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (q.trim().length < 2) {
-      setSugerencias([]);
-      setAbierto(false);
-      return;
-    }
+    if (q.trim().length < 2) { setSugerencias([]); setAbierto(false); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `/${facultad}/buscar/sugerencias?q=${encodeURIComponent(q)}`,
-        );
+        const res = await fetch(`/${carrera}/buscar/sugerencias?q=${encodeURIComponent(q)}`);
         const data: Sugerencia[] = await res.json();
         setSugerencias(data);
         setAbierto(data.length > 0);
         setIndiceActivo(-1);
-      } catch {
-        setSugerencias([]);
-      }
+      } catch { setSugerencias([]); }
     }, 220);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-    fetchSugerencias(e.target.value);
+    setValue(e.target.value); fetchSugerencias(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,64 +51,42 @@ export const BuscarForm = ({ facultad, initialQuery }: BuscarFormProps) => {
     const q = value.trim();
     if (!q) return;
     setAbierto(false);
-    router.push(`/${facultad}/buscar?q=${encodeURIComponent(q)}`);
+    router.push(`/${carrera}/buscar?q=${encodeURIComponent(q)}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!abierto || sugerencias.length === 0) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setIndiceActivo((prev) => Math.min(prev + 1, sugerencias.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setIndiceActivo((prev) => Math.max(prev - 1, -1));
-    } else if (e.key === "Enter" && indiceActivo >= 0) {
+    if (e.key === "ArrowDown") { e.preventDefault(); setIndiceActivo((prev) => Math.min(prev + 1, sugerencias.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setIndiceActivo((prev) => Math.max(prev - 1, -1)); }
+    else if (e.key === "Enter" && indiceActivo >= 0) {
       e.preventDefault();
       const s = sugerencias[indiceActivo];
-      setValue(s.texto);
-      setAbierto(false);
-      router.push(s.href);
-    } else if (e.key === "Escape") {
-      setAbierto(false);
-    }
+      setValue(s.texto); setAbierto(false); router.push(s.href);
+    } else if (e.key === "Escape") { setAbierto(false); }
   };
 
   const handleSugerenciaClick = (s: Sugerencia) => {
-    setValue(s.texto);
-    setAbierto(false);
-    router.push(s.href);
+    setValue(s.texto); setAbierto(false); router.push(s.href);
   };
 
   return (
     <div ref={wrapperRef} className="buscar-form-wrapper">
       <form className="buscar-form" onSubmit={handleSubmit} role="search">
         <input
-          type="search"
-          className="buscar-input"
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
+          type="search" className="buscar-input" value={value}
+          onChange={handleChange} onKeyDown={handleKeyDown}
           onFocus={() => sugerencias.length > 0 && setAbierto(true)}
-          placeholder="Buscar en el micrositio..."
-          aria-label="Buscar"
-          aria-autocomplete="list"
-          aria-expanded={abierto}
-          autoComplete="off"
-          autoFocus
+          placeholder="Buscar en el micrositio..." aria-label="Buscar"
+          aria-autocomplete="list" aria-expanded={abierto} autoComplete="off" autoFocus
         />
         <button type="submit" className="buscar-btn">Buscar</button>
       </form>
-
       {abierto && sugerencias.length > 0 && (
         <ul className="buscar-sugerencias" role="listbox">
           {sugerencias.map((s, i) => (
-            <li
-              key={`${s.href}-${i}`}
-              role="option"
-              aria-selected={i === indiceActivo}
+            <li key={`${s.href}-${i}`} role="option" aria-selected={i === indiceActivo}
               className={`buscar-sugerencia-item${i === indiceActivo ? " is-active" : ""}`}
-              onMouseDown={() => handleSugerenciaClick(s)}
-            >
+              onMouseDown={() => handleSugerenciaClick(s)}>
               <span className="buscar-sug-texto">{s.texto}</span>
               <span className="buscar-sug-categoria">{s.categoria}</span>
             </li>

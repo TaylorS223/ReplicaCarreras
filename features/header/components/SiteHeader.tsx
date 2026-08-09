@@ -13,7 +13,7 @@ type SiteHeaderProps = {
 export const SiteHeader = ({ content }: SiteHeaderProps) => {
   const pathname = usePathname();
   const firstSegment = pathname.split("/").filter(Boolean)[0] ?? "";
-  const currentFacultad = getFacultadConfig(firstSegment) ? firstSegment : null;
+  const currentFacultad = firstSegment || null;
 
   const [isCompact, setIsCompact] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);

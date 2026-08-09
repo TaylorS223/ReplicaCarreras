@@ -25,7 +25,9 @@ export const gqlFetch = async <T>(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
-    next: IS_DEV ? { revalidate: 0 } : { revalidate: 3600, tags: ["graphql"] },
+    ...(IS_DEV
+      ? { cache: "no-store" as const }
+      : { next: { revalidate: 3600, tags: ["graphql"] } }),
   });
 
   if (!response.ok) {

@@ -1,19 +1,24 @@
 import Link from "next/link";
+import { getAllCarreraTerms } from "@/lib/wordpress/services/getCarreraTermId";
 import { getFacultadSlugs } from "@/lib/facultades/registry";
 
-export default function PortalPage() {
-  const facultades = getFacultadSlugs();
+export default async function PortalPage() {
+  // Lee las carreras desde la taxonomía de WordPress
+  const terms = await getAllCarreraTerms();
+  // Fallback al registry local si WordPress no está disponible
+  const slugs = terms.length > 0
+    ? terms.map((t) => t.slug)
+    : getFacultadSlugs();
 
   return (
     <section className="section">
       <div className="container section-header">
-        <h1>Portal de micrositios ULEAM</h1>
-        <p>Selecciona una facultad para ingresar a su micrositio.</p>
-
+        <h1>Portal de micrositios</h1>
+        <p>Selecciona una carrera para ingresar a su micrositio.</p>
         <div>
-          {facultades.map((facultad) => (
-            <p key={facultad}>
-              <Link href={`/${facultad}`}>Ir a {facultad}</Link>
+          {slugs.map((slug) => (
+            <p key={slug}>
+              <Link href={`/${slug}`}>Ir a {slug}</Link>
             </p>
           ))}
         </div>

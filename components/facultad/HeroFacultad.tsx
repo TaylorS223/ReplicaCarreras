@@ -11,8 +11,8 @@ type HeroFacultadProps = {
 export const HeroFacultad = ({ facultadSlug, carreraSlug }: HeroFacultadProps = {}) => {
   const content = getHeroContent({ facultadSlug, carreraSlug });
 
-  // Intenta obtener heroSlides desde el contenido de carrera (viene de WordPress CPT carrusel_carrera)
-  const key = `${facultadSlug ?? "arquitectura"}:${carreraSlug ?? "arquitectura"}`;
+  // Key simplificada: solo carreraSlug
+  const key = carreraSlug ?? "arquitectura";
   const carreraContent = CARRERAS_CONTENT[key];
   const heroSlides = carreraContent?.heroSlides;
 

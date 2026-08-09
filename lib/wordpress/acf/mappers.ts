@@ -17,7 +17,6 @@ import type {
   PlanEstudiosMateriaAcf,
   RedSocialPost,
   SemestrePost,
-  TipoRedSocialSlug,
   WpAcfEnvelope,
 } from "@/lib/wordpress/acf/types";
 import { RED_SOCIAL_ID_MAP } from "@/lib/wordpress/acf/types";
@@ -85,14 +84,17 @@ export const mapSemestrePostsToPlanEstudios = async (
     byLevel[nivelNum].push(post);
   }
 
-  const levels: StudyLevel[] = await Promise.all(
+  const allLevels: (StudyLevel | null)[] = await Promise.all(
     Array.from({ length: 10 }, async (_, i) => {
       const num = i + 1;
       const levelPosts = byLevel[num] ?? [];
       const existingLevel = existing.levels[i];
 
       if (levelPosts.length === 0) {
-        return existingLevel ?? { title: `NIVEL ${num}`, totalCredits: "0", courses: [] };
+        // Solo incluir el nivel si ya tenía cursos previamente (existingLevel con cursos)
+        // Si no hay posts WP y no hay cursos existentes, devolvemos null para filtrar
+        if (existingLevel && existingLevel.courses.length > 0) return existingLevel;
+        return null;
       }
 
       const courses = await Promise.all(levelPosts.map(mapSemestrePostToCourse));
@@ -108,6 +110,9 @@ export const mapSemestrePostsToPlanEstudios = async (
       };
     }),
   );
+
+  // Filtrar los niveles vacíos (null)
+  const levels = allLevels.filter((l): l is StudyLevel => l !== null);
 
   return { ...existing, levels };
 };
@@ -301,7 +306,8 @@ export const mapPersonalPostToDocente = (
   especializacion: post.acf?.areaespecializacion ?? "",
   formacionAcademica: post.acf?.formacionacademica ? [post.acf.formacionacademica] : [],
   publicaciones: (() => {
-    const resolveLink = (v: typeof post.acf.publicaciongooglescholar): string => {
+    type LinkField = string | { url?: string; title?: string; target?: string } | null | undefined;
+    const resolveLink = (v: LinkField): string => {
       if (!v) return "";
       if (typeof v === "string") return v;
       return v.url ?? "";

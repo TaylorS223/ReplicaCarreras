@@ -1,12 +1,11 @@
 import { arquitecturaConfig } from "@/config/facultades/arquitectura";
-import { softwareConfig } from "@/config/facultades/software";
 import type { FacultadConfig, FacultadRegistry } from "@/lib/facultades/types";
 
-// Este archivo es el cerebro del sistema.
-// Agregar una nueva facultad/carrera = agregar un nuevo objeto aquí.
+// Este archivo es el cerebro del sistema local.
+// Solo contiene la carrera base de arquitectura como fallback de desarrollo.
+// Las rutas reales vienen de la taxonomía "carrera" de WordPress.
 export const FACULTADES_REGISTRY: Record<string, FacultadConfig> = {
   [arquitecturaConfig.slug]: arquitecturaConfig,
-  [softwareConfig.slug]: softwareConfig,
 };
 
 // Alias de URL histórica o comercial -> slug canónico de facultad.

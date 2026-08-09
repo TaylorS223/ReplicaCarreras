@@ -30,19 +30,57 @@ const getFacultadContent = (context?: ContentContext): FacultadContent => {
   const content = FACULTADES_CONTENT[facultadSlug];
 
   if (!content) {
-    throw new Error(`Sin contenido para facultad "${facultadSlug}"`);
+    // Carrera nueva — store vacío limpio (WordPress es la fuente de verdad)
+    const empty: FacultadContent = {
+      header: { brandImage: "", brandAlt: "", brandHref: "/", navItems: [] },
+      footer: { brandImage: "", brandAlt: "", location: "", email: "", groups: [], socialLinks: [], copyright: "" },
+      decanato: { title: "Decanato", description: "", profiles: [] },
+      direccionCarrera: { title: "Dirección de Carrera", description: "", profiles: [] },
+      comisiones: { title: "Comisiones", description: "", profiles: [] },
+      administracionServicios: { title: "Administración y servicios", description: "", groups: [] },
+    };
+    FACULTADES_CONTENT[facultadSlug] = empty;
+    return empty;
   }
 
   return content;
 };
 
 const getCarreraContent = (context?: ContentContext): CarreraContent => {
-  const { facultadSlug, carreraSlug } = resolveContext(context);
-  const key = `${facultadSlug}:${carreraSlug}`;
+  const { carreraSlug } = resolveContext(context);
+  const key = carreraSlug;
   const content = CARRERAS_CONTENT[key];
 
   if (!content) {
-    throw new Error(`Sin contenido para carrera "${key}"`);
+    // Carrera nueva — store vacío limpio (WordPress es la fuente de verdad)
+    const empty: CarreraContent = {
+      hero: { eyebrow: "", title: "", badge: "", description: "", images: [] },
+      infoCards: [
+        { iconClass: "fa fa-graduation-cap", title: "Titulo profesional", value: "", imagenFondo: "" },
+        { iconClass: "fa fa-calendar",        title: "Jornada",           value: "", imagenFondo: "" },
+        { iconClass: "fa fa-clock-o",         title: "Duración",          value: "", imagenFondo: "" },
+        { iconClass: "fa fa-users",           title: "Modalidad",         value: "", imagenFondo: "" },
+      ],
+      misionVision: [
+        { iconClass: "fa fa-bullseye",    title: "Misión", description: "" },
+        { iconClass: "fa fa-lightbulb-o", title: "Visión", description: "" },
+      ],
+      profile: {
+        sectionTitle: "",
+        cards: [
+          { iconClass: "fa fa-pencil-square-o", title: "Perfil de egreso", paragraphs: [""] },
+          { iconClass: "fa fa-briefcase", title: "Campo laboral", paragraphs: [""], cta: { label: "Malla curricular", href: "" } },
+        ],
+      },
+      proyectos: { title: "Noticias & Actualidad", description: "", items: [] },
+      accreditation: { title: "Acreditación internacional", paragraphs: [""], cta: { label: "Conocer más", href: "" }, image: { src: "", alt: "" } },
+      planEstudios: { title: "Plan de estudios", description: "", levels: [] },
+      personal: { title: "Personal docente", description: "", docentes: [] },
+      docentes: [],
+      noticias: [],
+    };
+    CARRERAS_CONTENT[key] = empty;
+    return empty;
   }
 
   return content;

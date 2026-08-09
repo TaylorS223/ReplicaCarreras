@@ -125,9 +125,9 @@ export type PersonalAcfServicios = {
   imagenpersonalservicios?: number | string;
   nombrepersonalservicios?: string;
   tipocargoservicios?: string;
-  emilpersonalservicios?: string;
-  ubicaclonfacultadservicios?: string;
-  horasatencionpersonalservicios?: string;
+  emailpersonalservicios?: string;
+  ubicacionfacultadservicios?: string;
+  horaatencionpersonalservicios?: string;
 };
 
 export type PersonalPostAcf =

@@ -7,16 +7,21 @@ import { getComisionesContent } from "@/lib/wordpress/services/getComisiones";
 import { getDocentes } from "@/lib/wordpress/services/getDocentes";
 import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
 import type { NavItem } from "@/types/nav";
+import type { ContentContext } from "@/lib/content/resolver";
 
-export const Header = async () => {
-  const content = getHeaderContent();
+type HeaderProps = {
+  context?: ContentContext;
+};
+
+export const Header = async ({ context }: HeaderProps = {}) => {
+  const content = getHeaderContent(context);
 
   // Determina qué subitems de Personal tienen datos en el store
-  const hasDecano = (() => { try { return getDecanatoContent().profiles.length > 0; } catch { return false; } })();
-  const hasDireccion = (() => { try { return getDireccionCarreraContent().profiles.length > 0; } catch { return false; } })();
-  const hasDocentes = (() => { try { return getDocentes().length > 0; } catch { return false; } })();
-  const hasComisiones = (() => { try { return getComisionesContent().profiles.length > 0; } catch { return false; } })();
-  const hasAdmin = (() => { try { return getAdministracionServiciosContent().groups.some((g) => g.items.length > 0); } catch { return false; } })();
+  const hasDecano = (() => { try { return getDecanatoContent(context).profiles.length > 0; } catch { return false; } })();
+  const hasDireccion = (() => { try { return getDireccionCarreraContent(context).profiles.length > 0; } catch { return false; } })();
+  const hasDocentes = (() => { try { return (getDocentes(context) ?? []).length > 0; } catch { return false; } })();
+  const hasComisiones = (() => { try { return getComisionesContent(context).profiles.length > 0; } catch { return false; } })();
+  const hasAdmin = (() => { try { return getAdministracionServiciosContent(context).groups.some((g) => g.items.length > 0); } catch { return false; } })();
 
   const SUBMENU_FLAGS: Record<string, boolean> = {
     decanato: hasDecano,

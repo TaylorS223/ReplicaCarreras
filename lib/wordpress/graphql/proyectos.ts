@@ -58,6 +58,9 @@ type ProyectoNode = {
       altText: string;
     };
   } | null;
+  carreras?: {
+    nodes: Array<{ slug: string }>;
+  };
 };
 
 type ProyectosListResult = {
@@ -79,6 +82,11 @@ const PROYECTOS_VINCULACION_QUERY = `
             altText
           }
         }
+        carreras {
+          nodes {
+            slug
+          }
+        }
       }
     }
   }
@@ -96,6 +104,11 @@ const PROYECTOS_INVESTIGACION_QUERY = `
           node {
             sourceUrl
             altText
+          }
+        }
+        carreras {
+          nodes {
+            slug
           }
         }
       }
@@ -121,20 +134,28 @@ const mapProyectoNode = (node: ProyectoNode): ProyectoItem => ({
   imagenAlt: node.featuredImage?.node?.altText ?? node.title,
 });
 
-export const getProyectosVinculacion = async (): Promise<ProyectoItem[]> => {
+export const getProyectosVinculacion = async (carreraSlug?: string): Promise<ProyectoItem[]> => {
   try {
     const data = await gqlFetch<ProyectosListResult>(PROYECTOS_VINCULACION_QUERY);
-    return (data?.proyectosVinculacion?.nodes ?? []).map(mapProyectoNode);
+    const nodes = data?.proyectosVinculacion?.nodes ?? [];
+    const filtered = carreraSlug
+      ? nodes.filter((n) => n.carreras?.nodes.some((c) => c.slug === carreraSlug))
+      : nodes;
+    return filtered.map(mapProyectoNode);
   } catch (error) {
     console.error("Error fetching proyectos vinculacion:", error);
     return [];
   }
 };
 
-export const getProyectosInvestigacion = async (): Promise<ProyectoItem[]> => {
+export const getProyectosInvestigacion = async (carreraSlug?: string): Promise<ProyectoItem[]> => {
   try {
     const data = await gqlFetch<ProyectosListResult>(PROYECTOS_INVESTIGACION_QUERY);
-    return (data?.proyectosInvestigacion?.nodes ?? []).map(mapProyectoNode);
+    const nodes = data?.proyectosInvestigacion?.nodes ?? [];
+    const filtered = carreraSlug
+      ? nodes.filter((n) => n.carreras?.nodes.some((c) => c.slug === carreraSlug))
+      : nodes;
+    return filtered.map(mapProyectoNode);
   } catch (error) {
     console.error("Error fetching proyectos investigacion:", error);
     return [];

@@ -175,7 +175,17 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
     if (!entry?.acf?.content) {
       const { FACULTADES_CONTENT } = await import("@/lib/content/facultades-data");
       const existing = FACULTADES_CONTENT[facultadSlug];
-      if (!existing) throw new Error(`Sin contenido base para facultad "${facultadSlug}".`);
+      if (!existing) {
+        // Carrera nueva — store vacío limpio, WordPress llenará los datos
+        return {
+          header: { brandImage: "", brandAlt: "", brandHref: "/", navItems: [] },
+          footer: { brandImage: "", brandAlt: "", location: "", email: "", groups: [], socialLinks: [], copyright: "" },
+          decanato: { title: "Decanato", description: "", profiles: [] },
+          direccionCarrera: { title: "Dirección de Carrera", description: "", profiles: [] },
+          comisiones: { title: "Comisiones", description: "", profiles: [] },
+          administracionServicios: { title: "Administración y servicios", description: "", groups: [] },
+        } as import("@/types/facultad-content").FacultadContent;
+      }
       return existing;
     }
     return mapFacultadFromAcf(entry);
@@ -234,7 +244,7 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
   }
 
   // Logos acreditadora y datos de footer desde la página ACF de carrera
-  const carreraEntry = await getCarreraAcfEntry(facultadSlug, "arquitectura").catch(() => null);
+  const carreraEntry = await getCarreraAcfEntry(facultadSlug).catch(() => null);
   if (carreraEntry?.acf) {
     const acf = carreraEntry.acf;
 
@@ -340,10 +350,11 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
 };
 
 export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {
-  const entry = await getCarreraAcfEntry(facultadSlug, carreraSlug);
+  const entry = await getCarreraAcfEntry(carreraSlug);
 
   const { CARRERAS_CONTENT } = await import("@/lib/content/carreras-data");
-  const key = `${facultadSlug}:${carreraSlug}`;
+  // Key simplificada: solo carreraSlug
+  const key = carreraSlug;
   const existing = CARRERAS_CONTENT[key];
 
   if (!existing) throw new Error(`Sin contenido base para carrera "${key}".`);
