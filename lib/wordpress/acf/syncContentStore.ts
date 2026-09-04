@@ -371,14 +371,25 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
     base = await mergeCarreraFromInicioPagina(entry.acf, base);
   }
 
-  const withDocentes = await syncDocentesFromCpt(base, facultadSlug, carreraSlug);
-  const withNoticias = await syncNoticiasFromCpt(withDocentes, facultadSlug, carreraSlug);
+  // ── Peticiones paralelas: docentes+semestres, noticias y carrusel simultáneos ──
+  const [withDocentes, withNoticiasBase, carruselPost] = await Promise.all([
+    syncDocentesFromCpt(base, facultadSlug, carreraSlug),
+    syncNoticiasFromCpt(base, facultadSlug, carreraSlug),
+    getCarruselCarrera(carreraSlug, facultadSlug).catch(() => null),
+  ]);
+
+  // Fusiona docentes + noticias en un solo objeto
+  const withDocentesYNoticias: CarreraContent = {
+    ...withDocentes,
+    noticias: withNoticiasBase.noticias,
+    proyectos: withNoticiasBase.proyectos,
+  };
+
   const withInicio = entry !== null && entry.acf
-    ? await applyInicioPaginaFromAcf(entry.acf, withNoticias)
-    : withNoticias;
+    ? await applyInicioPaginaFromAcf(entry.acf, withDocentesYNoticias)
+    : withDocentesYNoticias;
 
   // ── Carrusel hero desde CPT carrusel_carrera ──────────────────────────────
-  const carruselPost = await getCarruselCarrera(carreraSlug, facultadSlug).catch(() => null);
   const withCarrusel = carruselPost?.acf
     ? await (async () => {
         const images = await resolveCarruselImages(carruselPost.acf!);

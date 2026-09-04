@@ -22,6 +22,14 @@ export const AcreditacionSection = ({
     facultadSlug && carreraSlug ? { facultadSlug, carreraSlug } : undefined,
   );
 
+  // No renderizar si no hay contenido real de WordPress
+  const hasContent =
+    content.paragraphs.some((p) => p.trim() !== "") ||
+    (content.videoUrl ?? "").trim() !== "" ||
+    (content.image?.src ?? "").trim() !== "";
+
+  if (!hasContent) return null;
+
   const rawHref =
     typeof content.cta.href === "string"
       ? content.cta.href

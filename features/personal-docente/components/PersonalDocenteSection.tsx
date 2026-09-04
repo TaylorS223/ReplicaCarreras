@@ -11,6 +11,9 @@ type PersonalDocenteSectionProps = {
 export const PersonalDocenteSection = ({ basePath, facultadSlug, carreraSlug }: PersonalDocenteSectionProps) => {
   const content = getPersonalContent({ facultadSlug, carreraSlug });
 
+  // No renderizar si no hay docentes cargados desde WordPress
+  if (content.docentes.length === 0) return null;
+
   return (
     <PersonalDocenteWrapper>
       <div className="container">

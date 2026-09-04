@@ -5,8 +5,8 @@ import type { ContentContext } from "@/lib/content/resolver";
 const splitBySemicolon = (value: string): string[] =>
   value.split(";").map((item) => item.trim()).filter(Boolean);
 
-export const ComisionesSection = (ctx?: ContentContext) => {
-  const content = getComisionesContent(ctx);
+export const ComisionesSection = ({ facultadSlug, carreraSlug }: { facultadSlug?: string; carreraSlug?: string } = {}) => {
+  const content = getComisionesContent({ facultadSlug, carreraSlug });
 
   return (
     <section className="docente-detail section decanato-section">
@@ -20,11 +20,17 @@ export const ComisionesSection = (ctx?: ContentContext) => {
           return (
             <div key={profile.slug} className="docente-detail-grid decanato-profile">
               <aside>
-                {profile.foto && (
-                  <figure className="docente-detail-avatar" style={{ position: "relative" }}>
+                <figure className="docente-detail-avatar" style={{ position: "relative" }}>
+                  {profile.foto ? (
                     <Image src={profile.foto} alt={profile.alt} fill style={{ objectFit: "cover" }} sizes="160px" />
-                  </figure>
-                )}
+                  ) : (
+                    <svg viewBox="0 0 160 160" aria-hidden="true" className="docente-placeholder-avatar">
+                      <circle cx="80" cy="80" r="80" fill="#e8edf5" />
+                      <circle cx="80" cy="62" r="28" fill="#b0bdd0" />
+                      <ellipse cx="80" cy="130" rx="46" ry="30" fill="#b0bdd0" />
+                    </svg>
+                  )}
+                </figure>
               </aside>
 
               <article className="docente-detail-content">

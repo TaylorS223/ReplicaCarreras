@@ -100,10 +100,34 @@ export default async function CarreraLayout({ children, params }: CarreraLayoutP
 
     const { FACULTADES_CONTENT, upsertFacultadContent } = await import("@/lib/content/facultades-data");
     if (!FACULTADES_CONTENT[carrera]) {
-      const baseTemplate = FACULTADES_CONTENT["arquitectura"];
-      if (baseTemplate) {
-        upsertFacultadContent(carrera, { ...baseTemplate });
-      }
+      // Inicializar con navItems genéricos — WordPress actualizará los labels vía ACF
+      upsertFacultadContent(carrera, {
+        header: {
+          brandImage: "/imagenes/LOGO-HEADER4-scaled.png",
+          brandAlt: "Uleam",
+          brandHref: "/",
+          navItems: [
+            { label: "Inicio", href: "/" },
+            {
+              label: "Personal",
+              href: "/personal",
+              subItems: [
+                { label: "Decanato", href: "/personal/decanato" },
+                { label: "Dirección de Carrera", href: "/personal/direccion-carrera" },
+                { label: "Docentes", href: "/personal#docentes" },
+                { label: "Comisiones", href: "/personal/comisiones" },
+                { label: "Administración y servicios", href: "/personal/administracion-servicios" },
+              ],
+            },
+            { label: "Plan de estudios", href: `/carreras/${carrera}/plan-estudios` },
+          ],
+        },
+        footer: { brandImage: "/imagenes/LOGO-VERTICAL-768x384.png", brandAlt: "Uleam", location: "", email: "", groups: [], socialLinks: [], copyright: "" },
+        decanato: { title: "Decanato", description: "", profiles: [] },
+        direccionCarrera: { title: "Dirección de Carrera", description: "", profiles: [] },
+        comisiones: { title: "Comisiones", description: "", profiles: [] },
+        administracionServicios: { title: "Administración y servicios", description: "", groups: [] },
+      });
     }
   }
 
@@ -120,7 +144,7 @@ export default async function CarreraLayout({ children, params }: CarreraLayoutP
     <div className="page-shell" style={themeVars}>
       <Header context={{ facultadSlug: carrera, carreraSlug: carrera }} />
       <main>{children}</main>
-      <Footer />
+      <Footer context={{ facultadSlug: carrera, carreraSlug: carrera }} />
       {isPreview && <PreviewBanner />}
     </div>
   );

@@ -15,6 +15,9 @@ type ProyectosSectionProps = {
 export const ProyectosSection = ({ facultadSlug, carreraSlug }: ProyectosSectionProps) => {
   const content = getProyectosContent({ facultadSlug, carreraSlug });
 
+  // No renderizar si no hay noticias cargadas desde WordPress
+  if (content.items.length === 0) return null;
+
   const buildHref = (itemHref: string) => {
     if (!itemHref) return `/${facultadSlug}/noticias`;
     if (itemHref.startsWith("http")) return itemHref;

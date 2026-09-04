@@ -19,10 +19,16 @@ export const hydrateContentForContext = async (context: ContentContext) => {
     await syncContextContentFromAcf(facultadSlug, carreraSlug);
     return { mode: isPreview ? ("preview" as const) : ("acf" as const) };
   } catch (error) {
-    console.warn(
-      `[hydrateContentForContext] ACF sync falló para ${facultadSlug}/${carreraSlug}, usando mock como fallback.`,
-      error,
-    );
-    return { mode: "mock" as const };
+    // Primer intento falló — reintenta una vez más (ECONNRESET en LocalWP es transitorio)
+    try {
+      await syncContextContentFromAcf(facultadSlug, carreraSlug);
+      return { mode: isPreview ? ("preview" as const) : ("acf" as const) };
+    } catch (retryError) {
+      console.warn(
+        `[hydrateContentForContext] ACF sync falló para ${facultadSlug}/${carreraSlug}, usando mock como fallback.`,
+        retryError,
+      );
+      return { mode: "mock" as const };
+    }
   }
 };
