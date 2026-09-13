@@ -1,14 +1,11 @@
+import { cache } from "react";
 import { draftMode } from "next/headers";
 import type { ContentContext } from "@/lib/content/resolver";
 import { syncContextContentFromAcf } from "@/lib/wordpress/acf";
 import { isAcfSourceEnabled } from "@/lib/wordpress/source";
 
-export const hydrateContentForContext = async (context: ContentContext) => {
-  const facultadSlug = context.facultadSlug ?? "arquitectura";
-  const carreraSlug = context.carreraSlug ?? "arquitectura";
 
-  // En Draft Mode siempre forzamos sync desde ACF aunque la fuente ACF
-  // no esté habilitada globalmente, para mostrar los datos más recientes de WP.
+const hydrateBySlug = cache(async (facultadSlug: string, carreraSlug: string) => {
   const { isEnabled: isPreview } = await draftMode();
 
   if (!isPreview && !isAcfSourceEnabled()) {
@@ -31,4 +28,11 @@ export const hydrateContentForContext = async (context: ContentContext) => {
       return { mode: "mock" as const };
     }
   }
+});
+
+// API pública: acepta el mismo ContentContext de antes para no romper ningún caller.
+export const hydrateContentForContext = (context: ContentContext) => {
+  const facultadSlug = context.facultadSlug ?? "arquitectura";
+  const carreraSlug = context.carreraSlug ?? "arquitectura";
+  return hydrateBySlug(facultadSlug, carreraSlug);
 };

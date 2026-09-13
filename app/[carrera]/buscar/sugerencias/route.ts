@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Sugerencia } from "@/types/buscar";
 import {
   getNoticiasContentByContext,
   getPersonalContentByContext,
@@ -12,11 +13,7 @@ import {
   getPlanEstudiosContentByContext,
 } from "@/lib/content/resolver";
 
-export type Sugerencia = {
-  texto: string;
-  categoria: string;
-  href: string;
-};
+export type { Sugerencia } from "@/types/buscar";
 
 const normalizar = (texto: string) =>
   texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");

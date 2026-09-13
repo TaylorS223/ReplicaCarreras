@@ -97,6 +97,7 @@ export function ParticleNetwork({
     let height = 0;
     let particles: Particle[] = [];
     let rafId = 0;
+    let isVisible = false; // rastrea si el canvas está en el viewport
 
     // Mobile: halve particle count to save CPU
     function resolvedCount() {
@@ -233,19 +234,20 @@ export function ParticleNetwork({
     if (prefersReduced) {
       // Single static frame — no animation
       draw();
-    } else {
-      rafId = requestAnimationFrame(loop);
     }
+    // El IntersectionObserver (abajo) se encarga de arrancar el loop
+    // cuando el canvas entra al viewport por primera vez.
 
     // ── Resize observer ──────────────────────────────────────────────────────
     const ro = new ResizeObserver(() => {
-      // Cancel current RAF, resize, then restart
+      // Cancel current RAF, resize, then restart (solo si está visible)
       cancelAnimationFrame(rafId);
+      rafId = 0;
       ctx!.setTransform(1, 0, 0, 1, 0, 0); // reset transform before rescaling
       resize();
-      if (!prefersReduced) {
+      if (!prefersReduced && isVisible) {
         rafId = requestAnimationFrame(loop);
-      } else {
+      } else if (prefersReduced) {
         draw();
       }
     });
@@ -253,10 +255,33 @@ export function ParticleNetwork({
     const parent = canvas.parentElement;
     if (parent) ro.observe(parent);
 
+    // ── Visibility observer — pausa el RAF cuando el canvas está off-screen ──
+    // Evita consumo de CPU continuo mientras la sección no es visible.
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (prefersReduced) return;
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          // Sección visible → reanudar loop si estaba pausado
+          if (rafId === 0) {
+            rafId = requestAnimationFrame(loop);
+          }
+        } else {
+          // Sección fuera del viewport → pausar loop
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+      },
+      { threshold: 0 }
+    );
+
+    visibilityObserver.observe(canvas);
+
     // ── Cleanup ──────────────────────────────────────────────────────────────
     return () => {
       cancelAnimationFrame(rafId);
       ro.disconnect();
+      visibilityObserver.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [particleCount, colors, lineColor, maxDistance]);

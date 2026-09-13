@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
+import type { SugerenciaNoticia } from "@/types/buscar";
 import { getFacultadConfig } from "@/lib/facultades/registry";
 import { getNoticiasContentByContext } from "@/lib/content/resolver";
 
-export type SugerenciaNoticia = {
-  texto: string;
-  href: string;
-};
+export type { SugerenciaNoticia } from "@/types/buscar";
 
 const normalizar = (texto: string) =>
   texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -25,7 +23,6 @@ export async function GET(
 
   const config = getFacultadConfig(carrera);
   if (!config) {
-    // Sin config local, igual servimos sugerencias del store hidratado
   }
 
   const ctx = { facultadSlug: carrera, carreraSlug: carrera };

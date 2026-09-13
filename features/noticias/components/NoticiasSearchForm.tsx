@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { SugerenciaNoticia } from "@/app/[carrera]/noticias/buscar/sugerencias/route";
+import type { SugerenciaNoticia } from "@/types/buscar";
 
 type NoticiasSearchFormProps = {
   carrera: string;

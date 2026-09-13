@@ -81,20 +81,15 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
     touchStartY.current = null;
   };
 
-  // Keyboard
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const section = document.getElementById("plan");
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight && rect.bottom > 0;
-      if (!inView) return;
+      if (!visible) return;
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
+  }, [next, prev, visible]);
 
   const getState = (i: number): "active" | "prev" | "next" | "hidden" => {
     if (i === active) return "active";

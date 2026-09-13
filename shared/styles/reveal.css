@@ -16,14 +16,15 @@
   transition:
     opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
     transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: opacity, transform;
+  /* will-change eliminado del estado base — evita capas GPU prematuras en
+     todos los elementos antes de que el usuario haga scroll.
+     Se aplica solo en .reveal--visible (justo cuando se activa la transición). */
 }
 
 .reveal--fade {
   opacity: 0;
   transform: none;
   transition: opacity 600ms ease;
-  will-change: opacity;
 }
 
 .reveal--left {
@@ -32,7 +33,6 @@
   transition:
     opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
     transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: opacity, transform;
 }
 
 .reveal--right {
@@ -41,13 +41,15 @@
   transition:
     opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
     transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: opacity, transform;
 }
 
 /* Visible state — same for all variants */
 .reveal--visible {
   opacity: 1;
   transform: translate(0, 0);
+  /* will-change aplicado aquí: el browser promueve la capa solo en el momento
+     de la transición, no desde la carga inicial de la página. */
+  will-change: opacity, transform;
 }
 
 /* Stagger delays */

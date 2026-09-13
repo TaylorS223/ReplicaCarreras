@@ -18,10 +18,11 @@ import type {
 // En producción: ISR con revalidate + tags → caché de 1 hora, invalidable por webhook.
 const IS_DEV = process.env.NODE_ENV === "development";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const wpCache = (tags: string[]): { next: any } =>
+type WpCacheOptions = { next: { revalidate: number; tags: string[] } } | { cache: RequestCache };
+
+const wpCache = (tags: string[]): WpCacheOptions =>
   IS_DEV
-    ? { cache: "no-store" as const }
+    ? { cache: "no-store" }
     : { next: { revalidate: 3600, tags } };
 
 const getFirstOrNull = <T>(items: T[]): T | null => items[0] ?? null;
@@ -178,18 +179,29 @@ export const getEnlacesInteres = async (
 
 // ── Media ─────────────────────────────────────────────────────────────────────
 
+// Cache de resoluciones de media ID → URL.
+// Almacena la Promise (no el valor resuelto) para deduplicar llamadas concurrentes
+// al mismo ID. En producción con ISR el módulo vive por la duración del proceso,
+// así que IDs repetidos entre requests no vuelven a consultarse a WordPress.
+const mediaUrlCache = new Map<number, Promise<string>>();
+
 export const resolveMediaUrl = async (value: number | string | undefined): Promise<string> => {
   if (!value) return "";
+  // Si ya es una URL string, no hay nada que resolver
   if (typeof value === "string") return value;
 
-  try {
-    const media = await wpFetch<{ source_url?: string }>(`media/${value}`, {
-      ...wpCache(["wp-media"]),
-    });
-    return media.source_url ?? "";
-  } catch {
-    return "";
-  }
+  // Reutiliza la Promise en vuelo si ya existe — evita N fetches al mismo ID
+  const cached = mediaUrlCache.get(value);
+  if (cached) return cached;
+
+  const promise = wpFetch<{ source_url?: string }>(`media/${value}`, {
+    ...wpCache(["wp-media"]),
+  })
+    .then((media) => media.source_url ?? "")
+    .catch(() => "");
+
+  mediaUrlCache.set(value, promise);
+  return promise;
 };
 
 // ── Resolvers de imágenes ─────────────────────────────────────────────────────

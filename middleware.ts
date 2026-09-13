@@ -41,5 +41,9 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  // Excluye assets estáticos de Next.js, imágenes optimizadas y archivos
+  // del directorio public — el middleware no necesita ejecutarse en ellos.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml|imagenes/).*)",
+  ],
 };

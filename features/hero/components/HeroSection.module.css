@@ -49,22 +49,23 @@
 }
 
 .slideOverlayImg {
-  max-height: 95%;
-  max-width: 75%;
-  object-fit: contain;
   filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.25));
 }
 
 .slide {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
+  overflow: hidden;
   opacity: 0;
   transform: scale(1.04);
   transition:
     opacity 700ms ease,
     transform 1800ms ease;
+}
+
+.slideBgImg {
+  object-fit: cover;
+  object-position: center;
 }
 
 .slideActive {
@@ -93,9 +94,12 @@
 
 .panelWrapper {
   pointer-events: auto;
-  animation: panel-in 680ms ease both;
   width: min(100%, 580px);
   flex-shrink: 0;
+}
+
+.panelAnimate {
+  animation: panel-in 680ms ease both;
 }
 
 /* Derecha (slider 1) */
@@ -405,6 +409,7 @@
 
 .hero[data-reduced-motion="true"] .slide,
 .hero[data-reduced-motion="true"] .panelWrapper,
+.hero[data-reduced-motion="true"] .panelAnimate,
 .hero[data-reduced-motion="true"] .infoPanel,
 .hero[data-reduced-motion="true"] .panelRule,
 .hero[data-reduced-motion="true"] .panelEyebrow,
@@ -420,6 +425,7 @@
 @media (prefers-reduced-motion: reduce) {
   .slide,
   .panelWrapper,
+  .panelAnimate,
   .infoPanel,
   .panelRule,
   .panelEyebrow,
@@ -628,6 +634,7 @@
     min-height: 320px;
   }
 
+  /* <Image fill> dentro del overlay móvil — contiene la imagen al área del wrapper */
   .slideOverlayImg {
     max-height: 360px;
     max-width: 95%;

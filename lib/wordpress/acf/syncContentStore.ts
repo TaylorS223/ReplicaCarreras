@@ -61,34 +61,22 @@ export const syncPersonalFacultadFromCpt = async (
       getPersonalByTipo("servicios", 100, facultadSlug, facultadSlug),
     ]);
 
-  const result = { ...content };
+  // Resuelve imágenes de todos los grupos en paralelo — antes eran seriales
+  const [decanatoProfiles, direccionCarreraProfiles, comisionesProfiles, adminItems, serviciosItems] =
+    await Promise.all([
+      decanatoPosts.length > 0
+        ? withImages(decanatoPosts, mapPersonalPostToDecanatoProfile)
+        : Promise.resolve([]),
+      direccionCarreraPosts.length > 0
+        ? withImages(direccionCarreraPosts, mapPersonalPostToDireccionCarreraProfile)
+        : Promise.resolve([]),
+      comisionesPosts.length > 0
+        ? withImages(comisionesPosts, mapPersonalPostToComisionProfile)
+        : Promise.resolve([]),
+      withImages(adminPosts, mapPersonalPostToAdministrativo),
+      withImages(serviciosPosts, mapPersonalPostToAdministrativo),
+    ]);
 
-  // Siempre sobreescribe — si está vacío limpia el mock, si tiene datos lo reemplaza
-  result.decanato = {
-    ...result.decanato,
-    profiles: decanatoPosts.length > 0
-      ? await withImages(decanatoPosts, mapPersonalPostToDecanatoProfile)
-      : [],
-  };
-
-  result.direccionCarrera = {
-    ...result.direccionCarrera,
-    profiles: direccionCarreraPosts.length > 0
-      ? await withImages(direccionCarreraPosts, mapPersonalPostToDireccionCarreraProfile)
-      : [],
-  };
-
-  result.comisiones = {
-    ...result.comisiones,
-    profiles: comisionesPosts.length > 0
-      ? await withImages(comisionesPosts, mapPersonalPostToComisionProfile)
-      : [],
-  };
-
-  const adminItems = await withImages(adminPosts, mapPersonalPostToAdministrativo);
-  const serviciosItems = await withImages(serviciosPosts, mapPersonalPostToAdministrativo);
-
-  // Siempre sobreescribe — grupos vacíos si no hay posts
   const groups = [];
   if (adminItems.length > 0) {
     groups.push({ title: "Personal administrativo", items: adminItems });
@@ -96,11 +84,14 @@ export const syncPersonalFacultadFromCpt = async (
   if (serviciosItems.length > 0) {
     groups.push({ title: "Personal servicios varios", items: serviciosItems });
   }
-  result.administracionServicios = {
-    ...result.administracionServicios,
-    groups,
+
+  return {
+    ...content,
+    decanato:          { ...content.decanato,          profiles: decanatoProfiles },
+    direccionCarrera:  { ...content.direccionCarrera,  profiles: direccionCarreraProfiles },
+    comisiones:        { ...content.comisiones,        profiles: comisionesProfiles },
+    administracionServicios: { ...content.administracionServicios, groups },
   };
-  return result;
 };
 
 export const syncDocentesFromCpt = async (
@@ -191,14 +182,24 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
     return mapFacultadFromAcf(entry);
   };
 
-  let result = await getBase();
-  result = await syncPersonalFacultadFromCpt(result, facultadSlug);
+  // getBase y syncPersonalFacultadFromCpt son dependientes (base → personal),
+  // pero redesPosts, enlacesPosts, carreraEntry y proyectosVisibility son todos
+  // independientes entre sí y con el personal. Los lanzamos en paralelo.
+  const base = await getBase();
 
-  // Carga redes sociales y enlaces filtrados por carrera usando jerarquía nativa de WP
-  const [redesPosts, enlacesPosts] = await Promise.all([
-    getRedesSociales(carreraSlug, facultadSlug).catch(() => []),
-    getEnlacesInteres(carreraSlug, facultadSlug).catch(() => []),
-  ]);
+  const [personalResult, redesPosts, enlacesPosts, carreraEntry, proyectosVisibility] =
+    await Promise.all([
+      syncPersonalFacultadFromCpt(base, facultadSlug),
+      getRedesSociales(carreraSlug, facultadSlug).catch(() => []),
+      getEnlacesInteres(carreraSlug, facultadSlug).catch(() => []),
+      getCarreraAcfEntry(facultadSlug).catch(() => null),
+      checkProyectosVisibility().catch(() => ({
+        hasVinculacion: false,
+        hasInvestigacion: false,
+      })),
+    ]);
+
+  let result = personalResult;
 
   if (redesPosts.length > 0) {
     result = {
@@ -244,19 +245,17 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
   }
 
   // Logos acreditadora y datos de footer desde la página ACF de carrera
-  const carreraEntry = await getCarreraAcfEntry(facultadSlug).catch(() => null);
   if (carreraEntry?.acf) {
     const acf = carreraEntry.acf;
 
-    // Logo navbar (campo "logo")
-    if (acf.logo) {
-      const logoNavbar = await resolveMediaUrl(acf.logo);
-      if (logoNavbar) {
-        result = {
-          ...result,
-          header: { ...result.header, logoAcreditadoraNavbar: logoNavbar },
-        };
-      }
+    // Resuelve los dos logos en paralelo — antes eran seriales
+    const [logoNavbar, logoFooter] = await Promise.all([
+      acf.logo ? resolveMediaUrl(acf.logo) : Promise.resolve(""),
+      acf.logoacreditadorafooter ? resolveMediaUrl(acf.logoacreditadorafooter) : Promise.resolve(""),
+    ]);
+
+    if (logoNavbar) {
+      result = { ...result, header: { ...result.header, logoAcreditadoraNavbar: logoNavbar } };
     }
 
     // Labels del menú navbar
@@ -275,52 +274,27 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
       };
     }
 
-    // Logo footer
-    if (acf.logoacreditadorafooter) {
-      const logoFooter = await resolveMediaUrl(acf.logoacreditadorafooter);
-      if (logoFooter) {
-        result = {
-          ...result,
-          footer: { ...result.footer, logoAcreditadoraFooter: logoFooter },
-        };
-      }
+    if (logoFooter) {
+      result = { ...result, footer: { ...result.footer, logoAcreditadoraFooter: logoFooter } };
     }
 
-    // Correo y ubicación del footer
     if (acf.correocarrera) {
-      result = {
-        ...result,
-        footer: { ...result.footer, email: acf.correocarrera },
-      };
+      result = { ...result, footer: { ...result.footer, email: acf.correocarrera } };
     }
     if (acf.ubicacion) {
-      result = {
-        ...result,
-        footer: { ...result.footer, location: acf.ubicacion },
-      };
+      result = { ...result, footer: { ...result.footer, location: acf.ubicacion } };
     }
     // Siempre actualiza aliadosEstrategicos — vacío o con valor
     result = {
       ...result,
-      footer: {
-        ...result.footer,
-        aliadosEstrategicos: acf.aliadosestrategicos || "",
-      },
+      footer: { ...result.footer, aliadosEstrategicos: acf.aliadosestrategicos || "" },
     };
     if (acf.copyright) {
-      result = {
-        ...result,
-        footer: { ...result.footer, copyright: acf.copyright },
-      };
+      result = { ...result, footer: { ...result.footer, copyright: acf.copyright } };
     }
   }
 
   // ── Visibilidad de submenús de Proyectos según CPTs GraphQL ──────────────
-  const proyectosVisibility = await checkProyectosVisibility().catch(() => ({
-    hasVinculacion: false,
-    hasInvestigacion: false,
-  }));
-
   result = {
     ...result,
     header: {

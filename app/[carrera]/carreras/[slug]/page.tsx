@@ -14,9 +14,9 @@ export async function generateMetadata({ params }: CarreraDetailPageProps): Prom
   const carreraData = getCarreraBySlug(slug, { facultadSlug: carrera });
   if (!carreraData) return { title: "Carrera" };
 
-  const title = carreraData.hero?.title ?? slug;
-  const description = carreraData.hero?.description ?? "";
-  const ogImage = carreraData.hero?.images?.[0]?.src;
+  const title = carreraData.nombre ?? slug;
+  const description = carreraData.descripcion ?? "";
+  const ogImage = undefined;
 
   return {
     title: `${title} | ${carrera}`,

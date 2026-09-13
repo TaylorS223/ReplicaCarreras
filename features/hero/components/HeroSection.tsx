@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { HeroContent } from "@/types/api";
 import type { HeroSlide } from "@/types/carrera-content";
 import styles from "./HeroSection.module.css";
@@ -124,7 +124,7 @@ const mapHeroSlidesToSlides = (heroSlides: HeroSlide[]): Slide[] =>
         eyebrow: hs.eyebrow,
         title: hs.titulo,
         subtitle: hs.subtitulo,
-      },
+      } as SlideText,
     };
   });
 
@@ -208,7 +208,10 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
     : STATIC_SLIDES;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [sequenceKey, setSequenceKey] = useState(0);
+
+  // Ref al panelWrapper para reiniciar la animación CSS sin desmontar el nodo.
+  // Evita el double re-render que causaba key={sequenceKey}.
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const total = SLIDES.length;
 
@@ -232,8 +235,17 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
     return () => window.clearInterval(id);
   }, [reducedMotion, total]);
 
+  // Reinicia la animación CSS del panel al cambiar de slide usando un reflow
+  // forzado. Es equivalente a cambiar key={} pero sin desmontar/remontar el
+  // nodo, eliminando el segundo re-render que sequenceKey provocaba.
   useEffect(() => {
-    if (!reducedMotion) setSequenceKey((prev) => prev + 1);
+    if (reducedMotion) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    panel.classList.remove(styles.panelAnimate);
+    // Leer offsetWidth fuerza el reflow — el browser aplica el estado sin animación
+    void panel.offsetWidth;
+    panel.classList.add(styles.panelAnimate);
   }, [currentIndex, reducedMotion]);
 
   const currentSlide = SLIDES[currentIndex];
@@ -246,9 +258,20 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
           <div
             key={slide.bg}
             className={`${styles.slide} ${index === currentIndex ? styles.slideActive : ""}`}
-            style={{ backgroundImage: `url(${slide.bg})` }}
             aria-hidden={index !== currentIndex}
-          />
+          >
+            {/* <Image fill> permite a Next.js optimizar (WebP/AVIF, compresión, CDN).
+                priority en el primer slide evita LCP penalizado. */}
+            <Image
+              src={slide.bg}
+              alt=""
+              fill
+              sizes="100vw"
+              priority={index === 0}
+              className={styles.slideBgImg}
+              style={{ objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
         ))}
       </div>
 
@@ -259,11 +282,14 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
           aria-hidden="true"
           key={`overlay-desktop-${currentIndex}`}
         >
-          <img
+          {/* <Image> con fill para que Next.js sirva WebP/AVIF y tamaño correcto */}
+          <Image
             src={currentSlide.overlay}
             alt=""
+            fill
+            sizes="(max-width: 720px) 0px, 40vw"
             className={styles.slideOverlayImg}
-            aria-hidden="true"
+            style={{ objectFit: "contain" }}
           />
         </div>
       )}
@@ -290,8 +316,8 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
       <div className={`container ${styles.heroInner}`}>
         {/* Texto — siempre arriba en móvil */}
         <div
-          key={sequenceKey}
-          className={styles.panelWrapper}
+          ref={panelRef}
+          className={`${styles.panelWrapper} ${styles.panelAnimate}`}
           data-position={currentSlide.text.position}
           data-type={currentSlide.text.type}
         >
@@ -305,11 +331,13 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
             aria-hidden="true"
             key={`overlay-mobile-${currentIndex}`}
           >
-            <img
+            <Image
               src={currentSlide.overlay}
               alt=""
+              fill
+              sizes="80vw"
               className={styles.slideOverlayImg}
-              aria-hidden="true"
+              style={{ objectFit: "contain" }}
             />
           </div>
         )}
