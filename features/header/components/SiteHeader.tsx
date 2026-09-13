@@ -106,10 +106,12 @@ export const SiteHeader = ({ content }: SiteHeaderProps) => {
     <header className={`site-header ${isCompact ? "is-compact" : ""}`}>
       <div className="container header-inner">
         <Link className="brand" href={content.brandHref} aria-label={content.brandAlt}>
-          <img
-            src={content.logoAcreditadoraNavbar ?? content.brandImage}
-            alt={content.logoAcreditadoraNavbar ? "Logo acreditadora" : content.brandAlt}
-          />
+          {(content.logoAcreditadoraNavbar || content.brandImage) && (
+            <img
+              src={content.logoAcreditadoraNavbar ?? content.brandImage}
+              alt={content.logoAcreditadoraNavbar ? "Logo acreditadora" : content.brandAlt}
+            />
+          )}
         </Link>
 
         {/* Botón hamburguesa */}

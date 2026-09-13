@@ -1,4 +1,4 @@
-import { upsertCarreraContent } from "@/lib/content/carreras-data";
+import { createBlankCarreraContent, upsertCarreraContent } from "@/lib/content/carreras-data";
 import { upsertFacultadContent } from "@/lib/content/facultades-data";
 import {
   mapCarreraFromAcf,
@@ -169,8 +169,13 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
       if (!existing) {
         // Carrera nueva — store vacío limpio, WordPress llenará los datos
         return {
-          header: { brandImage: "", brandAlt: "", brandHref: "/", navItems: [] },
-          footer: { brandImage: "", brandAlt: "", location: "", email: "", groups: [], socialLinks: [], copyright: "" },
+          header: {
+            brandImage: "/imagenes/LOGO-HEADER4-scaled.png",
+            brandAlt: "Uleam",
+            brandHref: "/",
+            navItems: [],
+          },
+          footer: { brandImage: "/imagenes/LOGO-VERTICAL-768x384.png", brandAlt: "Uleam", location: "", email: "", groups: [], socialLinks: [], copyright: "" },
           decanato: { title: "Decanato", description: "", profiles: [] },
           direccionCarrera: { title: "Dirección de Carrera", description: "", profiles: [] },
           comisiones: { title: "Comisiones", description: "", profiles: [] },
@@ -294,8 +299,14 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
     }
   }
 
-  // ── Visibilidad de submenús de Proyectos según CPTs GraphQL ──────────────
-  result = {
+  // ── Persiste al store con navItems COMPLETOS (sin filtrar proyectos) ────────
+  // El filtro de visibilidad de proyectos se aplica solo al valor retornado,
+  // no al store, para evitar que una request con WP caído vacíe los navItems
+  // de forma permanente hasta el próximo restart del servidor.
+  upsertFacultadContent(facultadSlug, result);
+
+  // ── Aplica filtro de proyectos solo al resultado de esta request ──────────
+  const filteredResult = {
     ...result,
     header: {
       ...result.header,
@@ -306,7 +317,6 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
           if (sub.href.includes("investigacion")) return proyectosVisibility.hasInvestigacion;
           return true;
         });
-        // Si no hay subItems, ocultar el ítem padre también
         return filteredSubItems.length > 0
           ? { ...item, subItems: filteredSubItems }
           : { ...item, subItems: [] };
@@ -319,8 +329,7 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
     },
   };
 
-  upsertFacultadContent(facultadSlug, result);
-  return result;
+  return filteredResult;
 };
 
 export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlug: string) => {
@@ -331,14 +340,14 @@ export const syncCarreraContentFromAcf = async (facultadSlug: string, carreraSlu
   const key = carreraSlug;
   const existing = CARRERAS_CONTENT[key];
 
-  if (!existing) throw new Error(`Sin contenido base para carrera "${key}".`);
-
-  let base = existing;
+  // Si la carrera no está registrada estáticamente, genera un template vacío
+  // para que el sync ACF lo pueda rellenar dinámicamente.
+  let base: CarreraContent = existing ?? createBlankCarreraContent();
   if (entry !== null && entry.acf) {
     if (entry.acf.content) {
       base = mapCarreraFromAcf(entry);
     } else {
-      base = await mergeCarreraFromInicioPagina(entry.acf, existing);
+      base = await mergeCarreraFromInicioPagina(entry.acf, base);
     }
     // Siempre aplica los campos ACF planos (videoacreditacion, menuplanestudio, etc.)
     // independientemente de si existe acf.content
