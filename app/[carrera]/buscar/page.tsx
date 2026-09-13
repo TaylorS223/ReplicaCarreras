@@ -13,6 +13,7 @@ import {
   getAdministracionServiciosContentByContext,
   getInfoCardsByContext,
 } from "@/lib/content/resolver";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import type { ContentContext } from "@/lib/content/resolver";
 
 type BuscarPageProps = {
@@ -38,6 +39,7 @@ function incluye(texto: string | undefined, query: string): boolean {
 export default async function BuscarPage({ params, searchParams }: BuscarPageProps) {
   const { carrera } = await params;
   const { q } = await searchParams;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
   const query = normalizar((q ?? "").trim());
   const ctx: ContentContext = { facultadSlug: carrera, carreraSlug: carrera };
   const resultados: ResultadoBusqueda[] = [];

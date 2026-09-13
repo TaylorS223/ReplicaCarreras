@@ -6,6 +6,10 @@ import { ProyectosSection } from "@/features/proyectos/components/ProyectosSecti
 import { AcreditacionSection } from "@/features/proyectos/components/AcreditacionSection";
 import { Pensum } from "@/components/carrera/Pensum";
 import { PersonalDocenteSection } from "@/features/personal-docente/components/PersonalDocenteSection";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
+
+// Slugs que Next.js puede resolver con la ruta dinámica pero no son carreras reales
+const RESERVED_SLUGS = new Set(["favicon.ico", "robots.txt", "sitemap.xml"]);
 
 type CarreraHomePageProps = {
   params: Promise<{ carrera: string }>;
@@ -13,7 +17,16 @@ type CarreraHomePageProps = {
 
 export default async function CarreraHomePage({ params }: CarreraHomePageProps) {
   const { carrera } = await params;
+
+  // No intentar hidratar ni renderizar para rutas reservadas
+  if (RESERVED_SLUGS.has(carrera)) return null;
+
   const ctx = { facultadSlug: carrera, carreraSlug: carrera };
+
+  // Garantiza que el store esté lleno antes de que cualquier componente
+  // de esta página lea los datos. React.cache deduplica esta llamada
+  // si el layout ya la ejecutó en el mismo request.
+  await hydrateContentForContext(ctx);
 
   return (
     <>

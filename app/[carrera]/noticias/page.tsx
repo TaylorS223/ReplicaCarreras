@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import type { Metadata } from "next";
 
 type NoticiasPageProps = {
@@ -21,6 +22,7 @@ export async function generateMetadata({ params }: NoticiasPageProps): Promise<M
 
 export default async function NoticiasPage({ params }: NoticiasPageProps) {
   const { carrera } = await params;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const noticias = getNoticias({
     facultadSlug: carrera,

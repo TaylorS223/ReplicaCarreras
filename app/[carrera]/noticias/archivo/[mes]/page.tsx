@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { NoticiasSearchForm } from "@/features/noticias/components/NoticiasSearchForm";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 
 type ArchivoPageProps = {
   params: Promise<{ carrera: string; mes: string }>;
@@ -10,6 +11,7 @@ type ArchivoPageProps = {
 
 export default async function ArchivoPage({ params }: ArchivoPageProps) {
   const { carrera, mes } = await params;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const [year, month] = mes.split("-");
   if (!year || !month) notFound();

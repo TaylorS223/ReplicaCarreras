@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { NoticiasSearchForm } from "@/features/noticias/components/NoticiasSearchForm";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 
 type BuscarNoticiasPageProps = {
   params: Promise<{ carrera: string }>;
@@ -12,6 +13,7 @@ type BuscarNoticiasPageProps = {
 export default async function BuscarNoticiasPage({ params, searchParams }: BuscarNoticiasPageProps) {
   const { carrera } = await params;
   const { q } = await searchParams;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const normalizar = (texto: string) =>
     texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");

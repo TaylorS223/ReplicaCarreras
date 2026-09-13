@@ -1,5 +1,6 @@
 import { getDocentes } from "@/lib/wordpress/services/getDocentes";
 import { DocenteCard } from "@/components/personal/DocenteCard";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 import type { Metadata } from "next";
 
 type PersonalPageProps = {
@@ -20,6 +21,7 @@ export async function generateMetadata({ params }: PersonalPageProps): Promise<M
 
 export default async function PersonalPage({ params }: PersonalPageProps) {
   const { carrera } = await params;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const docentes = getDocentes({ facultadSlug: carrera, carreraSlug: carrera }) ?? [];
 

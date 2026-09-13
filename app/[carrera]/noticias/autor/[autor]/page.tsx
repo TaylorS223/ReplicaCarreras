@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getNoticias } from "@/lib/wordpress/services/getNoticias";
 import { NoticiasSearchForm } from "@/features/noticias/components/NoticiasSearchForm";
+import { hydrateContentForContext } from "@/lib/content/bootstrap";
 
 type AutorPageProps = {
   params: Promise<{ carrera: string; autor: string }>;
@@ -10,6 +11,7 @@ type AutorPageProps = {
 
 export default async function AutorPage({ params }: AutorPageProps) {
   const { carrera, autor } = await params;
+  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const todasNoticias = getNoticias({ facultadSlug: carrera, carreraSlug: carrera });
 
