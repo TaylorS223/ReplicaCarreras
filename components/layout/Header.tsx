@@ -1,3 +1,23 @@
+/**
+ * Header.tsx
+ *
+ * Server Component que construye el navbar para cada carrera.
+ *
+ * ## Responsabilidades
+ * - Lee el header content del store (ya hidratado por bootstrap.ts).
+ * - Filtra los subitems de "Personal" según qué CPTs tienen datos reales en WordPress
+ *   (decano, dirección de carrera, docentes, comisiones, administración).
+ * - El filtro de visibilidad de "Proyectos" NO se aplica aquí — ya viene aplicado
+ *   en los navItems del store desde syncFacultadContentFromAcf.
+ *
+ * ## Por qué no filtramos Proyectos aquí
+ * Anteriormente se llamaba a checkProyectosVisibility() dos veces por request:
+ * una en syncFacultadContentFromAcf y otra aquí. Si la segunda fallaba o devolvía
+ * false, borraba el ítem de Proyectos del navbar aunque el sync lo hubiera incluido
+ * correctamente, causando el bug de navbar intermitente. La solución fue eliminar
+ * la segunda llamada y confiar en el store ya hidratado.
+ */
+
 import { SiteHeader } from "@/features/header/components/SiteHeader";
 import { getHeaderContent } from "@/lib/wordpress/services/getHeader";
 import { getAdministracionServiciosContent } from "@/lib/wordpress/services/getAdministracionServicios";
@@ -5,7 +25,6 @@ import { getDecanatoContent } from "@/lib/wordpress/services/getDecanato";
 import { getDireccionCarreraContent } from "@/lib/wordpress/services/getDireccionCarrera";
 import { getComisionesContent } from "@/lib/wordpress/services/getComisiones";
 import { getDocentes } from "@/lib/wordpress/services/getDocentes";
-import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
 import type { NavItem } from "@/types/nav";
 import type { ContentContext } from "@/lib/content/resolver";
 
