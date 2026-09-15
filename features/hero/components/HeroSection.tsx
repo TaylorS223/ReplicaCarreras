@@ -275,23 +275,24 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
         ))}
       </div>
 
-      {/* Desktop: overlay absoluto sobre el fondo */}
-      {currentSlide.overlay && (
-        <div
-          className={`${styles.slideOverlayDesktop} ${styles.slideOverlayActive}`}
-          aria-hidden="true"
-          key={`overlay-desktop-${currentIndex}`}
-        >
-          {/* <Image> con fill para que Next.js sirva WebP/AVIF y tamaño correcto */}
-          <Image
-            src={currentSlide.overlay}
-            alt=""
-            fill
-            sizes="(max-width: 720px) 0px, 40vw"
-            className={styles.slideOverlayImg}
-            style={{ objectFit: "contain" }}
-          />
-        </div>
+      {/* Desktop: overlays para todos los slides — se muestra solo el activo con transición */}
+      {SLIDES.map((slide, index) =>
+        slide.overlay ? (
+          <div
+            key={`overlay-desktop-${slide.bg}`}
+            className={`${styles.slideOverlayDesktop} ${index === currentIndex ? styles.slideOverlayActive : ""}`}
+            aria-hidden="true"
+          >
+            <Image
+              src={slide.overlay}
+              alt=""
+              fill
+              sizes="(max-width: 720px) 0px, 40vw"
+              className={styles.slideOverlayImg}
+              style={{ objectFit: "contain" }}
+            />
+          </div>
+        ) : null
       )}
 
       <div className={styles.heroShade} aria-hidden="true" />
@@ -324,23 +325,27 @@ export const HeroSection = ({ content, heroSlides }: { content: HeroContent; her
           <SlidePanel text={currentSlide.text} />
         </div>
 
-        {/* Móvil: overlay dentro del flujo, debajo del texto */}
-        {currentSlide.overlay && (
-          <div
-            className={styles.slideOverlayMobile}
-            aria-hidden="true"
-            key={`overlay-mobile-${currentIndex}`}
-          >
-            <Image
-              src={currentSlide.overlay}
-              alt=""
-              fill
-              sizes="80vw"
-              className={styles.slideOverlayImg}
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-        )}
+        {/* Móvil: overlays para todos los slides — se muestra solo el activo con transición */}
+        <div className={styles.slideOverlayMobileWrapper}>
+          {SLIDES.map((slide, index) =>
+            slide.overlay ? (
+              <div
+                key={`overlay-mobile-${slide.bg}`}
+                className={`${styles.slideOverlayMobile} ${index === currentIndex ? styles.slideOverlayMobileActive : ""}`}
+                aria-hidden="true"
+              >
+                <Image
+                  src={slide.overlay}
+                  alt=""
+                  fill
+                  sizes="80vw"
+                  className={styles.slideOverlayImg}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            ) : null
+          )}
+        </div>
       </div>
     </section>
   );
