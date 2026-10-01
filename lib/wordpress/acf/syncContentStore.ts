@@ -37,6 +37,14 @@ import type { CarreraAcfSchema } from "@/lib/wordpress/acf/types";
 import type { FacultadContent } from "@/types/facultad-content";
 import type { CarreraContent } from "@/types/carrera-content";
 
+// Ordena posts de personal por acf.nivel ascendente; sin nivel van al final.
+const sortByNivel = <T extends { acf?: { nivel?: number | string } }>(posts: T[]): T[] =>
+  [...posts].sort((a, b) => {
+    const raw = (v: number | string | undefined) =>
+      v !== undefined && v !== "" && v !== null ? Number(v) : Infinity;
+    return raw(a.acf?.nivel) - raw(b.acf?.nivel);
+  });
+
 const withImages = async <T>(
   posts: Awaited<ReturnType<typeof getPersonalByTipo>>,
   mapper: (post: (typeof posts)[0], images: Record<string, string>) => T,
@@ -65,16 +73,16 @@ export const syncPersonalFacultadFromCpt = async (
   const [decanatoProfiles, direccionCarreraProfiles, comisionesProfiles, adminItems, serviciosItems] =
     await Promise.all([
       decanatoPosts.length > 0
-        ? withImages(decanatoPosts, mapPersonalPostToDecanatoProfile)
+        ? withImages(sortByNivel(decanatoPosts), mapPersonalPostToDecanatoProfile)
         : Promise.resolve([]),
       direccionCarreraPosts.length > 0
-        ? withImages(direccionCarreraPosts, mapPersonalPostToDireccionCarreraProfile)
+        ? withImages(sortByNivel(direccionCarreraPosts), mapPersonalPostToDireccionCarreraProfile)
         : Promise.resolve([]),
       comisionesPosts.length > 0
-        ? withImages(comisionesPosts, mapPersonalPostToComisionProfile)
+        ? withImages(sortByNivel(comisionesPosts), mapPersonalPostToComisionProfile)
         : Promise.resolve([]),
-      withImages(adminPosts, mapPersonalPostToAdministrativo),
-      withImages(serviciosPosts, mapPersonalPostToAdministrativo),
+      withImages(sortByNivel(adminPosts), mapPersonalPostToAdministrativo),
+      withImages(sortByNivel(serviciosPosts), mapPersonalPostToAdministrativo),
     ]);
 
   const groups = [];
