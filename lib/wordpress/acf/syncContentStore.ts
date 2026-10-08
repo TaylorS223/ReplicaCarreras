@@ -15,6 +15,7 @@ import {
   mapPersonalPostToDocente,
   mapRedesSocialesFromCpt,
   mapSemestrePostsToPlanEstudios,
+  groupUnidadesBySemestre,
   mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
 import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
@@ -27,6 +28,7 @@ import {
   getPersonalByTipo,
   getRedesSociales,
   getSemestres,
+  getUnidades,
   resolveCarruselImages,
   resolveInicioPaginaImages,
   resolveMediaUrl,
@@ -107,9 +109,10 @@ export const syncDocentesFromCpt = async (
   facultadSlug = "arquitectura",
   carreraSlug = "arquitectura",
 ): Promise<CarreraContent> => {
-  const [docentesPosts, semestresPosts] = await Promise.all([
+  const [docentesPosts, semestresPosts, unidadesPosts] = await Promise.all([
     getPersonalByTipo("docentes", 100, carreraSlug, facultadSlug),
     getSemestres(100, carreraSlug, facultadSlug),
+    getUnidades(carreraSlug, facultadSlug).catch(() => []),
   ]);
 
   let result = { ...content };
@@ -123,9 +126,10 @@ export const syncDocentesFromCpt = async (
   }
 
   if (semestresPosts.length > 0) {
+    const unidadesBySemestre = groupUnidadesBySemestre(unidadesPosts);
     result = {
       ...result,
-      planEstudios: await mapSemestrePostsToPlanEstudios(semestresPosts, result.planEstudios),
+      planEstudios: await mapSemestrePostsToPlanEstudios(semestresPosts, result.planEstudios, unidadesBySemestre),
     };
   }
 

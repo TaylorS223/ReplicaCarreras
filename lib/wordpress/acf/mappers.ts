@@ -28,6 +28,7 @@ import type {
   PlanEstudiosMateriaAcf,
   RedSocialPost,
   SemestrePost,
+  UnidadPost,
   WpAcfEnvelope,
 } from "@/lib/wordpress/acf/types";
 import { RED_SOCIAL_ID_MAP } from "@/lib/wordpress/acf/types";
@@ -76,10 +77,12 @@ const getSilaboUrl = async (value: number | string | { url?: string } | undefine
 const mapSilaboFromAcf = (acf: SemestrePost["acf"]): SilaboData | undefined => {
   if (!acf) return undefined;
 
-  // Detectar si hay datos del sílabo (campo plano o repeater)
+  // Detectar si hay datos del sílabo (campo plano, repeater o campos numerados)
   const hasSilaboData =
     acf.codigo_asignatura ||
     acf.numero_unidad ||
+    acf.titulo_unidad ||
+    acf.titulo_unidad_2 ||
     acf.unidades_contenido?.length ||
     acf.ambito ||
     acf.criterios_evaluacion?.length ||
@@ -88,9 +91,10 @@ const mapSilaboFromAcf = (acf: SemestrePost["acf"]): SilaboData | undefined => {
 
   if (!hasSilaboData) return undefined;
 
-  // ── Unidades: repeater tiene prioridad, si no, campos planos ──
+  // ── Unidades: repeater ACF Pro > campos numerados > campo plano (legacy) ──
   let unidades: SilaboUnidad[];
   if (acf.unidades_contenido && acf.unidades_contenido.length > 0) {
+    // ACF Pro: repeater unidades_contenido
     unidades = acf.unidades_contenido.map((u) => ({
       numeroUnidad: Number(u.numero_unidad ?? 0),
       tituloUnidad: u.titulo_unidad ?? "",
@@ -99,18 +103,36 @@ const mapSilaboFromAcf = (acf: SemestrePost["acf"]): SilaboData | undefined => {
       codigoResultado: u.codigo_resultado ?? "",
       actividadesPracticas: u.actividades_practicas ?? "",
     }));
-  } else if (acf.titulo_unidad || acf.numero_unidad) {
-    // Campos planos — una sola unidad por post
-    unidades = [{
-      numeroUnidad: Number(acf.numero_unidad ?? 1),
-      tituloUnidad: acf.titulo_unidad ?? "",
-      temasUnidad: acf.temas_unidad ?? "",
-      resultadoAprendizajeUnidad: acf.resultado_aprendizaje_unidad ?? "",
-      codigoResultado: acf.codigo_resultado ?? "",
-      actividadesPracticas: acf.actividades_practicas ?? "",
-    }];
   } else {
-    unidades = [];
+    // Sin ACF Pro: unidad 1 usa los campos planos, unidades 2-6 usan campos numerados
+    const unidad1: SilaboUnidad | null =
+      acf.titulo_unidad || acf.numero_unidad
+        ? {
+            numeroUnidad: Number(acf.numero_unidad ?? 1),
+            tituloUnidad: acf.titulo_unidad ?? "",
+            temasUnidad: acf.temas_unidad ?? "",
+            resultadoAprendizajeUnidad: acf.resultado_aprendizaje_unidad ?? "",
+            codigoResultado: acf.codigo_resultado ?? "",
+            actividadesPracticas: acf.actividades_practicas ?? "",
+          }
+        : null;
+
+    // Unidades 2-4: campos con sufijo _2, _3, _4 (mismo patrón que unidad 1)
+    const extraUnidades: SilaboUnidad[] = [2, 3, 4].flatMap((n) => {
+      const titulo = acf[`titulo_unidad_${n}` as keyof typeof acf] as string | undefined;
+      if (!titulo) return [];
+      const u: SilaboUnidad = {
+        numeroUnidad: n,
+        tituloUnidad: titulo,
+        temasUnidad: (acf[`temas_unidad_${n}` as keyof typeof acf] as string | undefined) ?? "",
+        resultadoAprendizajeUnidad: (acf[`resultado_aprendizaje_unidad_${n}` as keyof typeof acf] as string | undefined) ?? "",
+        codigoResultado: (acf[`codigo_resultado_${n}` as keyof typeof acf] as string | undefined) ?? "",
+        actividadesPracticas: (acf[`actividades_practicas_${n}` as keyof typeof acf] as string | undefined) ?? "",
+      };
+      return [u];
+    });
+
+    unidades = [...(unidad1 ? [unidad1] : []), ...extraUnidades];
   }
 
   // ── Criterios: repeater tiene prioridad, si no, campo plano ──
@@ -186,19 +208,54 @@ const mapSilaboFromAcf = (acf: SemestrePost["acf"]): SilaboData | undefined => {
   };
 };
 
-export const mapSemestrePostToCourse = async (post: SemestrePost): Promise<Course> => ({
-  title: post.acf?.nombremateria ?? post.title.rendered,
-  description: post.acf?.resultadoaprendizaje ?? "",
-  credits: String(post.acf?.creditos ?? ""),
-  syllabusUrl: await getSilaboUrl(post.acf?.silaboenlace),
-  silabo: mapSilaboFromAcf(post.acf),
-});
+// Convierte los posts del CPT unidades en un mapa semestreId → SilaboUnidad[]
+export const groupUnidadesBySemestre = (unidadPosts: UnidadPost[]): Record<number, SilaboUnidad[]> => {
+  const map: Record<number, SilaboUnidad[]> = {};
+  for (const post of unidadPosts) {
+    const semestreId = post.acf?.semestre;
+    if (!semestreId) continue;
+    if (!map[semestreId]) map[semestreId] = [];
+    map[semestreId].push({
+      numeroUnidad: Number(post.acf?.numero_unidad ?? 0),
+      tituloUnidad: post.acf?.titulo_unidad ?? "",
+      temasUnidad: post.acf?.temas_unidad ?? "",
+      resultadoAprendizajeUnidad: post.acf?.resultado_aprendizaje_unidad ?? "",
+      codigoResultado: post.acf?.codigo_resultado ?? "",
+      actividadesPracticas: post.acf?.actividades_practicas ?? "",
+    });
+  }
+  // Ordenar cada grupo por numero_unidad
+  for (const id of Object.keys(map)) {
+    map[Number(id)].sort((a, b) => a.numeroUnidad - b.numeroUnidad);
+  }
+  return map;
+};
+
+export const mapSemestrePostToCourse = async (
+  post: SemestrePost,
+  unidadesBySemestre: Record<number, SilaboUnidad[]> = {},
+): Promise<Course> => {
+  const silaboBase = mapSilaboFromAcf(post.acf);
+  // Si hay unidades del CPT para este semestre, las fusiona con las del sílabo
+  const unidadesCpt = unidadesBySemestre[post.id] ?? [];
+  const silabo = silaboBase && unidadesCpt.length > 0
+    ? { ...silaboBase, unidadesContenido: [...silaboBase.unidadesContenido, ...unidadesCpt].sort((a, b) => a.numeroUnidad - b.numeroUnidad) }
+    : silaboBase ?? (unidadesCpt.length > 0 ? { codigoAsignatura: "", nivelMalla: "", modalidad: "", sistemaEstudio: "", unidadAcademica: "", unidadOrganizacionCurricular: "", nucleoFormacion: "", horasContactoDocente: 0, horasPracticoExperimental: 0, horasAutonomas: 0, horasTotales: 0, planCurricular: "", periodoInicioVigencia: "", ultimaRevision: "", objetoEstudioCarrera: "", perfilEgreso: "", resultadoAprendizajePerfil: "", resultadoAprendizajeAsignatura: "", unidadesContenido: unidadesCpt, criteriosEvaluacion: [], referenciasBibliograficas: [] } : undefined);
+
+  return {
+    title: post.acf?.nombremateria ?? post.title.rendered,
+    description: post.acf?.resultadoaprendizaje ?? "",
+    credits: String(post.acf?.creditos ?? ""),
+    syllabusUrl: await getSilaboUrl(post.acf?.silaboenlace),
+    silabo,
+  };
+};
 
 export const mapSemestrePostsToPlanEstudios = async (
   posts: SemestrePost[],
   existing: PlanEstudiosContent,
-): Promise<PlanEstudiosContent> => {
-  if (posts.length === 0) return existing;
+  unidadesBySemestre: Record<number, SilaboUnidad[]> = {},
+): Promise<PlanEstudiosContent> => {  if (posts.length === 0) return existing;
 
   const byLevel: Record<number, SemestrePost[]> = {};
   for (const post of posts) {
@@ -222,7 +279,7 @@ export const mapSemestrePostsToPlanEstudios = async (
         return null;
       }
 
-      const courses = await Promise.all(levelPosts.map(mapSemestrePostToCourse));
+      const courses = await Promise.all(levelPosts.map((p) => mapSemestrePostToCourse(p, unidadesBySemestre)));
       const totalCredits = courses
         .reduce((acc, c) => acc + (parseFloat(c.credits) || 0), 0)
         .toFixed(1);

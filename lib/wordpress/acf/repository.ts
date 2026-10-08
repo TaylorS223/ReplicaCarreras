@@ -10,6 +10,7 @@ import type {
   RedSocialPost,
   SemestrePost,
   TipoPersonalSlug,
+  UnidadPost,
   WpAcfEnvelope,
   WpRestCollectionResponse,
 } from "@/lib/wordpress/acf/types";
@@ -174,6 +175,24 @@ export const getEnlacesInteres = async (
       ...carreraFilter,
     },
     ...wpCache(["enlaces-interes", ...(carreraSlug ? [`enlaces-interes-${carreraSlug}`] : [])]),
+  });
+};
+
+// ── CPT Unidades del sílabo ───────────────────────────────────────────────────
+
+export const getUnidades = async (
+  carreraSlug?: string,
+  _facultadSlug?: string,
+): Promise<UnidadPost[]> => {
+  const carreraFilter = await buildCarreraFilter(carreraSlug);
+
+  return wpFetch<UnidadPost[]>("unidades", {
+    query: {
+      per_page: 100,
+      _fields: "id,slug,title,acf,carrera",
+      ...carreraFilter,
+    },
+    ...wpCache(["unidades", ...(carreraSlug ? [`unidades-${carreraSlug}`] : [])]),
   });
 };
 

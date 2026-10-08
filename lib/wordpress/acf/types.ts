@@ -9,6 +9,23 @@ export type WpAcfEnvelope<TAcf> = {
   acf?: TAcf;
 };
 
+// ── CPT Unidades (unidades del sílabo) ───────────────────────────────────────
+
+export type UnidadPostAcf = {
+  numero_unidad?: number | string;
+  titulo_unidad?: string;
+  temas_unidad?: string;
+  resultado_aprendizaje_unidad?: string;
+  codigo_resultado?: string;
+  actividades_practicas?: string;
+  semestre?: number; // ID del post de semestre al que pertenece
+};
+
+export type UnidadPost = WpAcfEnvelope<UnidadPostAcf> & {
+  title: { rendered: string };
+  carrera: number[];
+};
+
 export type FacultadAcfSchema = {
   content?: FacultadContent;
 };
@@ -198,7 +215,7 @@ export type SemestrePostAcf = {
   resultado_aprendizaje_perfil?: string;
   resultado_aprendizaje_asignatura?: string;
 
-  // ── Grupo 3: Unidad (campos planos — una unidad por post) ──
+  // ── Grupo 3: Unidad (campos planos — una unidad por post, legacy) ──
   numero_unidad?: number | string;
   titulo_unidad?: string;
   temas_unidad?: string;
@@ -206,8 +223,29 @@ export type SemestrePostAcf = {
   codigo_resultado?: string;
   actividades_practicas?: string;
 
-  // ── Grupo 3 alternativo: Repeater unidades_contenido (si se configura en WP) ──
+  // ── Grupo 3 alternativo: Repeater unidades_contenido (ACF Pro) ──
   unidades_contenido?: SilaboUnidadAcf[];
+
+  // ── Grupo 3 alternativo 2: Campos numerados sin ACF Pro ──
+  // Siguen el mismo patrón que los campos de unidad 1 pero con sufijo _2, _3, _4
+  // Unidad 2
+  titulo_unidad_2?: string;
+  temas_unidad_2?: string;
+  resultado_aprendizaje_unidad_2?: string;
+  codigo_resultado_2?: string;
+  actividades_practicas_2?: string;
+  // Unidad 3
+  titulo_unidad_3?: string;
+  temas_unidad_3?: string;
+  resultado_aprendizaje_unidad_3?: string;
+  codigo_resultado_3?: string;
+  actividades_practicas_3?: string;
+  // Unidad 4
+  titulo_unidad_4?: string;
+  temas_unidad_4?: string;
+  resultado_aprendizaje_unidad_4?: string;
+  codigo_resultado_4?: string;
+  actividades_practicas_4?: string;
 
   // ── Grupo 4: Criterio de evaluación (campos planos) ──
   ambito?: string;
