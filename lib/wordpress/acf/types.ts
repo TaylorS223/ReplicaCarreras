@@ -136,7 +136,8 @@ export type PersonalPostAcf =
   & Partial<PersonalAcfDocente>
   & Partial<PersonalAcfComision>
   & Partial<PersonalAcfAdministracion>
-  & Partial<PersonalAcfServicios>;
+  & Partial<PersonalAcfServicios>
+  & { nivel?: number | string }; // campo ACF de orden jerárquico
 
 export type PersonalPost = WpAcfEnvelope<PersonalPostAcf> & {
   title: { rendered: string };
