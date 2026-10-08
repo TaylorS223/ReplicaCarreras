@@ -142,11 +142,91 @@ export type PersonalPost = WpAcfEnvelope<PersonalPostAcf> & {
   title: { rendered: string };
 };
 
+// Subtipos para los repeaters del sílabo
+export type SilaboUnidadAcf = {
+  numero_unidad?: number | string;
+  titulo_unidad?: string;
+  temas_unidad?: string;
+  resultado_aprendizaje_unidad?: string;
+  codigo_resultado?: string;
+  actividades_practicas?: string;
+};
+
+export type SilaboEvaluacionAcf = {
+  ambito?: string;
+  tipo_evaluacion?: string;
+  porcentaje?: number | string;
+  estrategias?: string;
+};
+
+export type SilaboReferenciaAcf = {
+  tipo_referencia?: "basica" | "complementaria" | string | false;
+  autores?: string;
+  anio?: number | string;
+  titulo_obra?: string;
+  editorial?: string;
+  url_referencia?: string;
+};
+
 export type SemestrePostAcf = {
+  // Campos originales
   nombremateria?: string;
   resultadoaprendizaje?: string;
   creditos?: number | string;
   silaboenlace?: number | string | { url?: string };
+
+  // ── Grupo 1: Datos generales del sílabo ──
+  codigo_asignatura?: string;
+  nivel_malla?: string;
+  modalidad?: string;
+  sistema_estudio?: string;
+  unidad_academica?: string;
+  unidad_organizacion_curricular?: string;
+  nucleo_formacion?: string;
+  horas_contacto_docente?: number | string;
+  horas_practico_experimental?: number | string;
+  horas_autonomas?: number | string;
+  horas_totales?: number | string;
+  plan_curricular?: string;
+  periodo_inicio_vigencia?: string;
+  ultima_revision?: string;
+
+  // ── Grupo 2: Contribución a la formación profesional ──
+  objeto_estudio_carrera?: string;
+  perfil_egreso?: string;
+  resultado_aprendizaje_perfil?: string;
+  resultado_aprendizaje_asignatura?: string;
+
+  // ── Grupo 3: Unidad (campos planos — una unidad por post) ──
+  numero_unidad?: number | string;
+  titulo_unidad?: string;
+  temas_unidad?: string;
+  resultado_aprendizaje_unidad?: string;
+  codigo_resultado?: string;
+  actividades_practicas?: string;
+
+  // ── Grupo 3 alternativo: Repeater unidades_contenido (si se configura en WP) ──
+  unidades_contenido?: SilaboUnidadAcf[];
+
+  // ── Grupo 4: Criterio de evaluación (campos planos) ──
+  ambito?: string;
+  tipo_evaluacion?: string;
+  porcentaje?: number | string;
+  estrategias?: string;
+
+  // ── Grupo 4 alternativo: Repeater criterios_evaluacion (si se configura en WP) ──
+  criterios_evaluacion?: SilaboEvaluacionAcf[];
+
+  // ── Grupo 5: Referencia bibliográfica (campos planos) ──
+  tipo_referencia?: "basica" | "complementaria" | string | false;
+  autores?: string;
+  anio?: number | string;
+  titulo_obra?: string;
+  editorial?: string;
+  url_referencia?: string;
+
+  // ── Grupo 5 alternativo: Repeater referencias_bibliograficas (si se configura en WP) ──
+  referencias_bibliograficas?: SilaboReferenciaAcf[];
 };
 
 export type SemestrePost = WpAcfEnvelope<SemestrePostAcf> & {

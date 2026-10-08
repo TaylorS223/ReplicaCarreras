@@ -5,7 +5,18 @@ import type { DecanatoProfile } from "@/types/decanato";
 import type { DireccionCarreraProfile } from "@/types/direccionCarrera";
 import type { ComisionProfile } from "@/types/comisiones";
 import type { PersonalAdministrativoItem } from "@/types/administracionServicios";
-import type { FooterContent, InicioPaginaContent, MateriaPlanEstudios, PlanEstudiosContent, StudyLevel, Course } from "@/types/api";
+import type {
+  FooterContent,
+  InicioPaginaContent,
+  MateriaPlanEstudios,
+  PlanEstudiosContent,
+  StudyLevel,
+  Course,
+  SilaboData,
+  SilaboUnidad,
+  SilaboEvaluacion,
+  SilaboReferencia,
+} from "@/types/api";
 import type { Noticia } from "@/types/noticia";
 import type { Proyecto } from "@/types/proyecto";
 import type {
@@ -62,11 +73,125 @@ const getSilaboUrl = async (value: number | string | { url?: string } | undefine
   return resolveMediaUrl(value);
 };
 
+const mapSilaboFromAcf = (acf: SemestrePost["acf"]): SilaboData | undefined => {
+  if (!acf) return undefined;
+
+  // Detectar si hay datos del sílabo (campo plano o repeater)
+  const hasSilaboData =
+    acf.codigo_asignatura ||
+    acf.numero_unidad ||
+    acf.unidades_contenido?.length ||
+    acf.ambito ||
+    acf.criterios_evaluacion?.length ||
+    acf.autores ||
+    acf.referencias_bibliograficas?.length;
+
+  if (!hasSilaboData) return undefined;
+
+  // ── Unidades: repeater tiene prioridad, si no, campos planos ──
+  let unidades: SilaboUnidad[];
+  if (acf.unidades_contenido && acf.unidades_contenido.length > 0) {
+    unidades = acf.unidades_contenido.map((u) => ({
+      numeroUnidad: Number(u.numero_unidad ?? 0),
+      tituloUnidad: u.titulo_unidad ?? "",
+      temasUnidad: u.temas_unidad ?? "",
+      resultadoAprendizajeUnidad: u.resultado_aprendizaje_unidad ?? "",
+      codigoResultado: u.codigo_resultado ?? "",
+      actividadesPracticas: u.actividades_practicas ?? "",
+    }));
+  } else if (acf.titulo_unidad || acf.numero_unidad) {
+    // Campos planos — una sola unidad por post
+    unidades = [{
+      numeroUnidad: Number(acf.numero_unidad ?? 1),
+      tituloUnidad: acf.titulo_unidad ?? "",
+      temasUnidad: acf.temas_unidad ?? "",
+      resultadoAprendizajeUnidad: acf.resultado_aprendizaje_unidad ?? "",
+      codigoResultado: acf.codigo_resultado ?? "",
+      actividadesPracticas: acf.actividades_practicas ?? "",
+    }];
+  } else {
+    unidades = [];
+  }
+
+  // ── Criterios: repeater tiene prioridad, si no, campo plano ──
+  let criterios: SilaboEvaluacion[];
+  if (acf.criterios_evaluacion && acf.criterios_evaluacion.length > 0) {
+    criterios = acf.criterios_evaluacion.map((c) => ({
+      ambito: c.ambito ?? "",
+      tipoEvaluacion: c.tipo_evaluacion ?? "",
+      porcentaje: Number(c.porcentaje ?? 0),
+      estrategias: c.estrategias ?? "",
+    }));
+  } else if (acf.ambito || acf.tipo_evaluacion) {
+    criterios = [{
+      ambito: acf.ambito ?? "",
+      tipoEvaluacion: acf.tipo_evaluacion ?? "",
+      porcentaje: Number(acf.porcentaje ?? 0),
+      estrategias: acf.estrategias ?? "",
+    }];
+  } else {
+    criterios = [];
+  }
+
+  // ── Referencias: repeater tiene prioridad, si no, campo plano ──
+  let referencias: SilaboReferencia[];
+  if (acf.referencias_bibliograficas && acf.referencias_bibliograficas.length > 0) {
+    referencias = acf.referencias_bibliograficas.map((r) => ({
+      tipoReferencia: (r.tipo_referencia === "complementaria" ? "complementaria" : "basica") as SilaboReferencia["tipoReferencia"],
+      autores: r.autores ?? "",
+      anio: String(r.anio ?? ""),
+      tituloObra: r.titulo_obra ?? "",
+      editorial: r.editorial ?? "",
+      urlReferencia: r.url_referencia ?? "",
+    }));
+  } else if (acf.autores || acf.titulo_obra) {
+    // tipo_referencia puede llegar como false desde ACF cuando no está seleccionado
+    const rawTipo = acf.tipo_referencia as string | false | undefined;
+    const tipoRef: SilaboReferencia["tipoReferencia"] =
+      rawTipo === "complementaria" ? "complementaria" : "basica";
+    referencias = [{
+      tipoReferencia: tipoRef as SilaboReferencia["tipoReferencia"],
+      autores: acf.autores ?? "",
+      anio: String(acf.anio ?? ""),
+      tituloObra: acf.titulo_obra ?? "",
+      editorial: acf.editorial ?? "",
+      urlReferencia: acf.url_referencia ?? "",
+    }];
+  } else {
+    referencias = [];
+  }
+
+  return {
+    codigoAsignatura: acf.codigo_asignatura ?? "",
+    nivelMalla: acf.nivel_malla ?? "",
+    modalidad: acf.modalidad ?? "",
+    sistemaEstudio: acf.sistema_estudio ?? "",
+    unidadAcademica: acf.unidad_academica ?? "",
+    unidadOrganizacionCurricular: acf.unidad_organizacion_curricular ?? "",
+    nucleoFormacion: acf.nucleo_formacion ?? "",
+    horasContactoDocente: Number(acf.horas_contacto_docente ?? 0),
+    horasPracticoExperimental: Number(acf.horas_practico_experimental ?? 0),
+    horasAutonomas: Number(acf.horas_autonomas ?? 0),
+    horasTotales: Number(acf.horas_totales ?? 0),
+    planCurricular: acf.plan_curricular ?? "",
+    periodoInicioVigencia: acf.periodo_inicio_vigencia ?? "",
+    ultimaRevision: acf.ultima_revision ?? "",
+    objetoEstudioCarrera: acf.objeto_estudio_carrera ?? "",
+    perfilEgreso: acf.perfil_egreso ?? "",
+    resultadoAprendizajePerfil: acf.resultado_aprendizaje_perfil ?? "",
+    resultadoAprendizajeAsignatura: acf.resultado_aprendizaje_asignatura ?? "",
+    unidadesContenido: unidades,
+    criteriosEvaluacion: criterios,
+    referenciasBibliograficas: referencias,
+  };
+};
+
 export const mapSemestrePostToCourse = async (post: SemestrePost): Promise<Course> => ({
   title: post.acf?.nombremateria ?? post.title.rendered,
   description: post.acf?.resultadoaprendizaje ?? "",
   credits: String(post.acf?.creditos ?? ""),
   syllabusUrl: await getSilaboUrl(post.acf?.silaboenlace),
+  silabo: mapSilaboFromAcf(post.acf),
 });
 
 export const mapSemestrePostsToPlanEstudios = async (

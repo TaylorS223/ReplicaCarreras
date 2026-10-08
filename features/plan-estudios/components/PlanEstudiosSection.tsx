@@ -3,10 +3,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Course, PlanEstudiosContent, StudyLevel } from "@/types/api";
 import { useReveal } from "@/shared/hooks/useReveal";
+import { SilaboModal } from "./SilaboModal";
+
+// ── Tipos ─────────────────────────────────────────────────────────────────────
+
+type SilaboModalState = {
+  courseTitle: string;
+  credits: string;
+  silabo: NonNullable<Course["silabo"]>;
+} | null;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
 
-const PlanCourseAccordion = ({ course }: { course: Course }) => (
+const PlanCourseAccordion = ({
+  course,
+  onOpenSilabo,
+}: {
+  course: Course;
+  onOpenSilabo: (state: NonNullable<SilaboModalState>) => void;
+}) => (
   <details className="course-item" {...(course.open ? { open: true } : {})}>
     <summary>
       <span className="course-title">{course.title}</span>
@@ -17,14 +32,30 @@ const PlanCourseAccordion = ({ course }: { course: Course }) => (
       <div className="course-meta">
         <span>Créditos:</span> <strong>{course.credits}</strong>
       </div>
-      <a
-        className="course-syllabus"
-        href={course.syllabusUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Sílabo
-      </a>
+      {course.silabo ? (
+        <button
+          className="course-syllabus"
+          type="button"
+          onClick={() =>
+            onOpenSilabo({
+              courseTitle: course.title,
+              credits: course.credits,
+              silabo: course.silabo!,
+            })
+          }
+        >
+          Sílabo
+        </button>
+      ) : course.syllabusUrl ? (
+        <a
+          className="course-syllabus"
+          href={course.syllabusUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Sílabo
+        </a>
+      ) : null}
     </div>
   </details>
 );
@@ -32,9 +63,11 @@ const PlanCourseAccordion = ({ course }: { course: Course }) => (
 const PlanLevelCard = ({
   level,
   state,
+  onOpenSilabo,
 }: {
   level: StudyLevel;
   state: "active" | "prev" | "next" | "hidden";
+  onOpenSilabo: (state: NonNullable<SilaboModalState>) => void;
 }) => (
   <article className={`plan-carousel-card plan-carousel-card--${state}`} aria-hidden={state === "hidden"}>
     <div className="plan-level-heading">
@@ -43,7 +76,7 @@ const PlanLevelCard = ({
     </div>
     <div className="plan-carousel-courses">
       {level.courses.map((course) => (
-        <PlanCourseAccordion key={course.title} course={course} />
+        <PlanCourseAccordion key={course.title} course={course} onOpenSilabo={onOpenSilabo} />
       ))}
     </div>
   </article>
@@ -55,6 +88,7 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
   const [active, setActive] = useState(0);
   const total = content.levels.length;
   const [sectionRef, visible] = useReveal<HTMLElement>();
+  const [modalState, setModalState] = useState<SilaboModalState>(null);
 
   // Touch / swipe
   const touchStartX = useRef<number | null>(null);
@@ -72,7 +106,6 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
     if (touchStartX.current === null || touchStartY.current === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
-    // Solo swipe horizontal (dx dominante)
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
       if (dx < 0) next();
       else prev();
@@ -83,13 +116,15 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // No navegar el carrusel mientras el modal está abierto
+      if (modalState) return;
       if (!visible) return;
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, visible]);
+  }, [next, prev, visible, modalState]);
 
   const getState = (i: number): "active" | "prev" | "next" | "hidden" => {
     if (i === active) return "active";
@@ -98,81 +133,110 @@ export const PlanEstudiosSection = ({ content }: { content: PlanEstudiosContent 
     return "hidden";
   };
 
+  const handleOpenSilabo = useCallback((state: NonNullable<SilaboModalState>) => {
+    setModalState(state);
+  }, []);
+
+  const handleCloseSilabo = useCallback(() => {
+    setModalState(null);
+  }, []);
+
   return (
-    <section
-      id="plan"
-      ref={sectionRef}
-      className={`section plan-carousel-section reveal${visible ? " reveal--visible" : ""}`}
-    >
-      <div className="container">
-        <div className="section-header">
-          <h2>{content.title}</h2>
-          {content.description && <p>{content.description}</p>}
-        </div>
-      </div>
-
-      {/* ── Carrusel peek — visible en desktop ── */}
-      <div
-        className="plan-carousel-viewport"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        aria-roledescription="carrusel"
-        aria-label="Niveles del plan de estudios"
+    <>
+      <section
+        id="plan"
+        ref={sectionRef}
+        className={`section plan-carousel-section reveal${visible ? " reveal--visible" : ""}`}
       >
-        <div className="plan-carousel-track">
-          {content.levels.map((level, i) => (
-            <PlanLevelCard key={level.title} level={level} state={getState(i)} />
-          ))}
+        <div className="container">
+          <div className="section-header">
+            <h2>{content.title}</h2>
+            {content.description && <p>{content.description}</p>}
+          </div>
         </div>
 
-        <button
-          className="plan-carousel-btn plan-carousel-btn--prev"
-          onClick={prev}
-          disabled={active === 0}
-          aria-label="Nivel anterior"
+        {/* ── Carrusel peek — visible en desktop ── */}
+        <div
+          className="plan-carousel-viewport"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          aria-roledescription="carrusel"
+          aria-label="Niveles del plan de estudios"
         >
-          &#8249;
-        </button>
-        <button
-          className="plan-carousel-btn plan-carousel-btn--next"
-          onClick={next}
-          disabled={active === total - 1}
-          aria-label="Nivel siguiente"
-        >
-          &#8250;
-        </button>
-      </div>
+          <div className="plan-carousel-track">
+            {content.levels.map((level, i) => (
+              <PlanLevelCard
+                key={level.title}
+                level={level}
+                state={getState(i)}
+                onOpenSilabo={handleOpenSilabo}
+              />
+            ))}
+          </div>
 
-      {/* Dots */}
-      <div className="plan-carousel-dots" role="tablist" aria-label="Niveles">
-        {content.levels.map((level, i) => (
           <button
-            key={level.title}
-            role="tab"
-            aria-selected={i === active}
-            aria-label={`Ir a ${level.title}`}
-            className={`plan-carousel-dot${i === active ? " plan-carousel-dot--active" : ""}`}
-            onClick={() => setActive(i)}
-          />
-        ))}
-      </div>
+            className="plan-carousel-btn plan-carousel-btn--prev"
+            onClick={prev}
+            disabled={active === 0}
+            aria-label="Nivel anterior"
+          >
+            &#8249;
+          </button>
+          <button
+            className="plan-carousel-btn plan-carousel-btn--next"
+            onClick={next}
+            disabled={active === total - 1}
+            aria-label="Nivel siguiente"
+          >
+            &#8250;
+          </button>
+        </div>
 
-      {/* ── Acordeón — visible solo en móvil ── */}
-      <div className="container">
-        <div className="plan-accordion-mobile">
-          {content.levels.map((level) => (
-            <details key={level.title} className="study-level">
-              <summary>{level.title}</summary>
-              <div className="study-items">
-                {level.courses.map((course) => (
-                  <PlanCourseAccordion key={course.title} course={course} />
-                ))}
-              </div>
-              <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
-            </details>
+        {/* Dots */}
+        <div className="plan-carousel-dots" role="tablist" aria-label="Niveles">
+          {content.levels.map((level, i) => (
+            <button
+              key={level.title}
+              role="tab"
+              aria-selected={i === active}
+              aria-label={`Ir a ${level.title}`}
+              className={`plan-carousel-dot${i === active ? " plan-carousel-dot--active" : ""}`}
+              onClick={() => setActive(i)}
+            />
           ))}
         </div>
-      </div>
-    </section>
+
+        {/* ── Acordeón — visible solo en móvil ── */}
+        <div className="container">
+          <div className="plan-accordion-mobile">
+            {content.levels.map((level) => (
+              <details key={level.title} className="study-level">
+                <summary>{level.title}</summary>
+                <div className="study-items">
+                  {level.courses.map((course) => (
+                    <PlanCourseAccordion
+                      key={course.title}
+                      course={course}
+                      onOpenSilabo={handleOpenSilabo}
+                    />
+                  ))}
+                </div>
+                <div className="level-note">Créditos por nivel: {level.totalCredits}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Modal del sílabo ── */}
+      {modalState && (
+        <SilaboModal
+          courseTitle={modalState.courseTitle}
+          credits={modalState.credits}
+          silabo={modalState.silabo}
+          onClose={handleCloseSilabo}
+        />
+      )}
+    </>
   );
 };

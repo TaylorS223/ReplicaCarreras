@@ -1,0 +1,611 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SilaboModal.css — Modal del Sílabo (Plan de Estudios)
+   Fiel a la referencia visual: fondo blanco, acentos azul oscuro (#1a2f5a),
+   secciones acordeón con borde izquierdo azul al abrir.
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay ── */
+.silabo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 50, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2vh 1rem;
+  /* El overlay mismo scrollea si el panel es más alto que la ventana */
+  overflow-y: auto;
+  animation: silabo-fade-in 0.18s ease;
+}
+
+@keyframes silabo-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Panel principal ── */
+.silabo-panel {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 780px;
+  /* Sin max-height fijo: el panel crece y el overlay scrollea */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 80px rgba(10, 20, 60, 0.22);
+  animation: silabo-slide-up 0.22s ease;
+  outline: none;
+  /* Margen automático para centrar verticalmente cuando hay espacio */
+  margin: auto;
+}
+
+@keyframes silabo-slide-up {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Encabezado del panel ── */
+.silabo-panel__head {
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 1px solid #e8edf5;
+  flex-shrink: 0;
+}
+
+.silabo-head-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.silabo-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.silabo-badge {
+  background: #eef2fb;
+  color: #1a3a6e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.silabo-close {
+  background: none;
+  border: none;
+  color: #8a96ab;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.4rem;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.silabo-close:hover {
+  color: #1a2f5a;
+  background: #f0f3fa;
+}
+
+.silabo-panel__title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #1a2f5a;
+  margin: 0 0 0.2rem;
+  line-height: 1.2;
+}
+
+.silabo-panel__subtitle {
+  font-size: 0.82rem;
+  color: #6b7a99;
+  margin: 0 0 1.1rem;
+}
+
+/* ── Tarjetas de estadísticas ── */
+.silabo-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.65rem;
+}
+
+.silabo-stat {
+  background: #f5f7fc;
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.silabo-stat__label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #8a96ab;
+  text-transform: uppercase;
+}
+
+.silabo-stat__value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a2f5a;
+}
+
+/* ── Cuerpo scrollable ── */
+.silabo-panel__body {
+  padding: 1rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Sección acordeón ── */
+.silabo-section {
+  border: 1px solid #e4e9f4;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.silabo-section--open {
+  border-color: #c2cde8;
+}
+
+.silabo-section__header {
+  width: 100%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  gap: 0.5rem;
+}
+
+.silabo-section__header:hover {
+  background: #f8faff;
+}
+
+.silabo-section__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #1a2f5a;
+  text-transform: uppercase;
+}
+
+.silabo-section__icon {
+  color: #5b6f9a;
+  font-size: 1.2rem;
+  font-weight: 300;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.silabo-section__body {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid #edf0f8;
+}
+
+/* ── Sección 1: Datos generales ── */
+.silabo-revision-badge {
+  text-align: right;
+  font-size: 0.75rem;
+  color: #6b7a99;
+  margin: 0.75rem 0 0.75rem;
+  background: #f5f7fc;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  display: inline-block;
+  float: right;
+}
+
+.silabo-revision-badge strong {
+  color: #1a2f5a;
+}
+
+.silabo-datos-generales {
+  overflow: hidden; /* clearfix para el float */
+}
+
+.silabo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  clear: both;
+}
+
+.silabo-table__row {
+  border-bottom: 1px solid #f0f3fa;
+}
+
+.silabo-table__row:last-child {
+  border-bottom: none;
+}
+
+.silabo-table__label {
+  font-size: 0.8rem;
+  color: #6b7a99;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  vertical-align: top;
+  width: 45%;
+}
+
+.silabo-table__value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a2f5a;
+  padding: 0.5rem 0;
+  text-align: right;
+}
+
+/* Distribución de horas */
+.silabo-horas {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #edf0f8;
+}
+
+.silabo-horas__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8a96ab;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.silabo-horas__grid {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.silabo-hora-item {
+  flex: 1;
+  min-width: 80px;
+  background: #f5f7fc;
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  text-align: center;
+}
+
+.silabo-hora-item--total {
+  background: #e8eefa;
+}
+
+.silabo-hora-item__num {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a2f5a;
+}
+
+.silabo-hora-item__desc {
+  font-size: 0.67rem;
+  color: #6b7a99;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Sección 2: Contribución ── */
+.silabo-contribucion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 0.75rem;
+}
+
+.silabo-contrib-card {
+  background: #f5f8ff;
+  border-radius: 0.65rem;
+  padding: 0.9rem 1rem;
+}
+
+.silabo-contrib-card__label {
+  display: block;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #2d5be3;
+  margin-bottom: 0.4rem;
+}
+
+.silabo-contrib-card p {
+  font-size: 0.84rem;
+  color: #3a4a6b;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ── Sección 3: Contenidos / Unidades ── */
+.silabo-unidades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.silabo-unidad {
+  border: 1px solid #e4e9f4;
+  border-radius: 0.65rem;
+  overflow: hidden;
+}
+
+.silabo-unidad--open {
+  border-color: #c2cde8;
+}
+
+.silabo-unidad__header {
+  width: 100%;
+  background: #f8faff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  gap: 0.5rem;
+  transition: background 0.15s;
+}
+
+.silabo-unidad__header:hover {
+  background: #eff3fb;
+}
+
+.silabo-unidad__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.silabo-unidad__label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #2d5be3;
+}
+
+.silabo-unidad__titulo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a2f5a;
+}
+
+.silabo-unidad__toggle {
+  color: #5b6f9a;
+  font-size: 1.1rem;
+  font-weight: 300;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.silabo-unidad__body {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid #edf0f8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.silabo-unidad__temas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.silabo-unidad__tema {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.83rem;
+  color: #3a4a6b;
+  line-height: 1.45;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f0f3fa;
+}
+
+.silabo-unidad__tema:last-child {
+  border-bottom: none;
+}
+
+.silabo-unidad__tema-num {
+  font-weight: 700;
+  color: #2d5be3;
+  flex-shrink: 0;
+  min-width: 2rem;
+}
+
+.silabo-unidad__resultado,
+.silabo-unidad__actividades {
+  background: #f5f8ff;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.silabo-unidad__resultado-label,
+.silabo-unidad__actividades-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a96ab;
+  margin-bottom: 0.35rem;
+}
+
+.silabo-unidad__codigo {
+  background: #dce6ff;
+  color: #1a3a8f;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+}
+
+.silabo-unidad__resultado p,
+.silabo-unidad__actividades p {
+  font-size: 0.82rem;
+  color: #3a4a6b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Sección 4: Criterios de evaluación ── */
+.silabo-evaluacion {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  padding-top: 0.75rem;
+}
+
+.silabo-eval-card {
+  background: #f5f7fc;
+  border-radius: 0.65rem;
+  padding: 0.9rem 1rem;
+}
+
+.silabo-eval-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: #1a2f5a;
+  flex-wrap: wrap;
+}
+
+.silabo-eval-card__ambito {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a96ab;
+}
+
+.silabo-eval-card__estrategias {
+  font-size: 0.8rem;
+  color: #5a6a8a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Sección 5: Referencias bibliográficas ── */
+.silabo-referencias {
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.silabo-refs-group__label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a96ab;
+  margin-bottom: 0.5rem;
+}
+
+.silabo-refs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.silabo-ref-item {
+  font-size: 0.82rem;
+  color: #3a4a6b;
+  line-height: 1.55;
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.silabo-ref-item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #2d5be3;
+  font-weight: 700;
+}
+
+.silabo-ref-link {
+  color: #2d5be3;
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 0.78rem;
+}
+
+.silabo-ref-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .silabo-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .silabo-panel {
+    border-radius: 1rem 1rem 0 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .silabo-panel__head {
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .silabo-panel__body {
+    padding: 0.75rem 1.25rem 1.5rem;
+  }
+
+  .silabo-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .silabo-evaluacion {
+    grid-template-columns: 1fr;
+  }
+
+  .silabo-panel__title {
+    font-size: 1.3rem;
+  }
+
+  .silabo-horas__grid {
+    gap: 0.5rem;
+  }
+
+  .silabo-hora-item {
+    min-width: 60px;
+  }
+}

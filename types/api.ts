@@ -53,12 +53,69 @@ export type AccreditationContent = {
   thumbnailUrl?: string;
 };
 
+// ── Tipos del Sílabo ─────────────────────────────────────────────────────────
+
+export type SilaboUnidad = {
+  numeroUnidad: number;
+  tituloUnidad: string;
+  temasUnidad: string;
+  resultadoAprendizajeUnidad: string;
+  codigoResultado: string;
+  actividadesPracticas: string;
+};
+
+export type SilaboEvaluacion = {
+  ambito: string;
+  tipoEvaluacion: string;
+  porcentaje: number;
+  estrategias: string;
+};
+
+export type SilaboReferencia = {
+  tipoReferencia: "basica" | "complementaria";
+  autores: string;
+  anio: string;
+  tituloObra: string;
+  editorial: string;
+  urlReferencia: string;
+};
+
+export type SilaboData = {
+  // Datos generales
+  codigoAsignatura: string;
+  nivelMalla: string;
+  modalidad: string;
+  sistemaEstudio: string;
+  unidadAcademica: string;
+  unidadOrganizacionCurricular: string;
+  nucleoFormacion: string;
+  horasContactoDocente: number;
+  horasPracticoExperimental: number;
+  horasAutonomas: number;
+  horasTotales: number;
+  planCurricular: string;
+  periodoInicioVigencia: string;
+  ultimaRevision: string;
+  // Contribución a la formación
+  objetoEstudioCarrera: string;
+  perfilEgreso: string;
+  resultadoAprendizajePerfil: string;
+  resultadoAprendizajeAsignatura: string;
+  // Contenidos
+  unidadesContenido: SilaboUnidad[];
+  // Criterios de evaluación
+  criteriosEvaluacion: SilaboEvaluacion[];
+  // Referencias bibliográficas
+  referenciasBibliograficas: SilaboReferencia[];
+};
+
 export type Course = {
   title: string;
   description: string;
   credits: string;
   syllabusUrl: string;
   open?: boolean;
+  silabo?: SilaboData;
 };
 
 export type StudyLevel = {
