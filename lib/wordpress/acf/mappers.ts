@@ -21,6 +21,7 @@ import type { Noticia } from "@/types/noticia";
 import type { Proyecto } from "@/types/proyecto";
 import type {
   CarreraAcfSchema,
+  CriterioPost,
   FacultadAcfSchema,
   InicioPaginaAcfSchema,
   NoticiaPost,
@@ -231,16 +232,61 @@ export const groupUnidadesBySemestre = (unidadPosts: UnidadPost[]): Record<numbe
   return map;
 };
 
+export const groupCriteriosBySemestre = (criteriosPosts: CriterioPost[]): Record<number, SilaboEvaluacion[]> => {
+  const map: Record<number, SilaboEvaluacion[]> = {};
+  for (const post of criteriosPosts) {
+    const semestreId = Number(post.acf?.semestre);
+    if (!semestreId) continue;
+    if (!map[semestreId]) map[semestreId] = [];
+    map[semestreId].push({
+      tipoEvaluacion: post.acf?.tipo_evaluacion ?? "",
+      ambito: post.acf?.ambito ?? "",
+      porcentaje: Number(post.acf?.porcentaje ?? 0),
+      estrategias: post.acf?.estrategias ?? "",
+    });
+  }
+  return map;
+};
+
 export const mapSemestrePostToCourse = async (
   post: SemestrePost,
   unidadesBySemestre: Record<number, SilaboUnidad[]> = {},
+  criteriosBySemestre: Record<number, SilaboEvaluacion[]> = {},
 ): Promise<Course> => {
   const silaboBase = mapSilaboFromAcf(post.acf);
-  // Si hay unidades del CPT para este semestre, las fusiona con las del sílabo
   const unidadesCpt = unidadesBySemestre[post.id] ?? [];
-  const silabo = silaboBase && unidadesCpt.length > 0
-    ? { ...silaboBase, unidadesContenido: [...silaboBase.unidadesContenido, ...unidadesCpt].sort((a, b) => a.numeroUnidad - b.numeroUnidad) }
-    : silaboBase ?? (unidadesCpt.length > 0 ? { codigoAsignatura: "", nivelMalla: "", modalidad: "", sistemaEstudio: "", unidadAcademica: "", unidadOrganizacionCurricular: "", nucleoFormacion: "", horasContactoDocente: 0, horasPracticoExperimental: 0, horasAutonomas: 0, horasTotales: 0, planCurricular: "", periodoInicioVigencia: "", ultimaRevision: "", objetoEstudioCarrera: "", perfilEgreso: "", resultadoAprendizajePerfil: "", resultadoAprendizajeAsignatura: "", unidadesContenido: unidadesCpt, criteriosEvaluacion: [], referenciasBibliograficas: [] } : undefined);
+  const criteriosCpt = criteriosBySemestre[post.id] ?? [];
+
+  // Construir silabo fusionando datos del post con CPTs
+  let silabo = silaboBase;
+
+  if (silabo) {
+    // Fusionar unidades: las del CPT se suman a las del post, ordenadas por numero
+    if (unidadesCpt.length > 0) {
+      silabo = {
+        ...silabo,
+        unidadesContenido: [...silabo.unidadesContenido, ...unidadesCpt]
+          .sort((a, b) => a.numeroUnidad - b.numeroUnidad),
+      };
+    }
+    // Fusionar criterios: los del CPT reemplazan los del post si existen
+    if (criteriosCpt.length > 0) {
+      silabo = { ...silabo, criteriosEvaluacion: criteriosCpt };
+    }
+  } else if (unidadesCpt.length > 0 || criteriosCpt.length > 0) {
+    // No hay silabo base pero sí datos en CPTs — crear silabo mínimo
+    silabo = {
+      codigoAsignatura: "", nivelMalla: "", modalidad: "", sistemaEstudio: "",
+      unidadAcademica: "", unidadOrganizacionCurricular: "", nucleoFormacion: "",
+      horasContactoDocente: 0, horasPracticoExperimental: 0, horasAutonomas: 0,
+      horasTotales: 0, planCurricular: "", periodoInicioVigencia: "",
+      ultimaRevision: "", objetoEstudioCarrera: "", perfilEgreso: "",
+      resultadoAprendizajePerfil: "", resultadoAprendizajeAsignatura: "",
+      unidadesContenido: unidadesCpt,
+      criteriosEvaluacion: criteriosCpt,
+      referenciasBibliograficas: [],
+    };
+  }
 
   return {
     title: post.acf?.nombremateria ?? post.title.rendered,
@@ -255,6 +301,7 @@ export const mapSemestrePostsToPlanEstudios = async (
   posts: SemestrePost[],
   existing: PlanEstudiosContent,
   unidadesBySemestre: Record<number, SilaboUnidad[]> = {},
+  criteriosBySemestre: Record<number, SilaboEvaluacion[]> = {},
 ): Promise<PlanEstudiosContent> => {  if (posts.length === 0) return existing;
 
   const byLevel: Record<number, SemestrePost[]> = {};
@@ -279,7 +326,7 @@ export const mapSemestrePostsToPlanEstudios = async (
         return null;
       }
 
-      const courses = await Promise.all(levelPosts.map((p) => mapSemestrePostToCourse(p, unidadesBySemestre)));
+      const courses = await Promise.all(levelPosts.map((p) => mapSemestrePostToCourse(p, unidadesBySemestre, criteriosBySemestre)));
       const totalCredits = courses
         .reduce((acc, c) => acc + (parseFloat(c.credits) || 0), 0)
         .toFixed(1);

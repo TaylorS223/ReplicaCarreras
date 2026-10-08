@@ -500,11 +500,19 @@
 }
 
 .silabo-eval-card__ambito {
+  font-size: 0.8rem;
+  color: #5a6a8a;
+  line-height: 1.5;
+  margin: 4px 0 0;
+}
+
+.silabo-eval-card__ambito-label {
   font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #8a96ab;
+  margin-right: 4px;
 }
 
 .silabo-eval-card__estrategias {

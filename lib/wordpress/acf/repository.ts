@@ -3,6 +3,7 @@ import { getCarreraTermId } from "@/lib/wordpress/services/getCarreraTermId";
 import type {
   CarreraAcfSchema,
   CarruselCarreraPost,
+  CriterioPost,
   EnlaceInteresPost,
   FacultadAcfSchema,
   NoticiaPost,
@@ -175,6 +176,24 @@ export const getEnlacesInteres = async (
       ...carreraFilter,
     },
     ...wpCache(["enlaces-interes", ...(carreraSlug ? [`enlaces-interes-${carreraSlug}`] : [])]),
+  });
+};
+
+// ── CPT Criterios de evaluación ───────────────────────────────────────────────
+
+export const getCriterios = async (
+  carreraSlug?: string,
+  _facultadSlug?: string,
+): Promise<CriterioPost[]> => {
+  const carreraFilter = await buildCarreraFilter(carreraSlug);
+
+  return wpFetch<CriterioPost[]>("criterios", {
+    query: {
+      per_page: 100,
+      _fields: "id,slug,title,acf,carrera",
+      ...carreraFilter,
+    },
+    ...wpCache(["criterios", ...(carreraSlug ? [`criterios-${carreraSlug}`] : [])]),
   });
 };
 

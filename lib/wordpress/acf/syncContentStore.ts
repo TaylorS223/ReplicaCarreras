@@ -16,12 +16,14 @@ import {
   mapRedesSocialesFromCpt,
   mapSemestrePostsToPlanEstudios,
   groupUnidadesBySemestre,
+  groupCriteriosBySemestre,
   mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
 import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
 import {
   getCarreraAcfEntry,
   getCarruselCarrera,
+  getCriterios,
   getEnlacesInteres,
   getFacultadAcfEntry,
   getNoticiasCpt,
@@ -109,10 +111,11 @@ export const syncDocentesFromCpt = async (
   facultadSlug = "arquitectura",
   carreraSlug = "arquitectura",
 ): Promise<CarreraContent> => {
-  const [docentesPosts, semestresPosts, unidadesPosts] = await Promise.all([
+  const [docentesPosts, semestresPosts, unidadesPosts, criteriosPosts] = await Promise.all([
     getPersonalByTipo("docentes", 100, carreraSlug, facultadSlug),
     getSemestres(100, carreraSlug, facultadSlug),
     getUnidades(carreraSlug, facultadSlug).catch(() => []),
+    getCriterios(carreraSlug, facultadSlug).catch(() => []),
   ]);
 
   let result = { ...content };
@@ -121,15 +124,15 @@ export const syncDocentesFromCpt = async (
     const docentes = await withImages(docentesPosts, mapPersonalPostToDocente);
     result = { ...result, docentes, personal: { ...result.personal, docentes } };
   } else {
-    // Sin posts en WordPress: limpia los mocks
     result = { ...result, docentes: [], personal: { ...result.personal, docentes: [] } };
   }
 
   if (semestresPosts.length > 0) {
     const unidadesBySemestre = groupUnidadesBySemestre(unidadesPosts);
+    const criteriosBySemestre = groupCriteriosBySemestre(criteriosPosts);
     result = {
       ...result,
-      planEstudios: await mapSemestrePostsToPlanEstudios(semestresPosts, result.planEstudios, unidadesBySemestre),
+      planEstudios: await mapSemestrePostsToPlanEstudios(semestresPosts, result.planEstudios, unidadesBySemestre, criteriosBySemestre),
     };
   }
 

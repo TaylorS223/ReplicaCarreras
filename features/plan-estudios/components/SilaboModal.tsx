@@ -350,10 +350,13 @@ export const SilaboModal = ({ courseTitle, credits, silabo, onClose }: SilaboMod
                         {criterio.tipoEvaluacion}
                         {criterio.porcentaje > 0 && `: ${criterio.porcentaje}%`}
                       </strong>
-                      {criterio.ambito && (
-                        <span className="silabo-eval-card__ambito">{criterio.ambito}</span>
-                      )}
                     </div>
+                    {criterio.ambito && (
+                      <p className="silabo-eval-card__ambito">
+                        <span className="silabo-eval-card__ambito-label">Ámbito: </span>
+                        {criterio.ambito}
+                      </p>
+                    )}
                     {criterio.estrategias && (
                       <p className="silabo-eval-card__estrategias">{criterio.estrategias}</p>
                     )}

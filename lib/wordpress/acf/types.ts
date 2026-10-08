@@ -26,6 +26,21 @@ export type UnidadPost = WpAcfEnvelope<UnidadPostAcf> & {
   carrera: number[];
 };
 
+// ── CPT Criterios (criterios de evaluación del sílabo) ───────────────────────
+
+export type CriterioPostAcf = {
+  tipo_evaluacion?: string;
+  ambito?: string;
+  porcentaje?: number | string;
+  estrategias?: string;
+  semestre?: number | string; // ID del post de semestre al que pertenece
+};
+
+export type CriterioPost = WpAcfEnvelope<CriterioPostAcf> & {
+  title: { rendered: string };
+  carrera: number[];
+};
+
 export type FacultadAcfSchema = {
   content?: FacultadContent;
 };
