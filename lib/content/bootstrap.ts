@@ -33,9 +33,9 @@ const hydrateBySlug = cache(async (facultadSlug: string, carreraSlug: string) =>
 
   // Siempre sincroniza desde WordPress.
   // Si falla, el error se propaga para que Next.js muestre la página de error.
-  await syncContextContentFromAcf(facultadSlug, carreraSlug);
+  const { facultad } = await syncContextContentFromAcf(facultadSlug, carreraSlug);
 
-  return { mode: isPreview ? ("preview" as const) : ("acf" as const) };
+  return { mode: isPreview ? ("preview" as const) : ("acf" as const), header: facultad.header };
 });
 
 // API pública: acepta el mismo ContentContext de antes para no romper ningún caller.

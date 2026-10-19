@@ -4,18 +4,18 @@
  * Server Component que construye el navbar para cada carrera.
  *
  * ## Responsabilidades
- * - Lee el header content del store (ya hidratado por bootstrap.ts).
+ * - Recibe el header de esta petición desde bootstrap.ts; usa el store como fallback.
  * - Filtra los subitems de "Personal" según qué CPTs tienen datos reales en WordPress
  *   (decano, dirección de carrera, docentes, comisiones, administración).
  * - El filtro de visibilidad de "Proyectos" NO se aplica aquí — ya viene aplicado
- *   en los navItems del store desde syncFacultadContentFromAcf.
+ *   en el header retornado por syncFacultadContentFromAcf.
  *
  * ## Por qué no filtramos Proyectos aquí
  * Anteriormente se llamaba a checkProyectosVisibility() dos veces por request:
  * una en syncFacultadContentFromAcf y otra aquí. Si la segunda fallaba o devolvía
  * false, borraba el ítem de Proyectos del navbar aunque el sync lo hubiera incluido
  * correctamente, causando el bug de navbar intermitente. La solución fue eliminar
- * la segunda llamada y confiar en el store ya hidratado.
+ * la segunda llamada y recibir el header filtrado de esta petición.
  */
 
 import { SiteHeader } from "@/features/header/components/SiteHeader";
@@ -27,13 +27,15 @@ import { getComisionesContent } from "@/lib/wordpress/services/getComisiones";
 import { getDocentes } from "@/lib/wordpress/services/getDocentes";
 import type { NavItem } from "@/types/nav";
 import type { ContentContext } from "@/lib/content/resolver";
+import type { HeaderContent } from "@/types/api";
 
 type HeaderProps = {
   context?: ContentContext;
+  content?: HeaderContent;
 };
 
-export const Header = async ({ context }: HeaderProps = {}) => {
-  const content = getHeaderContent(context);
+export const Header = async ({ context, content: hydratedContent }: HeaderProps = {}) => {
+  const content = hydratedContent ?? getHeaderContent(context);
 
   // Determina qué subitems de Personal tienen datos en el store
   const hasDecano = (() => { try { return getDecanatoContent(context).profiles.length > 0; } catch { return false; } })();
@@ -52,7 +54,7 @@ export const Header = async ({ context }: HeaderProps = {}) => {
 
   // Filtra subitems de Personal según qué CPTs tienen datos.
   // El filtro de Proyectos ya fue aplicado en syncFacultadContentFromAcf —
-  // los navItems que llegan del store ya tienen la visibilidad correcta.
+  // el layout entrega los navItems filtrados de esta petición.
   const filteredNavItems: NavItem[] = content.navItems.map((item) => {
     if (!item.subItems?.length) return item;
 

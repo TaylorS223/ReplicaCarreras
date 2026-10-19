@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getProyectosInvestigacion } from "@/lib/wordpress/graphql/proyectos";
 
 type Props = {
   params: Promise<{ carrera: string }>;
@@ -6,5 +7,6 @@ type Props = {
 
 export default async function CarreraProyectosPage({ params }: Props) {
   const { carrera } = await params;
-  redirect(`/${carrera}/proyectos/investigacion`);
+  const investigacion = await getProyectosInvestigacion(carrera);
+  redirect(`/${carrera}/proyectos/${investigacion.length ? "investigacion" : "vinculacion"}`);
 }

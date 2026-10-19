@@ -12,6 +12,7 @@ const ALLOWED_TAGS = [
   "wp-media",
   "carrusel",
   "graphql",
+  "proyectos",
 ] as const;
 
 type AllowedTag = (typeof ALLOWED_TAGS)[number];

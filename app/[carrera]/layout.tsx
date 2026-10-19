@@ -131,7 +131,7 @@ export default async function CarreraLayout({ children, params }: CarreraLayoutP
     }
   }
 
-  await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
+  const hydrated = await hydrateContentForContext({ facultadSlug: carrera, carreraSlug: carrera });
 
   const { isEnabled: isPreview } = await draftMode();
 
@@ -142,7 +142,7 @@ export default async function CarreraLayout({ children, params }: CarreraLayoutP
 
   return (
     <div className="page-shell" style={themeVars}>
-      <Header context={{ facultadSlug: carrera, carreraSlug: carrera }} />
+      <Header context={{ facultadSlug: carrera, carreraSlug: carrera }} content={hydrated.header} />
       <main>{children}</main>
       <Footer context={{ facultadSlug: carrera, carreraSlug: carrera }} />
       {isPreview && <PreviewBanner />}

@@ -20,6 +20,7 @@ import {
   mergeCarreraFromInicioPagina,
 } from "@/lib/wordpress/acf/mappers";
 import { checkProyectosVisibility } from "@/lib/wordpress/graphql/proyectos";
+import { completeProyectosNav } from "@/lib/content/proyectos-nav";
 import {
   getCarreraAcfEntry,
   getCarruselCarrera,
@@ -318,6 +319,7 @@ export const syncFacultadContentFromAcf = async (facultadSlug: string, carreraSl
   // El filtro de visibilidad de proyectos se aplica solo al valor retornado,
   // no al store, para evitar que una request con WP caído vacíe los navItems
   // de forma permanente hasta el próximo restart del servidor.
+  result = { ...result, header: { ...result.header, navItems: completeProyectosNav(result.header.navItems, carreraSlug) } };
   upsertFacultadContent(facultadSlug, result);
 
   // ── Aplica filtro de proyectos solo al resultado de esta request ──────────
